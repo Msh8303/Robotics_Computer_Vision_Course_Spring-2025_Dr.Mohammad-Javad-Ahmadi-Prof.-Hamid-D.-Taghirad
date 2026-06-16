@@ -1,0 +1,11 @@
+Class_Name,Precision,Recall,F1_Score,AUC_ROC,Threshold_Used
+Cannula,0.7677,0.5021,0.6071,0.9087,0.5
+Cap Cystotome,0.8542,0.5694,0.6833,0.9681,0.5
+Cap Forceps,0.9167,0.3667,0.5238,0.8495,0.5
+Forceps,0.9655,0.7778,0.8615,0.9927,0.5
+I-A Handpiece,0.9329,0.7183,0.8117,0.9749,0.5
+Lens Injector,1.0,0.6094,0.7573,0.9739,0.5
+Phaco Handpiece,0.9272,0.7735,0.8434,0.9852,0.5
+Primary Knife,1.0,0.5946,0.7458,0.9942,0.5
+Second Instrument,0.9775,0.7131,0.8246,0.9627,0.5
+Secondary Knife,0.75,0.5385,0.6269,0.9894,0.5

@@ -1,0 +1,875 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{err}{!}\PYG{n}{pip} \PYG{n}{install} \PYG{n}{pybullet}
+
+\PYG{c+c1}{\PYGZsh{}  C.1: Generate the PRR Robot URDF (Unified Robot Description Format)}
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{os}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Robot Physical Parameters \PYGZam{} Kinematic Constraints}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Prismatic joint (Link 1) stroke limits (in meters)}
+\PYG{n}{Q1\PYGZus{}MIN} \PYG{o}{=} \PYG{l+m+mf}{0.0}
+\PYG{n}{Q1\PYGZus{}MAX} \PYG{o}{=} \PYG{l+m+mf}{0.50}
+
+\PYG{c+c1}{\PYGZsh{} Link lengths derived from the Denavit\PYGZhy{}Hartenberg (DH) parameters (in meters)}
+\PYG{n}{D0} \PYG{o}{=} \PYG{l+m+mf}{0.70}  \PYG{c+c1}{\PYGZsh{} Base to Link 1 initial height offset}
+\PYG{n}{L2} \PYG{o}{=} \PYG{l+m+mf}{0.40}  \PYG{c+c1}{\PYGZsh{} Length of the second link (revolute shoulder)}
+\PYG{n}{L3} \PYG{o}{=} \PYG{l+m+mf}{0.30}  \PYG{c+c1}{\PYGZsh{} Length of the third link (revolute elbow)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} URDF XML Definition}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} The base\PYGZus{}link radius is set to 0.04m to prevent visual occlusion of the}
+\PYG{c+c1}{\PYGZsh{} inspection workspace, while preserving the mathematical coordinate frames.}
+\PYG{n}{URDF\PYGZus{}TEXT} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}}
+\PYG{l+s+s2}{\PYGZlt{}?xml version=\PYGZdq{}1.0\PYGZdq{}?\PYGZgt{}}
+\PYG{l+s+s2}{\PYGZlt{}robot name=\PYGZdq{}prr\PYGZus{}robot\PYGZdq{}\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}base\PYGZus{}link\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}cylinder radius=\PYGZdq{}0.04\PYGZdq{} length=\PYGZdq{}0.20\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.10\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}dark\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.15 0.15 0.17 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}collision\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}cylinder radius=\PYGZdq{}0.04\PYGZdq{} length=\PYGZdq{}0.20\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.10\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/collision\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}inertial\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}mass value=\PYGZdq{}10\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}inertia ixx=\PYGZdq{}0.2\PYGZdq{} ixy=\PYGZdq{}0\PYGZdq{} ixz=\PYGZdq{}0\PYGZdq{} iyy=\PYGZdq{}0.2\PYGZdq{} iyz=\PYGZdq{}0\PYGZdq{} izz=\PYGZdq{}0.2\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/inertial\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}link1\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}0.08 0.08 0.50\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.25\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}blue\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.20 0.45 0.85 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}collision\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}0.08 0.08 0.50\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.25\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/collision\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}inertial\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}mass value=\PYGZdq{}2.5\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.25\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}inertia ixx=\PYGZdq{}0.06\PYGZdq{} ixy=\PYGZdq{}0\PYGZdq{} ixz=\PYGZdq{}0\PYGZdq{} iyy=\PYGZdq{}0.06\PYGZdq{} iyz=\PYGZdq{}0\PYGZdq{} izz=\PYGZdq{}0.01\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/inertial\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}j1\PYGZus{}prismatic\PYGZdq{} type=\PYGZdq{}prismatic\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}base\PYGZus{}link\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}link1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.20\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}axis   xyz=\PYGZdq{}0 0 1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}limit  lower=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{Q1\PYGZus{}MIN}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{} upper=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{Q1\PYGZus{}MAX}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{} effort=\PYGZdq{}200\PYGZdq{} velocity=\PYGZdq{}1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}link2\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0.07 0.07\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}orange\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.95 0.55 0.10 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}collision\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0.07 0.07\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/collision\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}inertial\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}mass value=\PYGZdq{}1.0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}inertia ixx=\PYGZdq{}0.005\PYGZdq{} ixy=\PYGZdq{}0\PYGZdq{} ixz=\PYGZdq{}0\PYGZdq{} iyy=\PYGZdq{}0.030\PYGZdq{} iyz=\PYGZdq{}0\PYGZdq{} izz=\PYGZdq{}0.030\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/inertial\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}j2\PYGZus{}revolute\PYGZdq{} type=\PYGZdq{}continuous\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}link1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}link2\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.50\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}axis   xyz=\PYGZdq{}0 0 1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}link3\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0.06 0.06\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}green\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.20 0.75 0.30 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}collision\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0.06 0.06\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/collision\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}inertial\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}mass value=\PYGZdq{}0.7\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}inertia ixx=\PYGZdq{}0.003\PYGZdq{} ixy=\PYGZdq{}0\PYGZdq{} ixz=\PYGZdq{}0\PYGZdq{} iyy=\PYGZdq{}0.020\PYGZdq{} iyz=\PYGZdq{}0\PYGZdq{} izz=\PYGZdq{}0.020\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/inertial\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}j3\PYGZus{}revolute\PYGZdq{} type=\PYGZdq{}continuous\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}link2\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}link3\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}axis   xyz=\PYGZdq{}0 0 1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}ee\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}sphere radius=\PYGZdq{}0.025\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}yellow\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}1.0 0.85 0.10 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}collision\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}sphere radius=\PYGZdq{}0.025\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/collision\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}inertial\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}mass value=\PYGZdq{}0.05\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}inertia ixx=\PYGZdq{}1e\PYGZhy{}5\PYGZdq{} ixy=\PYGZdq{}0\PYGZdq{} ixz=\PYGZdq{}0\PYGZdq{} iyy=\PYGZdq{}1e\PYGZhy{}5\PYGZdq{} iyz=\PYGZdq{}0\PYGZdq{} izz=\PYGZdq{}1e\PYGZhy{}5\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/inertial\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}ee\PYGZus{}fixed\PYGZdq{} type=\PYGZdq{}fixed\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}link3\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}ee\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+
+\PYG{l+s+s2}{\PYGZlt{}/robot\PYGZgt{}}
+\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Export URDF File}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{URDF\PYGZus{}PATH} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/prr\PYGZus{}robot.urdf\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Write the URDF string to the local filesystem}
+\PYG{k}{with} \PYG{n+nb}{open}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}PATH}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}w\PYGZdq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{f}\PYG{p}{:}
+    \PYG{n}{f}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}TEXT}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Print confirmation logs}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}[INFO] Success: URDF file generated and saved to \PYGZsq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{URDF\PYGZus{}PATH}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZsq{}.\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}[INFO] Payload size: }\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}TEXT}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ bytes.\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}  C.2 \PYGZam{} C.3: Workcell Initialization \PYGZam{} Kinematic Validation}
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pybullet}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{p}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pybullet\PYGZus{}data}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{matplotlib.pyplot}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{plt}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 1. Static Parameters \PYGZam{} Initial Target Data}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{D0}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{,} \PYG{n}{L3} \PYG{o}{=} \PYG{l+m+mf}{0.70}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.30}
+\PYG{n}{URDF\PYGZus{}PATH} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/prr\PYGZus{}robot.urdf\PYGZdq{}}  \PYG{c+c1}{\PYGZsh{} Generated in Task C.1}
+
+\PYG{c+c1}{\PYGZsh{} Ground\PYGZhy{}truth/detected data from the Vision Pipeline (Part A)}
+\PYG{n}{my\PYGZus{}data} \PYG{o}{=} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.186}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.104}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.103}\PYG{p}{,} \PYG{l+m+mf}{0.052}\PYG{p}{),}  \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.053}\PYG{p}{,} \PYG{l+m+mf}{0.209}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.156}\PYG{p}{,} \PYG{l+m+mf}{0.073}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}blue\PYGZsq{}}\PYG{p}{,}  \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.229}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.187}\PYG{p}{),}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{}}
+\PYG{p}{]}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{fk\PYGZus{}math}\PYG{p}{(}\PYG{n}{q1}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Analytical Forward Kinematics (FK) derived in Part B.}
+\PYG{l+s+sd}{    Returns the (x, y, z) coordinates of the end\PYGZhy{}effector.}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{x} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{q2}\PYG{p}{)} \PYG{o}{*} \PYG{p}{(}\PYG{n}{L2} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{q3}\PYG{p}{))} \PYG{o}{\PYGZhy{}} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{q2}\PYG{p}{)} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{q3}\PYG{p}{)}
+    \PYG{n}{y} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{q2}\PYG{p}{)} \PYG{o}{*} \PYG{p}{(}\PYG{n}{L2} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{q3}\PYG{p}{))} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{q2}\PYG{p}{)} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{q3}\PYG{p}{)}
+    \PYG{n}{z} \PYG{o}{=} \PYG{n}{D0} \PYG{o}{+} \PYG{n}{q1}
+    \PYG{k}{return} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{z}\PYG{p}{])}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 2. PyBullet Environment Setup (Task C.2)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Connect to the physics engine in DIRECT mode (no GUI, ideal for Colab)}
+\PYG{n}{client\PYGZus{}id} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{connect}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{DIRECT}\PYG{p}{)}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{setAdditionalSearchPath}\PYG{p}{(}\PYG{n}{pybullet\PYGZus{}data}\PYG{o}{.}\PYG{n}{getDataPath}\PYG{p}{())}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{setGravity}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{9.81}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Load the workspace (ground plane) and the custom PRR robot}
+\PYG{n}{plane\PYGZus{}id} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{loadURDF}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}plane.urdf\PYGZdq{}}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{])}
+\PYG{n}{robot\PYGZus{}id} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{loadURDF}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}PATH}\PYG{p}{,} \PYG{n}{basePosition}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{useFixedBase}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Dynamically extract joint and link indices based on URDF naming}
+\PYG{n}{joint\PYGZus{}indices} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+\PYG{n}{ee\PYGZus{}link\PYGZus{}index} \PYG{o}{=} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
+
+\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{getNumJoints}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{)):}
+    \PYG{n}{info} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getJointInfo}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{i}\PYG{p}{)}
+    \PYG{n}{joint\PYGZus{}name} \PYG{o}{=} \PYG{n}{info}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{decode}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}utf\PYGZhy{}8\PYGZsq{}}\PYG{p}{)}
+    \PYG{n}{link\PYGZus{}name} \PYG{o}{=} \PYG{n}{info}\PYG{p}{[}\PYG{l+m+mi}{12}\PYG{p}{]}\PYG{o}{.}\PYG{n}{decode}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}utf\PYGZhy{}8\PYGZsq{}}\PYG{p}{)}
+
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j1\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{joint\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q1\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j2\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{joint\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q2\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j3\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{joint\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q3\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}ee\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{link\PYGZus{}name}\PYG{p}{:}  \PYG{n}{ee\PYGZus{}link\PYGZus{}index} \PYG{o}{=} \PYG{n}{i}
+
+\PYG{c+c1}{\PYGZsh{} Spawn cylindrical markers to represent the target disks on the table}
+\PYG{n}{disk\PYGZus{}ids} \PYG{o}{=} \PYG{p}{[]}
+\PYG{k}{for} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{my\PYGZus{}data}\PYG{p}{:}
+    \PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty} \PYG{o}{=} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{]}
+    \PYG{n}{rgba} \PYG{o}{=} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{]}
+
+    \PYG{n}{visual\PYGZus{}shape} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{createVisualShape}\PYG{p}{(}
+        \PYG{n}{shapeType}\PYG{o}{=}\PYG{n}{p}\PYG{o}{.}\PYG{n}{GEOM\PYGZus{}CYLINDER}\PYG{p}{,}
+        \PYG{n}{radius}\PYG{o}{=}\PYG{l+m+mf}{0.02}\PYG{p}{,}
+        \PYG{n}{length}\PYG{o}{=}\PYG{l+m+mf}{0.005}\PYG{p}{,}
+        \PYG{n}{rgbaColor}\PYG{o}{=}\PYG{n}{rgba}
+    \PYG{p}{)}
+
+    \PYG{n}{body\PYGZus{}id} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{createMultiBody}\PYG{p}{(}
+        \PYG{n}{baseMass}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,}
+        \PYG{n}{baseVisualShapeIndex}\PYG{o}{=}\PYG{n}{visual\PYGZus{}shape}\PYG{p}{,}
+        \PYG{n}{basePosition}\PYG{o}{=}\PYG{p}{[}\PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty}\PYG{p}{,} \PYG{l+m+mf}{0.0025}\PYG{p}{]}
+    \PYG{p}{)}
+    \PYG{n}{disk\PYGZus{}ids}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{body\PYGZus{}id}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}[INFO] PyBullet environment initialized successfully. Robot and targets are set.}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 3. Kinematic Validation (Task C.3)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{simple\PYGZus{}ik}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Dummy Inverse Kinematics for preliminary testing.}
+\PYG{l+s+sd}{    Assumes a fully extended arm (q3 = 0.0) aligned with the target.}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{q2} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arctan2}\PYG{p}{(}\PYG{n}{ty}\PYG{p}{,} \PYG{n}{tx}\PYG{p}{)}
+    \PYG{n}{q3} \PYG{o}{=} \PYG{l+m+mf}{0.0}
+    \PYG{n}{q1} \PYG{o}{=} \PYG{l+m+mf}{0.05}  \PYG{c+c1}{\PYGZsh{} Safe clearance height (z\PYGZus{}safe)}
+    \PYG{k}{return} \PYG{n}{q1}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}
+
+\PYG{n}{errors} \PYG{o}{=} \PYG{p}{[]}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Target\PYGZsq{}}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}8}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Simulated EE (x, y, z)\PYGZsq{}}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}35}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Math EE (x, y, z)\PYGZsq{}}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}35}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Error (mm)\PYGZsq{}}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}10}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZdq{}} \PYG{o}{*} \PYG{l+m+mi}{95}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Iterate through targets, apply joints, read simulation state, and compare}
+\PYG{k}{for} \PYG{n}{i}\PYG{p}{,} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{my\PYGZus{}data}\PYG{p}{):}
+    \PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty} \PYG{o}{=} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{]}
+
+    \PYG{c+c1}{\PYGZsh{} 1. Compute target joint angles}
+    \PYG{n}{q1}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3} \PYG{o}{=} \PYG{n}{simple\PYGZus{}ik}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} 2. Apply joint angles to the simulated robot}
+    \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q1\PYGZsq{}}\PYG{p}{],} \PYG{n}{q1}\PYG{p}{)}
+    \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q2\PYGZsq{}}\PYG{p}{],} \PYG{n}{q2}\PYG{p}{)}
+    \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q3\PYGZsq{}}\PYG{p}{],} \PYG{n}{q3}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} 3. Step the physics engine to update the kinematic tree}
+    \PYG{n}{p}\PYG{o}{.}\PYG{n}{stepSimulation}\PYG{p}{()}
+
+    \PYG{c+c1}{\PYGZsh{} 4. Read the actual End\PYGZhy{}Effector position from the simulator}
+    \PYG{n}{ee\PYGZus{}state} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getLinkState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{ee\PYGZus{}link\PYGZus{}index}\PYG{p}{)}
+    \PYG{n}{pos\PYGZus{}sim} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{n}{ee\PYGZus{}state}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+
+    \PYG{c+c1}{\PYGZsh{} 5. Compute the expected position using analytical equations}
+    \PYG{n}{pos\PYGZus{}math} \PYG{o}{=} \PYG{n}{fk\PYGZus{}math}\PYG{p}{(}\PYG{n}{q1}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} 6. Calculate Euclidean error in millimeters}
+    \PYG{n}{error\PYGZus{}m} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linalg}\PYG{o}{.}\PYG{n}{norm}\PYG{p}{(}\PYG{n}{pos\PYGZus{}sim} \PYG{o}{\PYGZhy{}} \PYG{n}{pos\PYGZus{}math}\PYG{p}{)}
+    \PYG{n}{error\PYGZus{}mm} \PYG{o}{=} \PYG{n}{error\PYGZus{}m} \PYG{o}{*} \PYG{l+m+mf}{1000.0}
+    \PYG{n}{errors}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{error\PYGZus{}mm}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Print formatted comparison}
+    \PYG{n}{sim\PYGZus{}str} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}(}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pos\PYGZus{}sim}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{.4f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{, }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pos\PYGZus{}sim}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{.4f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{, }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pos\PYGZus{}sim}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{.4f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{)\PYGZdq{}}
+    \PYG{n}{math\PYGZus{}str} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}(}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pos\PYGZus{}math}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{.4f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{, }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pos\PYGZus{}math}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{.4f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{, }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pos\PYGZus{}math}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{.4f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{)\PYGZdq{}}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}8}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{sim\PYGZus{}str}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}35}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{math\PYGZus{}str}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}35}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{error\PYGZus{}mm}\PYG{l+s+si}{:}\PYG{l+s+s2}{.6f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Disconnect physics client to free up resources}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{disconnect}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 4. Data Visualization: Kinematic Validation Error}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{figure}\PYG{p}{(}\PYG{n}{figsize}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{8}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{))}
+\PYG{n}{colors} \PYG{o}{=} \PYG{p}{[}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{]} \PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{my\PYGZus{}data}\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} Generate bar chart}
+\PYG{n}{bars} \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{bar}\PYG{p}{(}\PYG{n+nb}{range}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{my\PYGZus{}data}\PYG{p}{)),} \PYG{n}{errors}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{n}{colors}\PYG{p}{,} \PYG{n}{edgecolor}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}black\PYGZsq{}}\PYG{p}{,} \PYG{n}{alpha}\PYG{o}{=}\PYG{l+m+mf}{0.7}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Overlay the 1mm tolerance threshold required by the assignment}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{axhline}\PYG{p}{(}\PYG{n}{y}\PYG{o}{=}\PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}r\PYGZsq{}}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZhy{}\PYGZsq{}}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}1 mm Threshold\PYGZsq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Formatting}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{title}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Kinematic Validation Error (PyBullet vs. Analytical FK)\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{ylabel}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Error (mm)\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{xlabel}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}Target Disks\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{xticks}\PYG{p}{(}\PYG{n+nb}{range}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{my\PYGZus{}data}\PYG{p}{)),} \PYG{p}{[}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Disk }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{(}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{]}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{)\PYGZdq{}} \PYG{k}{for} \PYG{n}{i}\PYG{p}{,} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{my\PYGZus{}data}\PYG{p}{)])}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{ylim}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nb}{max}\PYG{p}{(}\PYG{n+nb}{max}\PYG{p}{(}\PYG{n}{errors}\PYG{p}{)} \PYG{o}{*} \PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{l+m+mf}{1.2}\PYG{p}{))}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{legend}\PYG{p}{()}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{grid}\PYG{p}{(}\PYG{n}{axis}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}y\PYGZsq{}}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZhy{}\PYGZsq{}}\PYG{p}{,} \PYG{n}{alpha}\PYG{o}{=}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Annotate bars with exact error values (scientific notation for tiny floats)}
+\PYG{k}{for} \PYG{n}{bar} \PYG{o+ow}{in} \PYG{n}{bars}\PYG{p}{:}
+    \PYG{n}{yval} \PYG{o}{=} \PYG{n}{bar}\PYG{o}{.}\PYG{n}{get\PYGZus{}height}\PYG{p}{()}
+    \PYG{n}{plt}\PYG{o}{.}\PYG{n}{text}\PYG{p}{(}\PYG{n}{bar}\PYG{o}{.}\PYG{n}{get\PYGZus{}x}\PYG{p}{()} \PYG{o}{+} \PYG{n}{bar}\PYG{o}{.}\PYG{n}{get\PYGZus{}width}\PYG{p}{()}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{n}{yval} \PYG{o}{+} \PYG{l+m+mf}{0.05}\PYG{p}{,} \PYG{l+s+sa}{f}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{yval}\PYG{l+s+si}{:}\PYG{l+s+s1}{.2e}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{ha}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}center\PYGZsq{}}\PYG{p}{,} \PYG{n}{va}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bottom\PYGZsq{}}\PYG{p}{,} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mi}{9}\PYG{p}{)}
+
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{show}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} C.4 (Part 1): Initial Animation Simulation}
+\PYG{c+c1}{\PYGZsh{} Demonstrating the \PYGZdq{}Self\PYGZhy{}Collision\PYGZdq{} / \PYGZdq{}Joint Wrap\PYGZhy{}around\PYGZdq{} Issue}
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pybullet}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{p}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pybullet\PYGZus{}data}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{matplotlib.pyplot}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{plt}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{imageio}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{IPython.display}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{display}\PYG{p}{,} \PYG{n}{Image}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 1. Target Data Definition}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Ground\PYGZhy{}truth/detected data from the Vision Pipeline}
+\PYG{n}{my\PYGZus{}data} \PYG{o}{=} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.186}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.104}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.103}\PYG{p}{,} \PYG{l+m+mf}{0.052}\PYG{p}{),}  \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.053}\PYG{p}{,} \PYG{l+m+mf}{0.209}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.156}\PYG{p}{,} \PYG{l+m+mf}{0.073}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}blue\PYGZsq{}}\PYG{p}{,}  \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.229}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.187}\PYG{p}{),}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.4}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{}}
+\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 2. Kinematic Algorithms (Flawed Version)}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{find\PYGZus{}best\PYGZus{}ik\PYGZus{}smart}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty}\PYG{p}{,} \PYG{n}{prev\PYGZus{}q}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Grid search algorithm minimizing angular jumps.}
+\PYG{l+s+sd}{    NOTE: This version allows the elbow joint to cross the 180\PYGZhy{}degree mark,}
+\PYG{l+s+sd}{    which physically translates to the robotic arm passing through itself.}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{q2\PYGZus{}samples} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{l+m+mi}{150}\PYG{p}{)}
+    \PYG{n}{q3\PYGZus{}samples} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{l+m+mi}{150}\PYG{p}{)}
+    \PYG{n}{Q2}\PYG{p}{,} \PYG{n}{Q3} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{meshgrid}\PYG{p}{(}\PYG{n}{q2\PYGZus{}samples}\PYG{p}{,} \PYG{n}{q3\PYGZus{}samples}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Forward kinematics calculation for the grid}
+    \PYG{n}{X} \PYG{o}{=} \PYG{n}{L2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q2} \PYG{o}{+} \PYG{n}{Q3}\PYG{p}{)}
+    \PYG{n}{Y} \PYG{o}{=} \PYG{n}{L2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q2} \PYG{o}{+} \PYG{n}{Q3}\PYG{p}{)}
+    \PYG{n}{DIST} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{((}\PYG{n}{X} \PYG{o}{\PYGZhy{}} \PYG{n}{tx}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{p}{(}\PYG{n}{Y} \PYG{o}{\PYGZhy{}} \PYG{n}{ty}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Penalty for sudden angular jumps (allows circular wrap\PYGZhy{}around)}
+    \PYG{n}{D2} \PYG{o}{=} \PYG{p}{(}\PYG{n}{Q2} \PYG{o}{\PYGZhy{}} \PYG{n}{prev\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}
+    \PYG{n}{D3} \PYG{o}{=} \PYG{p}{(}\PYG{n}{Q3} \PYG{o}{\PYGZhy{}} \PYG{n}{prev\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}
+    \PYG{n}{SCORE} \PYG{o}{=} \PYG{n}{DIST} \PYG{o}{*} \PYG{l+m+mi}{1000} \PYG{o}{+} \PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{D2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{D3}\PYG{p}{))}
+
+    \PYG{n}{min\PYGZus{}idx} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{unravel\PYGZus{}index}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{argmin}\PYG{p}{(}\PYG{n}{SCORE}\PYG{p}{),} \PYG{n}{SCORE}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{)}
+    \PYG{k}{return} \PYG{n}{Q2}\PYG{p}{[}\PYG{n}{min\PYGZus{}idx}\PYG{p}{],} \PYG{n}{Q3}\PYG{p}{[}\PYG{n}{min\PYGZus{}idx}\PYG{p}{]}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{interpolate\PYGZus{}shortest\PYGZus{}path}\PYG{p}{(}\PYG{n}{start\PYGZus{}q}\PYG{p}{,} \PYG{n}{end\PYGZus{}q}\PYG{p}{,} \PYG{n}{steps}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Linear interpolation on a circle.}
+\PYG{l+s+sd}{    Finds the shortest mathematical path, but causes self\PYGZhy{}collision in reality.}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{path} \PYG{o}{=} \PYG{p}{[]}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{steps}\PYG{p}{):}
+        \PYG{n}{t} \PYG{o}{=} \PYG{n}{i} \PYG{o}{/} \PYG{n+nb}{float}\PYG{p}{(}\PYG{n}{steps} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{)}
+        \PYG{n}{q1} \PYG{o}{=} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{+} \PYG{n}{t} \PYG{o}{*} \PYG{p}{(}\PYG{n}{end\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+        \PYG{n}{q2} \PYG{o}{=} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{+} \PYG{n}{t} \PYG{o}{*} \PYG{p}{((}\PYG{n}{end\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)}
+        \PYG{n}{q3} \PYG{o}{=} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{+} \PYG{n}{t} \PYG{o}{*} \PYG{p}{((}\PYG{n}{end\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)}
+        \PYG{n}{path}\PYG{o}{.}\PYG{n}{append}\PYG{p}{([}\PYG{n}{q1}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{])}
+    \PYG{k}{return} \PYG{n}{path}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 3. PyBullet Environment Setup}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Connect to the physics engine}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{connect}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{DIRECT}\PYG{p}{)}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{setAdditionalSearchPath}\PYG{p}{(}\PYG{n}{pybullet\PYGZus{}data}\PYG{o}{.}\PYG{n}{getDataPath}\PYG{p}{())}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{loadURDF}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}plane.urdf\PYGZdq{}}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{])}
+
+\PYG{c+c1}{\PYGZsh{} Load the previously generated URDF (Ensure URDF\PYGZus{}PATH is defined prior to this)}
+\PYG{n}{robot\PYGZus{}id} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{loadURDF}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}PATH}\PYG{p}{,} \PYG{n}{basePosition}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{useFixedBase}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Extract joint and link indices}
+\PYG{n}{joint\PYGZus{}indices} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+\PYG{n}{ee\PYGZus{}link\PYGZus{}index} \PYG{o}{=} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
+\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{getNumJoints}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{)):}
+    \PYG{n}{info} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getJointInfo}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{i}\PYG{p}{)}
+    \PYG{n}{j\PYGZus{}name} \PYG{o}{=} \PYG{n}{info}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{decode}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}utf\PYGZhy{}8\PYGZsq{}}\PYG{p}{)}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j1\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{j\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q1\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j2\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{j\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q2\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j3\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{j\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q3\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}ee\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{info}\PYG{p}{[}\PYG{l+m+mi}{12}\PYG{p}{]}\PYG{o}{.}\PYG{n}{decode}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}utf\PYGZhy{}8\PYGZsq{}}\PYG{p}{):} \PYG{n}{ee\PYGZus{}link\PYGZus{}index} \PYG{o}{=} \PYG{n}{i}
+
+\PYG{c+c1}{\PYGZsh{} Spawn cylindrical markers representing target disks}
+\PYG{k}{for} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{my\PYGZus{}data}\PYG{p}{:}
+    \PYG{n}{v\PYGZus{}shape} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{createVisualShape}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{GEOM\PYGZus{}CYLINDER}\PYG{p}{,} \PYG{n}{radius}\PYG{o}{=}\PYG{l+m+mf}{0.03}\PYG{p}{,} \PYG{n}{length}\PYG{o}{=}\PYG{l+m+mf}{0.01}\PYG{p}{,} \PYG{n}{rgbaColor}\PYG{o}{=}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{])}
+    \PYG{n}{p}\PYG{o}{.}\PYG{n}{createMultiBody}\PYG{p}{(}\PYG{n}{baseMass}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{baseVisualShapeIndex}\PYG{o}{=}\PYG{n}{v\PYGZus{}shape}\PYG{p}{,} \PYG{n}{basePosition}\PYG{o}{=}\PYG{p}{[}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{l+m+mf}{0.005}\PYG{p}{])}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 4. Waypoint Generation}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{home\PYGZus{}pose} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{])}
+\PYG{n}{waypoints} \PYG{o}{=} \PYG{p}{[}\PYG{n}{home\PYGZus{}pose}\PYG{p}{]}
+\PYG{n}{current\PYGZus{}q} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{)}
+\PYG{n}{q1\PYGZus{}safe} \PYG{o}{=} \PYG{l+m+mf}{0.05}
+
+\PYG{k}{for} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{my\PYGZus{}data}\PYG{p}{:}
+    \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3} \PYG{o}{=} \PYG{n}{find\PYGZus{}best\PYGZus{}ik\PYGZus{}smart}\PYG{p}{(}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{prev\PYGZus{}q}\PYG{o}{=}\PYG{n}{current\PYGZus{}q}\PYG{p}{)}
+    \PYG{n}{current\PYGZus{}q} \PYG{o}{=} \PYG{p}{(}\PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{)}
+    \PYG{n}{waypoints}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{n}{q1\PYGZus{}safe}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{]))}
+
+\PYG{n}{waypoints}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{home\PYGZus{}pose}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 5. Camera Setup \PYGZam{} Rendering Loop}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{WIDTH}\PYG{p}{,} \PYG{n}{HEIGHT} \PYG{o}{=} \PYG{l+m+mi}{640}\PYG{p}{,} \PYG{l+m+mi}{480}
+\PYG{n}{view\PYGZus{}matrix} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{computeViewMatrixFromYawPitchRoll}\PYG{p}{([}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{],} \PYG{l+m+mf}{1.6}\PYG{p}{,} \PYG{l+m+mi}{55}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{40}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{n}{proj\PYGZus{}matrix} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{computeProjectionMatrixFOV}\PYG{p}{(}\PYG{l+m+mi}{60}\PYG{p}{,} \PYG{n}{WIDTH} \PYG{o}{/} \PYG{n}{HEIGHT}\PYG{p}{,} \PYG{l+m+mf}{0.02}\PYG{p}{,} \PYG{l+m+mf}{5.0}\PYG{p}{)}
+
+\PYG{n}{frames} \PYG{o}{=} \PYG{p}{[]}
+\PYG{n}{STEPS\PYGZus{}PER\PYGZus{}SEGMENT} \PYG{o}{=} \PYG{l+m+mi}{16}
+\PYG{n}{DWELL\PYGZus{}FRAMES} \PYG{o}{=} \PYG{l+m+mi}{10}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}[INFO] Rendering the initial (flawed) animation with self\PYGZhy{}collision...\PYGZdq{}}\PYG{p}{)}
+
+\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{waypoints}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{):}
+    \PYG{n}{path} \PYG{o}{=} \PYG{n}{interpolate\PYGZus{}shortest\PYGZus{}path}\PYG{p}{(}\PYG{n}{waypoints}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],} \PYG{n}{waypoints}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{STEPS\PYGZus{}PER\PYGZus{}SEGMENT}\PYG{p}{)}
+
+    \PYG{k}{for} \PYG{n}{step}\PYG{p}{,} \PYG{n}{q\PYGZus{}state} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{path}\PYG{p}{):}
+        \PYG{c+c1}{\PYGZsh{} Apply joint states}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q1\PYGZsq{}}\PYG{p}{],} \PYG{n}{q\PYGZus{}state}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q2\PYGZsq{}}\PYG{p}{],} \PYG{n}{q\PYGZus{}state}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q3\PYGZsq{}}\PYG{p}{],} \PYG{n}{q\PYGZus{}state}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{])}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{stepSimulation}\PYG{p}{()}
+
+        \PYG{c+c1}{\PYGZsh{} Capture frame}
+        \PYG{n}{img} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getCameraImage}\PYG{p}{(}\PYG{n}{WIDTH}\PYG{p}{,} \PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{view\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{proj\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{renderer}\PYG{o}{=}\PYG{n}{p}\PYG{o}{.}\PYG{n}{ER\PYGZus{}TINY\PYGZus{}RENDERER}\PYG{p}{,} \PYG{n}{shadow}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}
+        \PYG{n}{frames}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{n}{img}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{p}{(}\PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{WIDTH}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{))[:,} \PYG{p}{:,} \PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{o}{.}\PYG{n}{astype}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{))}
+
+        \PYG{c+c1}{\PYGZsh{} Draw inspection laser during dwell time}
+        \PYG{k}{if} \PYG{n}{step} \PYG{o}{==} \PYG{n}{STEPS\PYGZus{}PER\PYGZus{}SEGMENT} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1} \PYG{o+ow}{and} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{waypoints}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{2}\PYG{p}{:}
+            \PYG{n}{ee\PYGZus{}pos} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getLinkState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{ee\PYGZus{}link\PYGZus{}index}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+            \PYG{n}{laser} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{addUserDebugLine}\PYG{p}{(}\PYG{n}{ee\PYGZus{}pos}\PYG{p}{,} \PYG{p}{[}\PYG{n}{ee\PYGZus{}pos}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{ee\PYGZus{}pos}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{l+m+mf}{0.0}\PYG{p}{],} \PYG{n}{lineColorRGB}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{lineWidth}\PYG{o}{=}\PYG{l+m+mi}{3}\PYG{p}{)}
+
+            \PYG{k}{for} \PYG{n}{\PYGZus{}} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{DWELL\PYGZus{}FRAMES}\PYG{p}{):}
+                \PYG{n}{img} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getCameraImage}\PYG{p}{(}\PYG{n}{WIDTH}\PYG{p}{,} \PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{view\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{proj\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{renderer}\PYG{o}{=}\PYG{n}{p}\PYG{o}{.}\PYG{n}{ER\PYGZus{}TINY\PYGZus{}RENDERER}\PYG{p}{,} \PYG{n}{shadow}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}
+                \PYG{n}{frames}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{n}{img}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{p}{(}\PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{WIDTH}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{))[:,} \PYG{p}{:,} \PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{o}{.}\PYG{n}{astype}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{))}
+
+            \PYG{n}{p}\PYG{o}{.}\PYG{n}{removeUserDebugItem}\PYG{p}{(}\PYG{n}{laser}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Disconnect the simulation environment}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{disconnect}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 6. Save and Display GIF}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{GIF\PYGZus{}PATH} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/inspection\PYGZus{}process\PYGZus{}flawed.gif\PYGZdq{}}
+\PYG{n}{imageio}\PYG{o}{.}\PYG{n}{mimsave}\PYG{p}{(}\PYG{n}{GIF\PYGZus{}PATH}\PYG{p}{,} \PYG{n}{frames}\PYG{p}{,} \PYG{n}{fps}\PYG{o}{=}\PYG{l+m+mi}{15}\PYG{p}{,} \PYG{n}{loop}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}[SUCCESS] Flawed animation saved to: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{GIF\PYGZus{}PATH}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{display}\PYG{p}{(}\PYG{n}{Image}\PYG{p}{(}\PYG{n}{filename}\PYG{o}{=}\PYG{n}{GIF\PYGZus{}PATH}\PYG{p}{))}
+
+
+\PYG{c+c1}{\PYGZsh{} C.4 (Part 2): Generate the Corrected \PYGZam{} Safe PRR Robot URDF}
+\PYG{c+c1}{\PYGZsh{} Resolving Self\PYGZhy{}Collision via Revolute Joints and Angle Limits}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{os}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Robot Physical Parameters \PYGZam{} Kinematic Constraints}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Prismatic joint (Link 1) stroke limits (in meters)}
+\PYG{n}{Q1\PYGZus{}MIN}\PYG{p}{,} \PYG{n}{Q1\PYGZus{}MAX} \PYG{o}{=} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.50}
+
+\PYG{c+c1}{\PYGZsh{} Link lengths derived from the Denavit\PYGZhy{}Hartenberg (DH) parameters (in meters)}
+\PYG{n}{D0} \PYG{o}{=} \PYG{l+m+mf}{0.70}  \PYG{c+c1}{\PYGZsh{} Base to Link 1 initial height offset}
+\PYG{n}{L2} \PYG{o}{=} \PYG{l+m+mf}{0.40}  \PYG{c+c1}{\PYGZsh{} Length of the second link (revolute shoulder)}
+\PYG{n}{L3} \PYG{o}{=} \PYG{l+m+mf}{0.30}  \PYG{c+c1}{\PYGZsh{} Length of the third link (revolute elbow)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Safe URDF XML Definition}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Engineering Updates in this version:}
+\PYG{c+c1}{\PYGZsh{} 1. Base link radius reduced to 0.04m to prevent visual occlusion of disks.}
+\PYG{c+c1}{\PYGZsh{} 2. Joint \PYGZsq{}j2\PYGZus{}revolute\PYGZsq{} and \PYGZsq{}j3\PYGZus{}revolute\PYGZsq{} changed from \PYGZsq{}continuous\PYGZsq{} to \PYGZsq{}revolute\PYGZsq{}.}
+\PYG{c+c1}{\PYGZsh{} 3. Strict \PYGZlt{}limit\PYGZgt{} tags added to \PYGZsq{}j3\PYGZus{}revolute\PYGZsq{} to prevent the forearm from}
+\PYG{c+c1}{\PYGZsh{}    folding into the previous link (avoiding self\PYGZhy{}collision).}
+\PYG{n}{URDF\PYGZus{}TEXT} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}}
+\PYG{l+s+s2}{\PYGZlt{}?xml version=\PYGZdq{}1.0\PYGZdq{}?\PYGZgt{}}
+\PYG{l+s+s2}{\PYGZlt{}robot name=\PYGZdq{}prr\PYGZus{}robot\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}base\PYGZus{}link\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}cylinder radius=\PYGZdq{}0.04\PYGZdq{} length=\PYGZdq{}0.20\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.10\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}dark\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.15 0.15 0.17 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}link1\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}0.08 0.08 0.50\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.25\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}blue\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.20 0.45 0.85 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}j1\PYGZus{}prismatic\PYGZdq{} type=\PYGZdq{}prismatic\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}base\PYGZus{}link\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}link1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.20\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}axis   xyz=\PYGZdq{}0 0 1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}limit  lower=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{Q1\PYGZus{}MIN}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{} upper=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{Q1\PYGZus{}MAX}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{} effort=\PYGZdq{}200\PYGZdq{} velocity=\PYGZdq{}1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}link2\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0.07 0.07\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}orange\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.95 0.55 0.10 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}j2\PYGZus{}revolute\PYGZdq{} type=\PYGZdq{}revolute\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}link1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}link2\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}0 0 0.50\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}axis   xyz=\PYGZdq{}0 0 1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}limit lower=\PYGZdq{}\PYGZhy{}3.14\PYGZdq{} upper=\PYGZdq{}3.14\PYGZdq{} effort=\PYGZdq{}200\PYGZdq{} velocity=\PYGZdq{}2\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}link3\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}box size=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0.06 0.06\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}green\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}0.20 0.75 0.30 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}j3\PYGZus{}revolute\PYGZdq{} type=\PYGZdq{}revolute\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}link2\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}link3\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L2}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}axis   xyz=\PYGZdq{}0 0 1\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}limit lower=\PYGZdq{}\PYGZhy{}3.05\PYGZdq{} upper=\PYGZdq{}3.05\PYGZdq{} effort=\PYGZdq{}200\PYGZdq{} velocity=\PYGZdq{}2\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}link name=\PYGZdq{}ee\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}visual\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}geometry\PYGZgt{}\PYGZlt{}sphere radius=\PYGZdq{}0.025\PYGZdq{}/\PYGZgt{}\PYGZlt{}/geometry\PYGZgt{}}
+\PYG{l+s+s2}{      \PYGZlt{}material name=\PYGZdq{}yellow\PYGZdq{}\PYGZgt{}\PYGZlt{}color rgba=\PYGZdq{}1.0 0.85 0.10 1\PYGZdq{}/\PYGZgt{}\PYGZlt{}/material\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}/visual\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/link\PYGZgt{}}
+
+\PYG{l+s+s2}{  \PYGZlt{}joint name=\PYGZdq{}ee\PYGZus{}fixed\PYGZdq{} type=\PYGZdq{}fixed\PYGZdq{}\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}parent link=\PYGZdq{}link3\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}child  link=\PYGZdq{}ee\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{    \PYGZlt{}origin xyz=\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{L3}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ 0 0\PYGZdq{}/\PYGZgt{}}
+\PYG{l+s+s2}{  \PYGZlt{}/joint\PYGZgt{}}
+\PYG{l+s+s2}{\PYGZlt{}/robot\PYGZgt{}}
+\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Export URDF File}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{URDF\PYGZus{}PATH} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}prr\PYGZus{}robot.urdf\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} Write the URDF string to the local filesystem}
+\PYG{k}{with} \PYG{n+nb}{open}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}PATH}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}w\PYGZdq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{f}\PYG{p}{:}
+    \PYG{n}{f}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}TEXT}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Print confirmation logs}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}[INFO] Success: Collision\PYGZhy{}free URDF file generated and saved to \PYGZsq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{URDF\PYGZus{}PATH}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZsq{}.\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}[INFO] Payload size: }\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}TEXT}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ bytes.\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} C.4 (Part 3): Safe Execution, Rendering Loop, and Physical Laser Pointer}
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pybullet}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{p}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pybullet\PYGZus{}data}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{imageio}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{IPython.display}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{display}\PYG{p}{,} \PYG{n}{Image}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 1. Target Data \PYGZam{} Physical Parameters}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} Ground\PYGZhy{}truth/detected data from the Vision Pipeline}
+\PYG{n}{my\PYGZus{}data} \PYG{o}{=} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.186}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.104}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.103}\PYG{p}{,} \PYG{l+m+mf}{0.052}\PYG{p}{),}  \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.053}\PYG{p}{,} \PYG{l+m+mf}{0.209}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.156}\PYG{p}{,} \PYG{l+m+mf}{0.073}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.9}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}blue\PYGZsq{}}\PYG{p}{,}  \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.229}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.187}\PYG{p}{),}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.4}\PYG{p}{,} \PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{]\PYGZcb{}}
+\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} Ensure L2 and L3 are defined in this scope (derived from previous cells)}
+\PYG{n}{L2}\PYG{p}{,} \PYG{n}{L3} \PYG{o}{=} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.30}
+\PYG{n}{URDF\PYGZus{}PATH} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}prr\PYGZus{}robot.urdf\PYGZdq{}}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 2. Collision\PYGZhy{}Free Kinematic Algorithms}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{find\PYGZus{}best\PYGZus{}ik\PYGZus{}safe}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty}\PYG{p}{,} \PYG{n}{prev\PYGZus{}q}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Grid search IK that strictly penalizes the elbow joint (q3)}
+\PYG{l+s+sd}{    from jumping across the 180\PYGZhy{}degree boundary to prevent self\PYGZhy{}collision.}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{q2\PYGZus{}samples} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{l+m+mi}{150}\PYG{p}{)}
+    \PYG{n}{q3\PYGZus{}samples} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{3.05}\PYG{p}{,} \PYG{l+m+mf}{3.05}\PYG{p}{,} \PYG{l+m+mi}{150}\PYG{p}{)}
+    \PYG{n}{Q2}\PYG{p}{,} \PYG{n}{Q3} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{meshgrid}\PYG{p}{(}\PYG{n}{q2\PYGZus{}samples}\PYG{p}{,} \PYG{n}{q3\PYGZus{}samples}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Forward Kinematics for the grid}
+    \PYG{n}{X} \PYG{o}{=} \PYG{n}{L2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q2} \PYG{o}{+} \PYG{n}{Q3}\PYG{p}{)}
+    \PYG{n}{Y} \PYG{o}{=} \PYG{n}{L2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q2} \PYG{o}{+} \PYG{n}{Q3}\PYG{p}{)}
+    \PYG{n}{DIST} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{((}\PYG{n}{X} \PYG{o}{\PYGZhy{}} \PYG{n}{tx}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{p}{(}\PYG{n}{Y} \PYG{o}{\PYGZhy{}} \PYG{n}{ty}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Angular distance calculation (Shoulder can wrap, Elbow must move linearly)}
+    \PYG{n}{D2} \PYG{o}{=} \PYG{p}{(}\PYG{n}{Q2} \PYG{o}{\PYGZhy{}} \PYG{n}{prev\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}
+    \PYG{n}{D3} \PYG{o}{=} \PYG{n}{Q3} \PYG{o}{\PYGZhy{}} \PYG{n}{prev\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}
+
+    \PYG{c+c1}{\PYGZsh{} Objective function: Minimize distance to target and angular movement}
+    \PYG{n}{SCORE} \PYG{o}{=} \PYG{n}{DIST} \PYG{o}{*} \PYG{l+m+mi}{1000} \PYG{o}{+} \PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{D2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{D3}\PYG{p}{))}
+    \PYG{n}{min\PYGZus{}idx} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{unravel\PYGZus{}index}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{argmin}\PYG{p}{(}\PYG{n}{SCORE}\PYG{p}{),} \PYG{n}{SCORE}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{n}{Q2}\PYG{p}{[}\PYG{n}{min\PYGZus{}idx}\PYG{p}{],} \PYG{n}{Q3}\PYG{p}{[}\PYG{n}{min\PYGZus{}idx}\PYG{p}{]}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{interpolate\PYGZus{}safe\PYGZus{}path}\PYG{p}{(}\PYG{n}{start\PYGZus{}q}\PYG{p}{,} \PYG{n}{end\PYGZus{}q}\PYG{p}{,} \PYG{n}{steps}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Linear interpolation enforcing a safe path for the elbow joint.}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{path} \PYG{o}{=} \PYG{p}{[]}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{steps}\PYG{p}{):}
+        \PYG{n}{t} \PYG{o}{=} \PYG{n}{i} \PYG{o}{/} \PYG{n+nb}{float}\PYG{p}{(}\PYG{n}{steps} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{)}
+        \PYG{n}{q1} \PYG{o}{=} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{+} \PYG{n}{t} \PYG{o}{*} \PYG{p}{(}\PYG{n}{end\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+        \PYG{n}{q2} \PYG{o}{=} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{+} \PYG{n}{t} \PYG{o}{*} \PYG{p}{((}\PYG{n}{end\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{+} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)}
+
+        \PYG{c+c1}{\PYGZsh{} Force linear trajectory for q3 (no circular wrap\PYGZhy{}around)}
+        \PYG{n}{q3} \PYG{o}{=} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{+} \PYG{n}{t} \PYG{o}{*} \PYG{p}{(}\PYG{n}{end\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{start\PYGZus{}q}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{])}
+        \PYG{n}{path}\PYG{o}{.}\PYG{n}{append}\PYG{p}{([}\PYG{n}{q1}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{])}
+    \PYG{k}{return} \PYG{n}{path}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 3. PyBullet Environment Initialization}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{connect}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{DIRECT}\PYG{p}{)}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{setAdditionalSearchPath}\PYG{p}{(}\PYG{n}{pybullet\PYGZus{}data}\PYG{o}{.}\PYG{n}{getDataPath}\PYG{p}{())}
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{loadURDF}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}plane.urdf\PYGZdq{}}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{])}
+\PYG{n}{robot\PYGZus{}id} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{loadURDF}\PYG{p}{(}\PYG{n}{URDF\PYGZus{}PATH}\PYG{p}{,} \PYG{n}{basePosition}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{useFixedBase}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Map joint names to their indices dynamically}
+\PYG{n}{joint\PYGZus{}indices} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+\PYG{n}{ee\PYGZus{}link\PYGZus{}index} \PYG{o}{=} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}
+\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{getNumJoints}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{)):}
+    \PYG{n}{info} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getJointInfo}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{i}\PYG{p}{)}
+    \PYG{n}{j\PYGZus{}name} \PYG{o}{=} \PYG{n}{info}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{decode}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}utf\PYGZhy{}8\PYGZsq{}}\PYG{p}{)}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j1\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{j\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q1\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j2\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{j\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q2\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}j3\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{j\PYGZus{}name}\PYG{p}{:} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q3\PYGZsq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{i}
+    \PYG{k}{if} \PYG{l+s+s2}{\PYGZdq{}ee\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{info}\PYG{p}{[}\PYG{l+m+mi}{12}\PYG{p}{]}\PYG{o}{.}\PYG{n}{decode}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}utf\PYGZhy{}8\PYGZsq{}}\PYG{p}{):} \PYG{n}{ee\PYGZus{}link\PYGZus{}index} \PYG{o}{=} \PYG{n}{i}
+
+\PYG{c+c1}{\PYGZsh{} Spawn target disks on the workspace}
+\PYG{k}{for} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{my\PYGZus{}data}\PYG{p}{:}
+    \PYG{n}{v\PYGZus{}shape} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{createVisualShape}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{GEOM\PYGZus{}CYLINDER}\PYG{p}{,} \PYG{n}{radius}\PYG{o}{=}\PYG{l+m+mf}{0.03}\PYG{p}{,} \PYG{n}{length}\PYG{o}{=}\PYG{l+m+mf}{0.01}\PYG{p}{,} \PYG{n}{rgbaColor}\PYG{o}{=}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{])}
+    \PYG{n}{p}\PYG{o}{.}\PYG{n}{createMultiBody}\PYG{p}{(}\PYG{n}{baseMass}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{baseVisualShapeIndex}\PYG{o}{=}\PYG{n}{v\PYGZus{}shape}\PYG{p}{,} \PYG{n}{basePosition}\PYG{o}{=}\PYG{p}{[}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{l+m+mf}{0.005}\PYG{p}{])}
+
+\PYG{c+c1}{\PYGZsh{} Create the Physical Laser Pointer (A thin, transparent red cylinder)}
+\PYG{n}{laser\PYGZus{}radius} \PYG{o}{=} \PYG{l+m+mf}{0.004}
+\PYG{n}{laser\PYGZus{}length} \PYG{o}{=} \PYG{l+m+mf}{2.0}  \PYG{c+c1}{\PYGZsh{} Extends below the table to ensure surface contact}
+\PYG{n}{laser\PYGZus{}visual} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{createVisualShape}\PYG{p}{(}\PYG{n}{p}\PYG{o}{.}\PYG{n}{GEOM\PYGZus{}CYLINDER}\PYG{p}{,} \PYG{n}{radius}\PYG{o}{=}\PYG{n}{laser\PYGZus{}radius}\PYG{p}{,} \PYG{n}{length}\PYG{o}{=}\PYG{n}{laser\PYGZus{}length}\PYG{p}{,} \PYG{n}{rgbaColor}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.8}\PYG{p}{])}
+\PYG{n}{laser\PYGZus{}body} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{createMultiBody}\PYG{p}{(}\PYG{n}{baseMass}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{baseVisualShapeIndex}\PYG{o}{=}\PYG{n}{laser\PYGZus{}visual}\PYG{p}{,} \PYG{n}{basePosition}\PYG{o}{=}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{5}\PYG{p}{])}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 4. Waypoint Planning}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{home\PYGZus{}pose} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{])}
+\PYG{n}{waypoints} \PYG{o}{=} \PYG{p}{[}\PYG{n}{home\PYGZus{}pose}\PYG{p}{]}
+\PYG{n}{current\PYGZus{}q} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{)}
+\PYG{n}{q1\PYGZus{}safe} \PYG{o}{=} \PYG{l+m+mf}{0.05}
+
+\PYG{c+c1}{\PYGZsh{} Calculate target joint configurations for each disk}
+\PYG{k}{for} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{my\PYGZus{}data}\PYG{p}{:}
+    \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3} \PYG{o}{=} \PYG{n}{find\PYGZus{}best\PYGZus{}ik\PYGZus{}safe}\PYG{p}{(}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{prev\PYGZus{}q}\PYG{o}{=}\PYG{n}{current\PYGZus{}q}\PYG{p}{)}
+    \PYG{n}{current\PYGZus{}q} \PYG{o}{=} \PYG{p}{(}\PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{)}
+    \PYG{n}{waypoints}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{n}{q1\PYGZus{}safe}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{]))}
+
+\PYG{n}{waypoints}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{home\PYGZus{}pose}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Return to home after inspection}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 5. Camera Setup \PYGZam{} Rendering Loop}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{WIDTH}\PYG{p}{,} \PYG{n}{HEIGHT} \PYG{o}{=} \PYG{l+m+mi}{640}\PYG{p}{,} \PYG{l+m+mi}{480}
+\PYG{n}{view\PYGZus{}matrix} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{computeViewMatrixFromYawPitchRoll}\PYG{p}{([}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.2}\PYG{p}{],} \PYG{l+m+mf}{1.6}\PYG{p}{,} \PYG{l+m+mi}{55}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{40}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{n}{proj\PYGZus{}matrix} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{computeProjectionMatrixFOV}\PYG{p}{(}\PYG{l+m+mi}{60}\PYG{p}{,} \PYG{n}{WIDTH} \PYG{o}{/} \PYG{n}{HEIGHT}\PYG{p}{,} \PYG{l+m+mf}{0.02}\PYG{p}{,} \PYG{l+m+mf}{5.0}\PYG{p}{)}
+
+\PYG{n}{frames} \PYG{o}{=} \PYG{p}{[]}
+\PYG{n}{STEPS\PYGZus{}PER\PYGZus{}SEGMENT} \PYG{o}{=} \PYG{l+m+mi}{16}
+\PYG{n}{DWELL\PYGZus{}FRAMES} \PYG{o}{=} \PYG{l+m+mi}{10}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}[INFO] Rendering the safe animation with dynamic physical laser...\PYGZdq{}}\PYG{p}{)}
+
+\PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{waypoints}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{):}
+    \PYG{n}{path} \PYG{o}{=} \PYG{n}{interpolate\PYGZus{}safe\PYGZus{}path}\PYG{p}{(}\PYG{n}{waypoints}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],} \PYG{n}{waypoints}\PYG{p}{[}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{STEPS\PYGZus{}PER\PYGZus{}SEGMENT}\PYG{p}{)}
+
+    \PYG{k}{for} \PYG{n}{step}\PYG{p}{,} \PYG{n}{q\PYGZus{}state} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{path}\PYG{p}{):}
+        \PYG{c+c1}{\PYGZsh{} 1. Update Robot Kinematics}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q1\PYGZsq{}}\PYG{p}{],} \PYG{n}{q\PYGZus{}state}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q2\PYGZsq{}}\PYG{p}{],} \PYG{n}{q\PYGZus{}state}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetJointState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{joint\PYGZus{}indices}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}q3\PYGZsq{}}\PYG{p}{],} \PYG{n}{q\PYGZus{}state}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{])}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{stepSimulation}\PYG{p}{()}
+
+        \PYG{c+c1}{\PYGZsh{} 2. Update Physical Laser Position}
+        \PYG{c+c1}{\PYGZsh{} Align the top of the laser cylinder exactly with the end\PYGZhy{}effector}
+        \PYG{n}{ee\PYGZus{}pos} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getLinkState}\PYG{p}{(}\PYG{n}{robot\PYGZus{}id}\PYG{p}{,} \PYG{n}{ee\PYGZus{}link\PYGZus{}index}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+        \PYG{n}{laser\PYGZus{}center\PYGZus{}z} \PYG{o}{=} \PYG{n}{ee\PYGZus{}pos}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{p}{(}\PYG{n}{laser\PYGZus{}length} \PYG{o}{/} \PYG{l+m+mf}{2.0}\PYG{p}{)}
+        \PYG{n}{p}\PYG{o}{.}\PYG{n}{resetBasePositionAndOrientation}\PYG{p}{(}\PYG{n}{laser\PYGZus{}body}\PYG{p}{,} \PYG{p}{[}\PYG{n}{ee\PYGZus{}pos}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{ee\PYGZus{}pos}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{laser\PYGZus{}center\PYGZus{}z}\PYG{p}{],} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{])}
+
+        \PYG{c+c1}{\PYGZsh{} 3. Capture Frame}
+        \PYG{n}{img} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getCameraImage}\PYG{p}{(}\PYG{n}{WIDTH}\PYG{p}{,} \PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{view\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{proj\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{renderer}\PYG{o}{=}\PYG{n}{p}\PYG{o}{.}\PYG{n}{ER\PYGZus{}TINY\PYGZus{}RENDERER}\PYG{p}{,} \PYG{n}{shadow}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}
+        \PYG{n}{frames}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{n}{img}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{p}{(}\PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{WIDTH}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{))[:,} \PYG{p}{:,} \PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{o}{.}\PYG{n}{astype}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{))}
+
+        \PYG{c+c1}{\PYGZsh{} 4. Handle Inspection Dwell Time (Hovering over the target)}
+        \PYG{k}{if} \PYG{n}{step} \PYG{o}{==} \PYG{n}{STEPS\PYGZus{}PER\PYGZus{}SEGMENT} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1} \PYG{o+ow}{and} \PYG{n}{i} \PYG{o}{\PYGZlt{}} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{waypoints}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{2}\PYG{p}{:}
+            \PYG{k}{for} \PYG{n}{\PYGZus{}} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{DWELL\PYGZus{}FRAMES}\PYG{p}{):}
+                \PYG{n}{img} \PYG{o}{=} \PYG{n}{p}\PYG{o}{.}\PYG{n}{getCameraImage}\PYG{p}{(}\PYG{n}{WIDTH}\PYG{p}{,} \PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{view\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{proj\PYGZus{}matrix}\PYG{p}{,} \PYG{n}{renderer}\PYG{o}{=}\PYG{n}{p}\PYG{o}{.}\PYG{n}{ER\PYGZus{}TINY\PYGZus{}RENDERER}\PYG{p}{,} \PYG{n}{shadow}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}
+                \PYG{n}{frames}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{n}{img}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{p}{(}\PYG{n}{HEIGHT}\PYG{p}{,} \PYG{n}{WIDTH}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{))[:,} \PYG{p}{:,} \PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{]}\PYG{o}{.}\PYG{n}{astype}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{))}
+
+\PYG{n}{p}\PYG{o}{.}\PYG{n}{disconnect}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 6. Export and Display Result}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{GIF\PYGZus{}PATH} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}inspection\PYGZus{}process\PYGZus{}laser.gif\PYGZdq{}}
+\PYG{n}{imageio}\PYG{o}{.}\PYG{n}{mimsave}\PYG{p}{(}\PYG{n}{GIF\PYGZus{}PATH}\PYG{p}{,} \PYG{n}{frames}\PYG{p}{,} \PYG{n}{fps}\PYG{o}{=}\PYG{l+m+mi}{15}\PYG{p}{,} \PYG{n}{loop}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}[SUCCESS] Simulation complete. GIF saved to: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{GIF\PYGZus{}PATH}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Robust method to display GIF in Jupyter/Colab notebooks}
+\PYG{k}{with} \PYG{n+nb}{open}\PYG{p}{(}\PYG{n}{GIF\PYGZus{}PATH}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}rb\PYGZsq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{f}\PYG{p}{:}
+    \PYG{n}{display}\PYG{p}{(}\PYG{n}{Image}\PYG{p}{(}\PYG{n}{data}\PYG{o}{=}\PYG{n}{f}\PYG{o}{.}\PYG{n}{read}\PYG{p}{(),} \PYG{n+nb}{format}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}gif\PYGZsq{}}\PYG{p}{))}
+
+\PYG{c+c1}{\PYGZsh{} C.5: Integrated Final Report \PYGZam{} Data Visualization Pipeline (Corrected)}
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{cv2}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{matplotlib.pyplot}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{plt}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 1. Static Geometry Configuration \PYGZam{} Workspace Limits}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{L2} \PYG{o}{=} \PYG{l+m+mf}{0.40}  \PYG{c+c1}{\PYGZsh{} Length of active arm link 2 (meters)}
+\PYG{n}{L3} \PYG{o}{=} \PYG{l+m+mf}{0.30}  \PYG{c+c1}{\PYGZsh{} Length of active arm link 3 (meters)}
+
+\PYG{c+c1}{\PYGZsh{} Inner and outer reach boundaries of the mechanical system workspace}
+\PYG{n}{R\PYGZus{}INNER} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{abs}\PYG{p}{(}\PYG{n}{L2} \PYG{o}{\PYGZhy{}} \PYG{n}{L3}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} 0.10 meters}
+\PYG{n}{R\PYGZus{}OUTER} \PYG{o}{=} \PYG{n}{L2} \PYG{o}{+} \PYG{n}{L3}          \PYG{c+c1}{\PYGZsh{} 0.70 meters}
+
+\PYG{c+c1}{\PYGZsh{} Consolidated tracking metrics with complete key mappings}
+\PYG{c+c1}{\PYGZsh{} Updated with your latest Inverse Kinematics execution results}
+\PYG{n}{pipeline\PYGZus{}results} \PYG{o}{=} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}Disk 1\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.186}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.104}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}error\PYGZus{}mm\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1.63}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.86}\PYG{p}{,} \PYG{l+m+mf}{0.14}\PYG{p}{,} \PYG{l+m+mf}{0.14}\PYG{p}{)\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}Disk 2\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,}   \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.103}\PYG{p}{,} \PYG{l+m+mf}{0.052}\PYG{p}{),}  \PYG{l+s+s1}{\PYGZsq{}error\PYGZus{}mm\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{2.26}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.86}\PYG{p}{,} \PYG{l+m+mf}{0.14}\PYG{p}{,} \PYG{l+m+mf}{0.14}\PYG{p}{)\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}Disk 3\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.053}\PYG{p}{,} \PYG{l+m+mf}{0.208}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}error\PYGZus{}mm\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{1.06}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.14}\PYG{p}{,} \PYG{l+m+mf}{0.78}\PYG{p}{,} \PYG{l+m+mf}{0.24}\PYG{p}{)\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}Disk 4\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.156}\PYG{p}{,} \PYG{l+m+mf}{0.072}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}error\PYGZus{}mm\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{0.67}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.14}\PYG{p}{,} \PYG{l+m+mf}{0.78}\PYG{p}{,} \PYG{l+m+mf}{0.24}\PYG{p}{)\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}Disk 5\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}blue\PYGZsq{}}\PYG{p}{,}  \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.229}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.186}\PYG{p}{),} \PYG{l+s+s1}{\PYGZsq{}error\PYGZus{}mm\PYGZsq{}}\PYG{p}{:} \PYG{l+m+mf}{3.52}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.16}\PYG{p}{,} \PYG{l+m+mf}{0.35}\PYG{p}{,} \PYG{l+m+mf}{0.90}\PYG{p}{)\PYGZcb{}}
+\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 2. Subplot 1 Generation: Rectified Image Canvas Rendering}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{canvas\PYGZus{}size} \PYG{o}{=} \PYG{l+m+mi}{600}
+\PYG{n}{rectified\PYGZus{}img} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{full}\PYG{p}{((}\PYG{n}{canvas\PYGZus{}size}\PYG{p}{,} \PYG{n}{canvas\PYGZus{}size}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{),} \PYG{l+m+mi}{242}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} Background base color}
+
+\PYG{c+c1}{\PYGZsh{} Overlay reference grid lines every 6cm (60 pixels)}
+\PYG{n}{grid\PYGZus{}color} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mi}{220}\PYG{p}{,} \PYG{l+m+mi}{220}\PYG{p}{,} \PYG{l+m+mi}{245}\PYG{p}{)}
+\PYG{k}{for} \PYG{n}{pos} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{canvas\PYGZus{}size} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{60}\PYG{p}{):}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{line}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{,} \PYG{p}{(}\PYG{n}{pos}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{),} \PYG{p}{(}\PYG{n}{pos}\PYG{p}{,} \PYG{n}{canvas\PYGZus{}size}\PYG{p}{),} \PYG{n}{grid\PYGZus{}color}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{line}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{pos}\PYG{p}{),} \PYG{p}{(}\PYG{n}{canvas\PYGZus{}size}\PYG{p}{,} \PYG{n}{pos}\PYG{p}{),} \PYG{n}{grid\PYGZus{}color}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Render processed targets and status identifier tracking overlays}
+\PYG{k}{for} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{pipeline\PYGZus{}results}\PYG{p}{:}
+    \PYG{c+c1}{\PYGZsh{} Convert metric base frames back into pixel mappings}
+    \PYG{n}{u} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{300} \PYG{o}{+} \PYG{p}{(}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{*} \PYG{l+m+mf}{1000.0}\PYG{p}{))}
+    \PYG{n}{v} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mi}{300} \PYG{o}{\PYGZhy{}} \PYG{p}{(}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{*} \PYG{l+m+mf}{1000.0}\PYG{p}{))}
+
+    \PYG{c+c1}{\PYGZsh{} Internal body fill}
+    \PYG{n}{bgr\PYGZus{}color} \PYG{o}{=} \PYG{p}{[}\PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{c} \PYG{o}{*} \PYG{l+m+mi}{255}\PYG{p}{)} \PYG{k}{for} \PYG{n}{c} \PYG{o+ow}{in} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{]][::}\PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{]}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{circle}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{,} \PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{),} \PYG{l+m+mi}{22}\PYG{p}{,} \PYG{n}{bgr\PYGZus{}color}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{)}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{circle}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{,} \PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{),} \PYG{l+m+mi}{22}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{40}\PYG{p}{,} \PYG{l+m+mi}{40}\PYG{p}{,} \PYG{l+m+mi}{40}\PYG{p}{),} \PYG{l+m+mi}{2}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Draw green bounding indicator representing a safe, reachable target status}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{circle}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{,} \PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{),} \PYG{l+m+mi}{30}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{30}\PYG{p}{,} \PYG{l+m+mi}{190}\PYG{p}{,} \PYG{l+m+mi}{40}\PYG{p}{),} \PYG{l+m+mi}{2}\PYG{p}{)}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{putText}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{,} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{],} \PYG{p}{(}\PYG{n}{u} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{20}\PYG{p}{,} \PYG{n}{v} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{36}\PYG{p}{),}
+                \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{FONT\PYGZus{}HERSHEY\PYGZus{}SIMPLEX}\PYG{p}{,} \PYG{l+m+mf}{0.4}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{),} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{LINE\PYGZus{}AA}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 3. Figure Presentation \PYGZam{} Combined Layout Rendering}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{fig}\PYG{p}{,} \PYG{n}{axes} \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{subplots}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,} \PYG{n}{figsize}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{18}\PYG{p}{,} \PYG{l+m+mf}{5.5}\PYG{p}{))}
+\PYG{n}{fig}\PYG{o}{.}\PYG{n}{suptitle}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}PRR Automated Inspection System \PYGZhy{} Integrated End\PYGZhy{}to\PYGZhy{}End Report\PYGZdq{}}\PYG{p}{,}
+             \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mi}{14}\PYG{p}{,} \PYG{n}{fontweight}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bold\PYGZsq{}}\PYG{p}{,} \PYG{n}{y}\PYG{o}{=}\PYG{l+m+mf}{0.98}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{} Subplot 1: Rectified Top\PYGZhy{}Down Workspace Image \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{imshow}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}title}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}1. Rectified Top\PYGZhy{}Down View}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{(Contours \PYGZam{} Reachable Status)\PYGZdq{}}\PYG{p}{,} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mi}{11}\PYG{p}{,} \PYG{n}{fontweight}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bold\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Pixel U (Width)\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Pixel V (Height)\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{grid}\PYG{p}{(}\PYG{k+kc}{False}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{} Subplot 2: Analytical Mechanical Workspace Scheme \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}title}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}2. Robotic Arm Workspace}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{(Annular Reachable Zone Map)\PYGZdq{}}\PYG{p}{,} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mi}{11}\PYG{p}{,} \PYG{n}{fontweight}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bold\PYGZsq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Draw workspace bounds centered at origin}
+\PYG{n}{workspace\PYGZus{}shade} \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{Circle}\PYG{p}{((}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{),} \PYG{n}{R\PYGZus{}OUTER}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZsh{}e2f0d9\PYGZsq{}}\PYG{p}{,} \PYG{n}{alpha}\PYG{o}{=}\PYG{l+m+mf}{0.6}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Reachable Workspace\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{add\PYGZus{}patch}\PYG{p}{(}\PYG{n}{workspace\PYGZus{}shade}\PYG{p}{)}
+\PYG{n}{non\PYGZus{}reachable\PYGZus{}core} \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{Circle}\PYG{p}{((}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{),} \PYG{n}{R\PYGZus{}INNER}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}white\PYGZsq{}}\PYG{p}{,} \PYG{n}{alpha}\PYG{o}{=}\PYG{l+m+mf}{1.0}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{add\PYGZus{}patch}\PYG{p}{(}\PYG{n}{non\PYGZus{}reachable\PYGZus{}core}\PYG{p}{)}
+
+\PYG{n}{circle\PYGZus{}outer} \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{Circle}\PYG{p}{((}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{),} \PYG{n}{R\PYGZus{}OUTER}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZsh{}70ad47\PYGZsq{}}\PYG{p}{,} \PYG{n}{fill}\PYG{o}{=}\PYG{k+kc}{False}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZsq{}}\PYG{p}{,} \PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+sa}{f}\PYG{l+s+s1}{\PYGZsq{}Max Reach (}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{R\PYGZus{}OUTER}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s1}{m)\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{circle\PYGZus{}inner} \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{Circle}\PYG{p}{((}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{),} \PYG{n}{R\PYGZus{}INNER}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZsh{}c55a11\PYGZsq{}}\PYG{p}{,} \PYG{n}{fill}\PYG{o}{=}\PYG{k+kc}{False}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZhy{}\PYGZsq{}}\PYG{p}{,} \PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+sa}{f}\PYG{l+s+s1}{\PYGZsq{}Min Reach (}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{R\PYGZus{}INNER}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s1}{m)\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{add\PYGZus{}patch}\PYG{p}{(}\PYG{n}{circle\PYGZus{}outer}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{add\PYGZus{}patch}\PYG{p}{(}\PYG{n}{circle\PYGZus{}inner}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Map spatial location of the detected disks on the diagram}
+\PYG{k}{for} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{pipeline\PYGZus{}results}\PYG{p}{:}
+    \PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{scatter}\PYG{p}{(}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{color}\PYG{o}{=}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{],} \PYG{n}{edgecolors}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}black\PYGZsq{}}\PYG{p}{,} \PYG{n}{s}\PYG{o}{=}\PYG{l+m+mi}{180}\PYG{p}{,} \PYG{n}{zorder}\PYG{o}{=}\PYG{l+m+mi}{5}\PYG{p}{)}
+    \PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{text}\PYG{p}{(}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{+} \PYG{l+m+mf}{0.02}\PYG{p}{,} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{+} \PYG{l+m+mf}{0.02}\PYG{p}{,} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{],} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mi}{9}\PYG{p}{,} \PYG{n}{fontweight}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bold\PYGZsq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Mark physical location of base pivot origin axis assembly}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{scatter}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}black\PYGZsq{}}\PYG{p}{,} \PYG{n}{marker}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}X\PYGZsq{}}\PYG{p}{,} \PYG{n}{s}\PYG{o}{=}\PYG{l+m+mi}{120}\PYG{p}{,} \PYG{n}{zorder}\PYG{o}{=}\PYG{l+m+mi}{6}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Robot Base Axis\PYGZsq{}}\PYG{p}{)}
+
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}xlim}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.45}\PYG{p}{,} \PYG{l+m+mf}{0.45}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylim}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.45}\PYG{p}{,} \PYG{l+m+mf}{0.45}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}World X Coordinates (meters)\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}World Y Coordinates (meters)\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{axhline}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}gray\PYGZsq{}}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}:\PYGZsq{}}\PYG{p}{,} \PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mf}{0.8}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{axvline}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}gray\PYGZsq{}}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}:\PYGZsq{}}\PYG{p}{,} \PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mf}{0.8}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}aspect}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}equal\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{legend}\PYG{p}{(}\PYG{n}{loc}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}upper right\PYGZsq{}}\PYG{p}{,} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mf}{8.5}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{o}{.}\PYG{n}{grid}\PYG{p}{(}\PYG{k+kc}{True}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZhy{}\PYGZsq{}}\PYG{p}{,} \PYG{n}{alpha}\PYG{o}{=}\PYG{l+m+mf}{0.4}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{} Subplot 3: Numerical Performance Metric Bar Chart \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}title}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}3. Target Positioning Error Breakdown}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{(Kinematic Brute\PYGZhy{}Force vs Ground\PYGZhy{}Truth)\PYGZdq{}}\PYG{p}{,} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mi}{11}\PYG{p}{,} \PYG{n}{fontweight}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bold\PYGZsq{}}\PYG{p}{)}
+
+\PYG{n}{labels} \PYG{o}{=} \PYG{p}{[}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}id\PYGZsq{}}\PYG{p}{]} \PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{pipeline\PYGZus{}results}\PYG{p}{]}
+\PYG{n}{errors} \PYG{o}{=} \PYG{p}{[}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}error\PYGZus{}mm\PYGZsq{}}\PYG{p}{]} \PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{pipeline\PYGZus{}results}\PYG{p}{]}
+\PYG{n}{bar\PYGZus{}colors} \PYG{o}{=} \PYG{p}{[}\PYG{n}{d}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}rgb\PYGZsq{}}\PYG{p}{]} \PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{pipeline\PYGZus{}results}\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} Construct statistical summary tracking chart}
+\PYG{n}{error\PYGZus{}bars} \PYG{o}{=} \PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{bar}\PYG{p}{(}\PYG{n}{labels}\PYG{p}{,} \PYG{n}{errors}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{n}{bar\PYGZus{}colors}\PYG{p}{,} \PYG{n}{edgecolor}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZsh{}404040\PYGZsq{}}\PYG{p}{,} \PYG{n}{alpha}\PYG{o}{=}\PYG{l+m+mf}{0.85}\PYG{p}{,} \PYG{n}{width}\PYG{o}{=}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Benchmark limits overlay lines}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{axhline}\PYG{p}{(}\PYG{n}{y}\PYG{o}{=}\PYG{l+m+mf}{5.0}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZhy{}\PYGZsq{}}\PYG{p}{,} \PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mf}{1.2}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Task B.5 Limit (5.0 mm)\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{axhline}\PYG{p}{(}\PYG{n}{y}\PYG{o}{=}\PYG{l+m+mf}{1.0}\PYG{p}{,} \PYG{n}{color}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}orange\PYGZsq{}}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}:\PYGZsq{}}\PYG{p}{,} \PYG{n}{linewidth}\PYG{o}{=}\PYG{l+m+mf}{1.2}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Ideal Tolerance (1.0 mm)\PYGZsq{}}\PYG{p}{)}
+
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Euclidean Positioning Error (mm)\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Inspected Target Components\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylim}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{6.0}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{grid}\PYG{p}{(}\PYG{n}{axis}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}y\PYGZsq{}}\PYG{p}{,} \PYG{n}{linestyle}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}\PYGZhy{}\PYGZhy{}\PYGZsq{}}\PYG{p}{,} \PYG{n}{alpha}\PYG{o}{=}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+\PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{legend}\PYG{p}{(}\PYG{n}{loc}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}upper right\PYGZsq{}}\PYG{p}{,} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mf}{8.5}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Annotate metric text values precisely over the target bars}
+\PYG{k}{for} \PYG{n}{bar} \PYG{o+ow}{in} \PYG{n}{error\PYGZus{}bars}\PYG{p}{:}
+    \PYG{n}{height} \PYG{o}{=} \PYG{n}{bar}\PYG{o}{.}\PYG{n}{get\PYGZus{}height}\PYG{p}{()}
+    \PYG{n}{axes}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}\PYG{o}{.}\PYG{n}{text}\PYG{p}{(}\PYG{n}{bar}\PYG{o}{.}\PYG{n}{get\PYGZus{}x}\PYG{p}{()} \PYG{o}{+} \PYG{n}{bar}\PYG{o}{.}\PYG{n}{get\PYGZus{}width}\PYG{p}{()}\PYG{o}{/}\PYG{l+m+mf}{2.0}\PYG{p}{,} \PYG{n}{height} \PYG{o}{+} \PYG{l+m+mf}{0.15}\PYG{p}{,}
+                 \PYG{l+s+sa}{f}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{height}\PYG{l+s+si}{:}\PYG{l+s+s1}{.3f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s1}{ mm\PYGZsq{}}\PYG{p}{,} \PYG{n}{ha}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}center\PYGZsq{}}\PYG{p}{,} \PYG{n}{va}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bottom\PYGZsq{}}\PYG{p}{,} \PYG{n}{fontsize}\PYG{o}{=}\PYG{l+m+mi}{9}\PYG{p}{,} \PYG{n}{fontweight}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}bold\PYGZsq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{c+c1}{\PYGZsh{} 4. Show Figures}
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{tight\PYGZus{}layout}\PYG{p}{()}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{subplots\PYGZus{}adjust}\PYG{p}{(}\PYG{n}{top}\PYG{o}{=}\PYG{l+m+mf}{0.85}\PYG{p}{)}
+\PYG{n}{plt}\PYG{o}{.}\PYG{n}{show}\PYG{p}{()}
+\end{MintedVerbatim}
