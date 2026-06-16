@@ -1,0 +1,579 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage[sorting=none]{biblatex}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+%\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{lmodern} % فونت بهتر برای لاتین
+\usepackage{xcolor}
+\usepackage{minted}
+\usepackage{fvextra}
+
+\setminted{
+	linenos,
+	breaklines=true,
+	breakanywhere=true,
+	encoding=utf8,
+	autogobble=true,
+	fontsize=\small,
+	frame=single,
+	tabsize=4,
+	obeytabs=true,
+	mathescape=false,
+	texcomments=false
+}
+\usepackage{amssymb}
+\usepackage{longtable} % برای جداول طولانی
+\usepackage{enumitem} % برای کنترل لیست‌ها
+\usepackage{booktabs} % برای جداول حرفه‌ای
+\hypersetup{
+	colorlinks=true,
+	linkcolor=teal,
+	filecolor=magenta,      
+	urlcolor=teal,
+	citecolor=teal
+}
+\usepackage{xepersian}
+
+
+
+
+\setlength\headheight{28pt} 
+\addbibresource{bibliography.bib}
+\settextfont[Path={./font/}, Scale=1.3]{IRLotus}
+\setlatintextfont[Scale=1]{Times New Roman}
+\renewcommand{\baselinestretch}{1.5}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{تمرین کلاسی اول رباتیک و بینایی ماشین}
+\chead{\includegraphics[width=1cm]{img/Logo.png}}
+\rhead{\thepage}
+
+\rfoot{محمدامین محمدیون شبستری}
+
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\AtBeginDocument{
+	\def\chapterautorefname{فصل}%
+	\def\sectionautorefname{پاسخ سوال}%
+	\def\subsectionautorefname{بخش}%
+	\def\subsubsectionautorefname{بخش}%
+	\def\equationautorefname{رابطهٔ}%
+    \def\lstlistingautorefname{برنامۀ}%
+}
+\renewcommand{\lstlistingname}{Code}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+
+
+\lstset{style=mystyle}
+
+\begin{document}
+\input{titlepage}
+
+\tableofcontents \clearpage
+\listoffigures \clearpage
+\listoftables \clearpage
+\lstlistoflistings \clearpage
+\newpage
+
+\section{پاسخ سوال تمرین کلاسی اول}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.55\textwidth]{img/Q.png}
+	\caption{نمای شماتیکی ربات بازویی سه درجه آزادی نوع Elbow}
+	\label{fig:robot}
+\end{figure}
+
+در شکل \ref{fig:robot} یک \lr{3-DOF Elbow Manipulator} مشاهده می‌شود. این ربات از سه مفصل دورانی 
+(دو مفصل بازویی و یک مفصل پایه) تشکیل شده است و می‌تواند مشابه دست انسان عمل کند. 
+
+این نوع ربات‌ها معمولاً در کاربردهایی مانند:
+\begin{itemize}
+	\item مونتاژ صنعتی دقیق،
+	\item نقاشی و اسپری‌کاری،
+	\item برداشتن و قرار دادن قطعات (\lr{Pick and Place}),
+	\item ماشین‌کاری سبک،
+	\item بسته‌بندی و دستگاه‌های روباتیک آموزشی
+\end{itemize}
+مورد استفاده قرار می‌گیرند. 
+
+سه مفصل این ربات به ترتیب شامل:
+\begin{itemize}
+	\item \textbf{مفصل ۱:} دوران حول محور عمودی  — چرخش پایه
+	\item \textbf{مفصل ۲:} دوران حول محور افقی  — بالا و پایین رفتن بازوی اول
+	\item \textbf{مفصل ۳:} دوران حول محور افقی  — جمع و باز شدن بازوی دوم
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{مرحله اول: انتخاب فریم‌های مناسب مفاصل}
+
+برای تحلیل سینماتیکی ربات، لازم است بر اساس قرارداد استاندارد \lr{DH}، یک فریم مختصات به هر مفصل نسبت دهیم. این کار باید طبق قواعد زیر انجام شود:
+
+\subsubsection*{انتخاب محور \lr{z}}
+
+در قرارداد \lr{DH}، محور \lr{$z_i$} همواره:
+\begin{itemize}
+	\item عمود بر صفحه دوران مفصل،
+	\item منطبق بر محور دوران مفصل دورانی،
+\end{itemize}
+انتخاب می‌شود. 
+
+بنابراین:
+\begin{itemize}
+	\item برای مفصل ۱، چون دوران حول محور عمودی انجام می‌شود، محور \lr{$z_0$} عمودی گرفته می‌شود.
+	\item برای مفصل ۲، دوران حول محور افقی است، پس \lr{$z_1$} افقی در راستای محور چرخش مفصل ۲ در نظر گرفته می‌شود.
+	\item برای مفصل ۳، دوران نیز افقی است، بنابراین \lr{$z_2$} هم‌راستای محور دوران مفصل سوم قرار داده می‌شود.
+\end{itemize}
+
+\subsubsection*{انتخاب محور \lr{x}}
+
+طبق قرارداد \lr{DH}:
+
+محور \lr{$x_i$} باید:
+\begin{itemize}
+	\item عمود بر هر دو محور \lr{$z_i$} و \lr{$z_{i+1}$} باشد،
+	\item و کوتاه‌ترین فاصله بین آنها را بیان کند.
+\end{itemize}
+
+در این ربات:
+\begin{itemize}
+	\item   \lr{$x_1$} نسبت به \lr{$z_0$} و \lr{$z_1$} عمود است.
+	\item \lr{$x_2$} بین \lr{$z_1$} و \lr{$z_2$} و در امتداد لینک اول قرار می‌گیرد.
+	\item \lr{$x_3$} مشابه مورد قبل، در راستای لینک دوم قرار می‌گیرد.
+\end{itemize}
+
+\subsubsection*{قانون دست راست}
+
+برای جهت‌دهی فریم‌ها، قانون دست راست استفاده می‌شود:
+\begin{itemize}
+	\item انگشت شست: جهت محور \lr{x}
+	\item انگشت اشاره: جهت محور \lr{y}
+	\item انگشت میانی: جهت محور \lr{z}
+\end{itemize}
+
+به این ترتیب، فریم‌ها کاملاً مشخص خواهند شد.
+
+\subsubsection*{چرا فریم‌ها اینگونه انتخاب شدند؟}
+
+\begin{itemize}
+	\item پایه ربات (\lr{Joint 1}) یک مفصل چرخشی عمودی دارد، پس \lr{$z_0$} عمودی انتخاب شد تا دوران مفصل با آن هم‌محور باشد.
+	\item مفصل دوم روی یک لولای افقی می‌چرخد، پس \lr{$z_1$} افقی در راستای مکانیسم در نظر گرفته شد.
+	\item مفصل سوم نیز دقیقاً مشابه مفصل دوم است، پس \lr{$z_2$} در راستای بازوی دوم قرار داده شد.
+	\item محورهای \lr{x}‌ برای بیان کوتاه‌ترین فاصله بین دو محور دوران انتخاب شدند؛ زیرا این دقیقاً همان تعریف پارامتر \lr{$a_i$} در قرارداد DH است.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{مرحله دوم: تشکیل جدول \lr{DH}}
+
+پس از مشخص شدن فریم‌ها، اکنون باید پارامترهای DH را برای هر لینک استخراج کنیم.
+
+چهار پارامتر \lr{DH} عبارت‌اند از:
+
+\begin{itemize}
+	\item \lr{$a_i$}: فاصله بین دو محور \lr{$z_i$} و \lr{$z_{i+1}$} روی محور \lr{$x_i$}
+	\item \lr{$\alpha_i$}: زاویه بین دو محور \lr{$z_i$} و \lr{$z_{i+1}$} حول محور \lr{$x_i$}
+	\item \lr{$d_i$}: فاصله بین دو محور \lr{$x_{i-1}$} و \lr{$x_i$} روی محور \lr{$z_i$}
+	\item \lr{$\theta_i$}: زاویه بین دو محور \lr{$x_{i-1}$} و \lr{$x_i$} حول محور \lr{$z_i$}
+\end{itemize}
+
+اکنون این مقادیر را برای ربات شکل \ref{fig:robot} محاسبه می‌کنیم:
+
+%%%%%%%%%%%%%%%%%%%%% Link 1 %%%%%%%%%%%%%%%%%%%%%
+\paragraph*{لینک ۱:}
+\begin{itemize}
+	\item \lr{$a_1 = 0$}: دو محور \lr{$z_0$} و \lr{$z_1$} یکدیگر را قطع می‌کنند.
+	\item \lr{$\alpha_1 = 90^\circ$}: این دو محور عمود هستند.
+	\item \lr{$d_1 = d_1$}: فاصله عمودی پایه تا مفصل دوم.
+	\item \lr{$\theta_1 = \theta_1$}: زاویه دوران مفصل اول.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%% Link 2 %%%%%%%%%%%%%%%%%%%%%
+\paragraph*{لینک ۲:}
+\begin{itemize}
+	\item \lr{$a_2 = a_2$}: طول بازوی اول.
+	\item \lr{$\alpha_2 = 0$}: محورهای \lr{$z_1$} و \lr{$z_2$} موازی هستند.
+	\item \lr{$d_2 = 0$}: هیچ جابه‌جایی روی \lr{$z_1$} وجود ندارد.
+	\item \lr{$\theta_2 = \theta_2$}: زاویه مفصل دوم.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%% Link 3 %%%%%%%%%%%%%%%%%%%%%
+\paragraph*{لینک ۳:}
+\begin{itemize}
+	\item \lr{$a_3 = a_3$}: طول بازوی دوم.
+	\item \lr{$\alpha_3 = 0$}: محورهای \lr{$z_2$} و \lr{$z_3$} موازی‌اند.
+	\item \lr{$d_3 = 0$}: هیچ جابه‌جایی روی \lr{$z_2$} نیست.
+	\item \lr{$\theta_3 = \theta_3$}: زاویه مفصل سوم.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%% Final table %%%%%%%%%%%%%%%%%%%%%
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{c|c|c|c|c}
+		$i$ & $a_i$ & $\alpha_i$ & $d_i$ & $\theta_i$ \\
+		\hline
+		1 & 0     & $+90^\circ$ & $d_1$ & $\theta_1$ \\
+		2 & $a_2$ & $0^\circ$   & 0     & $\theta_2$ \\
+		3 & $a_3$ & $0^\circ$   & 0     & $\theta_3$ \\
+	\end{tabular}
+	\caption{جدول پارامترهای \lr{DH} برای ربات سه مفصل الدور}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{تشکیل ماتریس‌های DH}
+
+پس از تعیین فریم‌ها و استخراج پارامترهای جدول DH، مرحله بعدی تشکیل
+ماتریس‌های تبدیل همگن برای هر لینک است. این ماتریس‌ها رابطه بین دستگاه
+مختصات دو فریم متوالی را بیان می‌کنند.
+
+در روش \lr{Denavit-Hartenberg} تبدیل از فریم $i$ به فریم $i+1$ به کمک
+چهار تبدیل ساده انجام می‌شود.
+
+ترتیب این تبدیلات به صورت زیر است:
+
+\begin{enumerate}
+	\item دوران حول محور $z_i$ به اندازه $\theta_i$
+	\item انتقال در راستای $z_i$ به اندازه $d_i$
+	\item انتقال در راستای $x_i$ به اندازه $a_i$
+	\item دوران حول محور $x_i$ به اندازه $\alpha_i$
+\end{enumerate}
+
+بنابراین تبدیل کلی برابر است با:
+
+\[
+T_i^{i+1} =
+R_z(\theta_i)
+T_z(d_i)
+T_x(a_i)
+R_x(\alpha_i)
+\]
+
+که در آن:
+
+\[
+R_z(\theta_i)=
+\begin{bmatrix}
+	\cos\theta_i & -\sin\theta_i & 0 & 0\\
+	\sin\theta_i & \cos\theta_i & 0 & 0\\
+	0 & 0 & 1 & 0\\
+	0 & 0 & 0 & 1
+\end{bmatrix}
+\]
+
+\[
+T_z(d_i)=
+\begin{bmatrix}
+	1 & 0 & 0 & 0\\
+	0 & 1 & 0 & 0\\
+	0 & 0 & 1 & d_i\\
+	0 & 0 & 0 & 1
+\end{bmatrix}
+\]
+
+\[
+T_x(a_i)=
+\begin{bmatrix}
+	1 & 0 & 0 & a_i\\
+	0 & 1 & 0 & 0\\
+	0 & 0 & 1 & 0\\
+	0 & 0 & 0 & 1
+\end{bmatrix}
+\]
+
+\[
+R_x(\alpha_i)=
+\begin{bmatrix}
+	1 & 0 & 0 & 0\\
+	0 & \cos\alpha_i & -\sin\alpha_i & 0\\
+	0 & \sin\alpha_i & \cos\alpha_i & 0\\
+	0 & 0 & 0 & 1
+\end{bmatrix}
+\]
+
+با ضرب این چهار ماتریس، فرم استاندارد ماتریس DH به دست می‌آید:
+
+\[
+T_i^{i+1} =
+\left[
+\begin{array}{ccc|c}
+	\cos\theta_i & -\sin\theta_i\cos\alpha_i & \sin\theta_i\sin\alpha_i & a_i\cos\theta_i \\
+	\sin\theta_i & \cos\theta_i\cos\alpha_i & -\cos\theta_i\sin\alpha_i & a_i\sin\theta_i \\
+	0 & \sin\alpha_i & \cos\alpha_i & d_i \\
+	\hline
+	0 & 0 & 0 & 1
+\end{array}
+\right]
+\]
+
+در این ماتریس:
+
+\begin{itemize}
+	\item بخش $3\times3$ بالا سمت چپ ماتریس دوران است
+	\item ستون آخر بردار مکان است
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{ماتریس تبدیل مفصل اول}
+
+پارامترهای لینک اول:
+
+\[
+a_1=0
+\]
+
+\[
+\alpha_1=90^\circ
+\]
+
+\[
+d_1=d_1
+\]
+
+\[
+\theta_1=\theta_1
+\]
+
+بنابراین:
+
+\[
+\cos\alpha_1 = 0
+\]
+
+\[
+\sin\alpha_1 = 1
+\]
+
+پس ماتریس تبدیل برابر است با:
+
+\[
+T_{01} =
+\left[
+\begin{array}{ccc|c}
+	\cos\theta_1 & 0 & \sin\theta_1 & 0 \\
+	\sin\theta_1 & 0 & -\cos\theta_1 & 0 \\
+	0 & 1 & 0 & d_1 \\
+	\hline
+	0 & 0 & 0 & 1
+\end{array}
+\right]
+\]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{ماتریس تبدیل مفصل دوم}
+
+پارامترها:
+
+\[
+a_2 = a_2
+\]
+
+\[
+\alpha_2 = 0
+\]
+
+\[
+d_2 = 0
+\]
+
+\[
+\theta_2 = \theta_2
+\]
+
+در نتیجه:
+
+\[
+T_{12} =
+\left[
+\begin{array}{ccc|c}
+	\cos\theta_2 & -\sin\theta_2 & 0 & a_2\cos\theta_2 \\
+	\sin\theta_2 & \cos\theta_2 & 0 & a_2\sin\theta_2 \\
+	0 & 0 & 1 & 0 \\
+	\hline
+	0 & 0 & 0 & 1
+\end{array}
+\right]
+\]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{ماتریس تبدیل مفصل سوم}
+
+پارامترها:
+
+\[
+a_3 = a_3
+\]
+
+\[
+\alpha_3 = 0
+\]
+
+\[
+d_3 = 0
+\]
+
+\[
+\theta_3 = \theta_3
+\]
+
+بنابراین:
+
+\[
+T_{23} =
+\left[
+\begin{array}{ccc|c}
+	\cos\theta_3 & -\sin\theta_3 & 0 & a_3\cos\theta_3 \\
+	\sin\theta_3 & \cos\theta_3 & 0 & a_3\sin\theta_3 \\
+	0 & 0 & 1 & 0 \\
+	\hline
+	0 & 0 & 0 & 1
+\end{array}
+\right]
+\]
+
+از آنجا که محورهای مفصل دوم و سوم موازی هستند، می‌توان زاویه ترکیبی زیر را تعریف کرد:
+
+\[
+\theta_{23} = \theta_2 + \theta_3
+\]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Forward Kinematic نهایی}
+
+برای به دست آوردن سینماتیک مستقیم ربات باید ماتریس‌های تبدیل را در
+یکدیگر ضرب کنیم:
+
+\[
+T_{03} =
+T_{01} T_{12} T_{23}
+\]
+
+ابتدا:
+
+\[
+T_{02}=T_{01}T_{12}
+\]
+
+که نتیجه ضرب برابر است با:
+
+\[
+T_{02} =
+\left[
+\begin{array}{ccc|c}
+	c_1 c_2 & -c_1 s_2 & s_1 & a_2 c_1 c_2 \\
+	s_1 c_2 & -s_1 s_2 & -c_1 & a_2 s_1 c_2 \\
+	s_2 & c_2 & 0 & d_1 + a_2 s_2 \\
+	\hline
+	0 & 0 & 0 & 1
+\end{array}
+\right]
+\]
+
+حال:
+
+\[
+T_{03}=T_{02}T_{23}
+\]
+
+نتیجه نهایی:
+
+\[
+T_{03} =
+\left[
+\begin{array}{ccc|c}
+	c_1 c_{23} & -c_1 s_{23} & s_1 &
+	c_1 (a_2 c_2 + a_3 c_{23}) \\
+	
+	s_1 c_{23} & -s_1 s_{23} & -c_1 &
+	s_1 (a_2 c_2 + a_3 c_{23}) \\
+	
+	s_{23} & c_{23} & 0 &
+	d_1 + a_2 s_2 + a_3 s_{23} \\
+	
+	\hline
+	0 & 0 & 0 & 1
+\end{array}
+\right]
+\]
+
+که در آن:
+
+\[
+c_i = \cos\theta_i
+\]
+
+\[
+s_i = \sin\theta_i
+\]
+
+و همچنین:
+
+\[
+c_{23} = \cos(\theta_2+\theta_3)
+\]
+
+\[
+s_{23} = \sin(\theta_2+\theta_3)
+\]
+
+\subsubsection*{تحلیل نتیجه}
+
+بردار مکان انتهای بازو از ستون چهارم ماتریس به دست می‌آید:
+
+\[
+x = (a_2\cos\theta_2 + a_3\cos(\theta_2+\theta_3))\cos\theta_1
+\]
+
+\[
+y = (a_2\cos\theta_2 + a_3\cos(\theta_2+\theta_3))\sin\theta_1
+\]
+
+\[
+z = d_1 + a_2\sin\theta_2 + a_3\sin(\theta_2+\theta_3)
+\]
+
+
+
+\begin{itemize}
+	\item زاویه $\theta_1$ باعث چرخش کل بازو در صفحه افقی می‌شود
+	\item زاویه‌های $\theta_2$ و $\theta_3$ حرکت صفحه‌ای بازو را تعیین می‌کنند
+	\item مختصات $(x,y,z)$ موقعیت نهایی اندافکتور ربات را در فضای سه‌بعدی مشخص می‌کند
+\end{itemize}
+
+
+
+
+\end{document}
+
