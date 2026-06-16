@@ -1,0 +1,88 @@
+\contentsline {section}{\numberline {1}پرسش اول: شناخت دامنه، تحلیل اکتشافی داده‌ها \lr {EDA} و استراتژی‌های پیش‌پردازش}{6}{section.1}%
+\contentsline {subsection}{\numberline {1.1}درک سناریوی بالینی}{6}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}شرح جراحی آب مروارید و فازهای اصلی آن}{6}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}اهمیت آگاهی از فازهای جراحی برای سیستم‌های دستیار هوشمند}{7}{subsubsection.1.1.2}%
+\contentsline {paragraph}{دلایل ضرورت آگاهی بلادرنگ از فاز جراحی}{8}{section*.6}%
+\contentsline {paragraph}{پیامدهای عدم تشخیص یا تشخیص نادرست فاز جراحی}{8}{section*.7}%
+\contentsline {subsection}{\numberline {1.2}فرمول‌بندی مسئله}{9}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}طبقه‌بندی‌های \lr {Single-Label} و \lr {Multi-Label} و تفاوت‌های آن‌ها}{9}{subsubsection.1.2.1}%
+\contentsline {paragraph}{1. روش \lr {Single-Label}}{9}{section*.8}%
+\contentsline {paragraph}{2. روش \lr {Multi-Lable}}{9}{section*.9}%
+\contentsline {paragraph}{3. تفاوت‌های اصلی دو روش}{9}{section*.10}%
+\contentsline {subsubsection}{\numberline {1.2.2}طبقه‌بندی مناسب برای سناریو جراحی آب مروارید}{10}{subsubsection.1.2.2}%
+\contentsline {subsubsection}{\numberline {1.2.3} تابع زیان مناسب در صورت انتخاب روش \lr {Multi-Label}}{10}{subsubsection.1.2.3}%
+\contentsline {subsubsection}{\numberline {1.2.4}محدودیت‌های تابع \lr {Cross-Entropy} استاندارد و رویکرد جایگزین برای آن}{10}{subsubsection.1.2.4}%
+\contentsline {subsection}{\numberline {1.3}تحلیل داده‌ها و چالش‌های بصری}{11}{subsection.1.3}%
+\contentsline {subsubsection}{\numberline {1.3.1}تحلیل آماری و توصیفی از توزیع کلاس‌ها}{11}{subsubsection.1.3.1}%
+\contentsline {paragraph}{اطلاعات جامع در مورد داده‌ها}{11}{section*.12}%
+\contentsline {paragraph}{بررسی توزیع برچسب‌ها}{16}{section*.13}%
+\contentsline {paragraph}{ماتریس هم‌رخدادی \lr {Co-occurance Matrix}}{18}{section*.15}%
+\contentsline {paragraph}{اطلاعات جامع در مورد داده‌ها}{20}{section*.19}%
+\contentsline {paragraph}{بررسی توزیع برچسب‌ها}{21}{section*.20}%
+\contentsline {paragraph}{ماتریس هم‌رخدادی \lr {Co-occurance Matrix}}{22}{section*.22}%
+\contentsline {subsubsection}{\numberline {1.3.2}بررسی توازن کلاس‌ها \lr {(Class Imbalance)}}{23}{subsubsection.1.3.2}%
+\contentsline {paragraph}{بدون کلاس‌های آناتومی}{23}{section*.24}%
+\contentsline {paragraph}{با کلاس‌های آناتومی}{26}{section*.27}%
+\contentsline {subsubsection}{\numberline {1.3.3}روش‌های پیشنهادی افزایش داده}{28}{subsubsection.1.3.3}%
+\contentsline {paragraph}{1. چالش‌های بصری و روش بهبود آن‌ها}{29}{section*.30}%
+\contentsline {paragraph}{2. چالش‌های مربوط به ساختار داده و عدم تعادل کلاس‌ها}{30}{section*.31}%
+\contentsline {paragraph}{3. بررسی محدودیت‌های جراحی}{30}{section*.32}%
+\contentsline {section}{\numberline {2}پرسش دوم: طراحی معماری، تنظیم فرآیند آموزش و تفسیرپذیری مدل \lr {(XAI)}}{30}{section.2}%
+\contentsline {subsection}{\numberline {2.1}انتخاب معماری و یادگیری انتقال \lr {(Transfer Learning)}}{32}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}انتخاب معماری}{32}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}چرا آموزش از صفر (From-Scratch) مناسب نیست؟}{32}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}استفاده از وزن‌های از پیش آموزش دیده ImageNet}{33}{subsubsection.2.1.3}%
+\contentsline {paragraph}{مزایا:}{33}{section*.36}%
+\contentsline {subsection}{\numberline {2.2}استراتژی آموزش و بهینه‌سازی}{33}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}جستجوی فراپارامترها با Optuna}{33}{subsubsection.2.2.1}%
+\contentsline {paragraph}{مقایسه AdamW و SGD}{34}{section*.37}%
+\contentsline {subsubsection}{\numberline {2.2.2}مقایسه \lr {Focal Loss} و \lr {Label Smoothing} برای مقابله با عدم تعادل کلاس‌ها}{34}{subsubsection.2.2.2}%
+\contentsline {paragraph}{\lr {Label Smoothing}}{34}{section*.38}%
+\contentsline {paragraph}{\lr {Focal Loss}}{35}{section*.39}%
+\contentsline {paragraph}{دلیل انتخاب \lr {Focal Loss} در این تمرین}{35}{section*.40}%
+\contentsline {subsubsection}{\numberline {2.2.3}دو رویکرد آموزشی}{36}{subsubsection.2.2.3}%
+\contentsline {paragraph}{رویکرد اول:}{36}{section*.41}%
+\contentsline {paragraph}{رویکرد دوم:}{36}{section*.42}%
+\contentsline {subsection}{\numberline {2.3}پیاده‌سازی رویکرد اول: یادگیری چندبرچسبی با استفاده از EfficientNet-B3}{36}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}ساختار خط لوله (\lr {Pipeline}) پیاده‌سازی}{37}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}نتایج بهینه‌سازی و تحلیل روند آموزش}{37}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}ارزیابی مدل بر روی داده‌های تست}{38}{subsubsection.2.3.3}%
+\contentsline {paragraph}{تحلیل غلبه آماری کلاس‌های آناتومیک:}{39}{section*.47}%
+\contentsline {paragraph}{عملکرد تخصصی ابزارهای جراحی:}{39}{section*.48}%
+\contentsline {paragraph}{تحلیل خطاهای طبقه‌بندی و هم‌پوشانی ویژگی‌ها:}{39}{section*.49}%
+\contentsline {paragraph}{تأثیر عدم تعادل داده‌ها (\lr {Data Imbalance}):}{40}{section*.50}%
+\contentsline {paragraph}{تحلیل نتایج:}{40}{section*.51}%
+\contentsline {subsubsection}{\numberline {2.3.4}تحلیل فضای ویژگی با \lr {t-SNE}}{40}{subsubsection.2.3.4}%
+\contentsline {subsubsection}{\numberline {2.3.5}تفسیرپذیری مدل با استفاده از \lr {Grad-CAM}}{41}{subsubsection.2.3.5}%
+\contentsline {paragraph}{تفسیر بصری تمرکز مدل بر روی ابزارها:}{41}{section*.54}%
+\contentsline {paragraph}{تحلیل نقاط داغ در ابزارهای خاص:}{42}{section*.55}%
+\contentsline {paragraph}{ارزیابی اعتبار تصمیم‌گیری مدل:}{42}{section*.56}%
+\contentsline {subsection}{\numberline {2.4}پیاده‌سازی رویکرد دوم: حذف ساختارهای آناتومیک و موازنه ابزارها}{42}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}تعدیل برچسب‌ها و استراتژی موازنه (\lr {Data Balancing})}{42}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}بهینه‌سازی فراپارامترها با \lr {Optuna}}{43}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}روند آموزش و تحلیل بیش‌برازش (\lr {Overfitting})}{43}{subsubsection.2.4.3}%
+\contentsline {paragraph}{تحلیل نمودارهای \lr {Loss} و \lr {Accuracy}:}{43}{section*.58}%
+\contentsline {subsubsection}{\numberline {2.4.4}ارزیابی نهایی و مقایسه با رویکرد اول}{44}{subsubsection.2.4.4}%
+\contentsline {paragraph}{تحلیل مقایسه‌ای:}{44}{section*.61}%
+\contentsline {paragraph}{بصری‌سازی و تفسیر:}{45}{section*.63}%
+\contentsline {paragraph}{تحلیل ماتریس درهم‌ریختگی و الگوهای هم‌رخدادی (\lr {Co-occurrence}):}{45}{section*.64}%
+\contentsline {paragraph}{تحلیل بصری فضای ویژگی با استفاده از \lr {t-SNE}:}{46}{section*.66}%
+\contentsline {paragraph}{تفسیر مدل و بصری‌سازی نواحی تصمیم‌ساز با \lr {Grad-CAM}:}{47}{section*.68}%
+\contentsline {subsection}{\numberline {2.5}کد}{48}{subsection.2.5}%
+\contentsline {section}{\numberline {3}پرسش سوم: اعتبارسنجی متقاطع، ارزیابی پایداری و یادگیری تجمعی}{80}{section.3}%
+\contentsline {subsection}{\numberline {3.1}رویکردهای اعتبارسنجی متقاطع (\lr {Cross-Validation})}{80}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}مقایسه تطبیقی \lr {K-Fold} و \lr {Stratified K-Fold}:}{80}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}ضرورت استفاده از روش \lr {Stratified} در جراحی آب‌مروارید:}{80}{subsubsection.3.1.2}%
+\contentsline {paragraph}{تحلیل منطق انتخاب:}{80}{section*.70}%
+\contentsline {paragraph}{ارتقای قطعیت شبکه (\lr {Network Certainty}):}{80}{section*.71}%
+\contentsline {subsection}{\numberline {3.2}پیاده سازی و ریفکتور کد}{81}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}پیاده‌سازی اعتبارسنجی متقاطع لایه‌بندی شده (\lr {Multilabel Stratified K-Fold}):}{81}{subsubsection.3.2.1}%
+\contentsline {paragraph}{گام اول: تجمیع و لایه‌بندی هوشمند داده‌ها:}{81}{section*.72}%
+\contentsline {paragraph}{گام دوم: چرخه آموزش و بازنشانی مدل:}{81}{section*.73}%
+\contentsline {subsubsection}{\numberline {3.2.2}تحلیل کمی و کیفی نتایج (\lr {Results Analysis}):}{81}{subsubsection.3.2.2}%
+\contentsline {paragraph}{تحلیل پایداری و قطعیت (\lr {Robustness Analysis}):}{81}{section*.75}%
+\contentsline {subsubsection}{\numberline {3.2.3}کد}{82}{subsubsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.3}یادگیری تجمعی \lr {(Ensemble Learning)} در برابر سرعت استنتاج}{88}{subsection.3.3}%
+\contentsline {paragraph}{۱. رویکرد استنتاج تجمعی (\lr {Inference-time Ensemble}):}{88}{section*.76}%
+\contentsline {paragraph}{۲. رویکرد سوپ مدل (\lr {Model Soups}):}{88}{section*.77}%
+\contentsline {paragraph}{حل تضاد دقت و سرعت با \lr {Model Soups}:}{88}{section*.78}%

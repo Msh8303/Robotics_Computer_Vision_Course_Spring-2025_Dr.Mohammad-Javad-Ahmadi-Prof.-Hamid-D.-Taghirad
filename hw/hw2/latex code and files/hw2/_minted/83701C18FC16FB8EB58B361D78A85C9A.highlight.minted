@@ -1,0 +1,121 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{cv2}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{detect\PYGZus{}corner\PYGZus{}markers}\PYG{p}{(}\PYG{n}{image}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Find the 4 black square calibration markers.}
+\PYG{l+s+sd}{    Returns: corners array sorted [TL, TR, BR, BL]}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+
+    \PYG{c+c1}{\PYGZsh{} brg \PYGZhy{}\PYGZhy{}\PYGZgt{} hsv}
+    \PYG{n}{hsv} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{cvtColor}\PYG{p}{(}\PYG{n}{image}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{COLOR\PYGZus{}BGR2HSV}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} threshold}
+    \PYG{n}{\PYGZus{}}\PYG{p}{,} \PYG{n}{binary} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{threshold}\PYG{p}{(}
+        \PYG{n}{hsv}\PYG{p}{[:,} \PYG{p}{:,} \PYG{l+m+mi}{2}\PYG{p}{],}
+        \PYG{l+m+mi}{50}\PYG{p}{,}
+        \PYG{l+m+mi}{255}\PYG{p}{,}
+        \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{THRESH\PYGZus{}BINARY\PYGZus{}INV}
+    \PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} external contours}
+    \PYG{n}{contours}\PYG{p}{,} \PYG{n}{\PYGZus{}} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{findContours}\PYG{p}{(}
+        \PYG{n}{binary}\PYG{p}{,}
+        \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{RETR\PYGZus{}EXTERNAL}\PYG{p}{,}
+        \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{CHAIN\PYGZus{}APPROX\PYGZus{}SIMPLE}
+    \PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} filter by size \PYGZam{} squareness}
+    \PYG{n}{square\PYGZus{}candidates} \PYG{o}{=} \PYG{p}{[]}
+
+    \PYG{k}{for} \PYG{n}{cnt} \PYG{o+ow}{in} \PYG{n}{contours}\PYG{p}{:}
+        \PYG{n}{area} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{contourArea}\PYG{p}{(}\PYG{n}{cnt}\PYG{p}{)}
+
+        \PYG{k}{if} \PYG{n}{area} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{100}\PYG{p}{:}
+            \PYG{k}{continue}
+
+        \PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{w}\PYG{p}{,} \PYG{n}{h} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{boundingRect}\PYG{p}{(}\PYG{n}{cnt}\PYG{p}{)}
+
+        \PYG{n}{box\PYGZus{}area} \PYG{o}{=} \PYG{n}{w} \PYG{o}{*} \PYG{n}{h}
+        \PYG{n}{squareness} \PYG{o}{=} \PYG{n}{area} \PYG{o}{/} \PYG{n}{box\PYGZus{}area} \PYG{k}{if} \PYG{n}{box\PYGZus{}area} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0} \PYG{k}{else} \PYG{l+m+mi}{0}
+
+        \PYG{k}{if} \PYG{n}{squareness} \PYG{o}{\PYGZgt{}} \PYG{l+m+mf}{0.3}\PYG{p}{:}
+            \PYG{n}{square\PYGZus{}candidates}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{cnt}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} largest 4}
+    \PYG{n}{square\PYGZus{}candidates}\PYG{o}{.}\PYG{n}{sort}\PYG{p}{(}\PYG{n}{key}\PYG{o}{=}\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{contourArea}\PYG{p}{,} \PYG{n}{reverse}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+    \PYG{n}{top4} \PYG{o}{=} \PYG{n}{square\PYGZus{}candidates}\PYG{p}{[:}\PYG{l+m+mi}{4}\PYG{p}{]}
+
+    \PYG{k}{if} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{top4}\PYG{p}{)} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{4}\PYG{p}{:}
+        \PYG{k}{raise} \PYG{n+ne}{ValueError}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Could not detect 4 corner markers\PYGZdq{}}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} centroids}
+    \PYG{n}{centers} \PYG{o}{=} \PYG{p}{[]}
+
+    \PYG{k}{for} \PYG{n}{cnt} \PYG{o+ow}{in} \PYG{n}{top4}\PYG{p}{:}
+        \PYG{n}{M} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{moments}\PYG{p}{(}\PYG{n}{cnt}\PYG{p}{)}
+
+        \PYG{k}{if} \PYG{n}{M}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}m00\PYGZsq{}}\PYG{p}{]} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{:}
+            \PYG{k}{continue}
+
+        \PYG{n}{cx} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{M}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}m10\PYGZsq{}}\PYG{p}{]} \PYG{o}{/} \PYG{n}{M}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}m00\PYGZsq{}}\PYG{p}{])}
+        \PYG{n}{cy} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{M}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}m01\PYGZsq{}}\PYG{p}{]} \PYG{o}{/} \PYG{n}{M}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}m00\PYGZsq{}}\PYG{p}{])}
+
+        \PYG{n}{centers}\PYG{o}{.}\PYG{n}{append}\PYG{p}{((}\PYG{n}{cx}\PYG{p}{,} \PYG{n}{cy}\PYG{p}{))}
+
+    \PYG{c+c1}{\PYGZsh{} sort}
+    \PYG{n}{centers} \PYG{o}{=} \PYG{n}{sort\PYGZus{}clockwise}\PYG{p}{(}\PYG{n}{centers}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{n}{np}\PYG{o}{.}\PYG{n}{float32}\PYG{p}{(}\PYG{n}{centers}\PYG{p}{)}
+
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{sort\PYGZus{}clockwise}\PYG{p}{(}\PYG{n}{pts}\PYG{p}{):}
+
+    \PYG{n}{pts} \PYG{o}{=} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{pts}\PYG{p}{,} \PYG{n}{key}\PYG{o}{=}\PYG{k}{lambda} \PYG{n}{p}\PYG{p}{:} \PYG{n}{p}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{])}
+
+    \PYG{n}{top} \PYG{o}{=} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{pts}\PYG{p}{[:}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{n}{key}\PYG{o}{=}\PYG{k}{lambda} \PYG{n}{p}\PYG{p}{:} \PYG{n}{p}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+    \PYG{n}{bottom} \PYG{o}{=} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{pts}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{:],} \PYG{n}{key}\PYG{o}{=}\PYG{k}{lambda} \PYG{n}{p}\PYG{p}{:} \PYG{n}{p}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{reverse}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{p}{[}\PYG{n}{top}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{top}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{bottom}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{bottom}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]]}
+
+
+\PYG{c+c1}{\PYGZsh{} load image}
+\PYG{n}{image\PYGZus{}path} \PYG{o}{=} \PYG{l+s+sa}{r}\PYG{l+s+s2}{\PYGZdq{}C:\PYGZbs{}Users\PYGZbs{}Asus\PYGZbs{}Desktop\PYGZbs{}hasti\PYGZbs{}output.png\PYGZdq{}}   \PYG{c+c1}{\PYGZsh{} change to your image path}
+\PYG{n}{image} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imread}\PYG{p}{(}\PYG{n}{image\PYGZus{}path}\PYG{p}{)}
+
+\PYG{k}{if} \PYG{n}{image} \PYG{o+ow}{is} \PYG{k+kc}{None}\PYG{p}{:}
+    \PYG{k}{raise} \PYG{n+ne}{FileNotFoundError}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Image not found: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{image\PYGZus{}path}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} detect markers}
+\PYG{n}{corners} \PYG{o}{=} \PYG{n}{detect\PYGZus{}corner\PYGZus{}markers}\PYG{p}{(}\PYG{n}{image}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Detected corners:\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{corners}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} draw detected points}
+\PYG{n}{output} \PYG{o}{=} \PYG{n}{image}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{()}
+
+\PYG{n}{labels} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}TL\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}TR\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}BR\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}BL\PYGZdq{}}\PYG{p}{]}
+
+\PYG{k}{for} \PYG{n}{i}\PYG{p}{,} \PYG{p}{(}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{)} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{corners}\PYG{o}{.}\PYG{n}{astype}\PYG{p}{(}\PYG{n+nb}{int}\PYG{p}{)):}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{circle}\PYG{p}{(}\PYG{n}{output}\PYG{p}{,} \PYG{p}{(}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{),} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{),} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{)}
+
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{putText}\PYG{p}{(}
+        \PYG{n}{output}\PYG{p}{,}
+        \PYG{n}{labels}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],}
+        \PYG{p}{(}\PYG{n}{x} \PYG{o}{+} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{10}\PYG{p}{),}
+        \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{FONT\PYGZus{}HERSHEY\PYGZus{}SIMPLEX}\PYG{p}{,}
+        \PYG{l+m+mf}{0.7}\PYG{p}{,}
+        \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{),}
+        \PYG{l+m+mi}{2}
+    \PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} save \PYGZam{} show}
+\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imwrite}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}detected\PYGZus{}markers.jpg\PYGZdq{}}\PYG{p}{,} \PYG{n}{output}\PYG{p}{)}
+\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imshow}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Detected Markers\PYGZdq{}}\PYG{p}{,} \PYG{n}{output}\PYG{p}{)}
+\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{waitKey}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{destroyAllWindows}\PYG{p}{()}
+
+
+\end{MintedVerbatim}

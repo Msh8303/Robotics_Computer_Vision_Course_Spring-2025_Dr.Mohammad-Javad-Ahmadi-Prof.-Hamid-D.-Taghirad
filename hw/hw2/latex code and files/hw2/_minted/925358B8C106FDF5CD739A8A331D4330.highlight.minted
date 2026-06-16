@@ -1,0 +1,117 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{cv2}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{segment\PYGZus{}discs\PYGZus{}and\PYGZus{}show}\PYG{p}{(}\PYG{n}{path\PYGZus{}to\PYGZus{}png}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Load HSV image from file, segment colored discs, separate touching components.}
+\PYG{l+s+sd}{    Show results and return list of (color\PYGZus{}name, u, v) in pixel coordinates.}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{c+c1}{\PYGZsh{} read a3}
+    \PYG{n}{rectified\PYGZus{}img} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imread}\PYG{p}{(}\PYG{n}{path\PYGZus{}to\PYGZus{}png}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{IMREAD\PYGZus{}COLOR}\PYG{p}{)}
+    \PYG{k}{if} \PYG{n}{rectified\PYGZus{}img} \PYG{o+ow}{is} \PYG{k+kc}{None}\PYG{p}{:}
+        \PYG{k}{raise} \PYG{n+ne}{FileNotFoundError}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Cannot load image: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{path\PYGZus{}to\PYGZus{}png}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+    \PYG{n}{hsv} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{cvtColor}\PYG{p}{(}\PYG{n}{rectified\PYGZus{}img}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{COLOR\PYGZus{}BGR2HSV}\PYG{p}{)}
+    \PYG{n}{results} \PYG{o}{=} \PYG{p}{[]}
+
+    \PYG{c+c1}{\PYGZsh{} blue \PYGZam{} green: 1 range/ red: 2 ranges}
+    \PYG{n}{color\PYGZus{}ranges} \PYG{o}{=} \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}
+            \PYG{p}{([}\PYG{l+m+mi}{0}\PYG{p}{,}   \PYG{l+m+mi}{100}\PYG{p}{,} \PYG{l+m+mi}{100}\PYG{p}{],} \PYG{p}{[}\PYG{l+m+mi}{10}\PYG{p}{,}  \PYG{l+m+mi}{255}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{]),}   \PYG{c+c1}{\PYGZsh{} low red}
+            \PYG{p}{([}\PYG{l+m+mi}{170}\PYG{p}{,} \PYG{l+m+mi}{100}\PYG{p}{,} \PYG{l+m+mi}{100}\PYG{p}{],} \PYG{p}{[}\PYG{l+m+mi}{180}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{])}    \PYG{c+c1}{\PYGZsh{} high red}
+        \PYG{p}{],}
+        \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}
+            \PYG{p}{([}\PYG{l+m+mi}{40}\PYG{p}{,}  \PYG{l+m+mi}{80}\PYG{p}{,}  \PYG{l+m+mi}{80}\PYG{p}{],}  \PYG{p}{[}\PYG{l+m+mi}{80}\PYG{p}{,}  \PYG{l+m+mi}{255}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{])}
+        \PYG{p}{],}
+        \PYG{l+s+s1}{\PYGZsq{}blue\PYGZsq{}}\PYG{p}{:} \PYG{p}{[}
+            \PYG{p}{([}\PYG{l+m+mi}{100}\PYG{p}{,} \PYG{l+m+mi}{80}\PYG{p}{,} \PYG{l+m+mi}{80}\PYG{p}{],}   \PYG{p}{[}\PYG{l+m+mi}{130}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{])}
+        \PYG{p}{],}
+    \PYG{p}{\PYGZcb{}}
+
+
+    \PYG{c+c1}{\PYGZsh{} kernels morphological separation}
+
+    \PYG{n}{open\PYGZus{}kernel}      \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{getStructuringElement}\PYG{p}{(}\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{MORPH\PYGZus{}ELLIPSE}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{))}
+    \PYG{n}{close\PYGZus{}kernel}     \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{getStructuringElement}\PYG{p}{(}\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{MORPH\PYGZus{}ELLIPSE}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{9}\PYG{p}{,} \PYG{l+m+mi}{9}\PYG{p}{))}
+    \PYG{n}{separate\PYGZus{}kernel}  \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{getStructuringElement}\PYG{p}{(}\PYG{n}{cv2}\PYG{o}{.}\PYG{n}{MORPH\PYGZus{}ELLIPSE}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{11}\PYG{p}{,} \PYG{l+m+mi}{11}\PYG{p}{))}
+
+    \PYG{c+c1}{\PYGZsh{} copy of original}
+    \PYG{n}{vis\PYGZus{}img} \PYG{o}{=} \PYG{n}{rectified\PYGZus{}img}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{()}
+
+    \PYG{c+c1}{\PYGZsh{} process each color}
+    \PYG{k}{for} \PYG{n}{color\PYGZus{}name}\PYG{p}{,} \PYG{n}{ranges} \PYG{o+ow}{in} \PYG{n}{color\PYGZus{}ranges}\PYG{o}{.}\PYG{n}{items}\PYG{p}{():}
+
+        \PYG{c+c1}{\PYGZsh{} combine masks for red}
+        \PYG{n}{mask} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{hsv}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[:}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{)}
+        \PYG{k}{for} \PYG{n}{lo}\PYG{p}{,} \PYG{n}{hi} \PYG{o+ow}{in} \PYG{n}{ranges}\PYG{p}{:}
+            \PYG{n}{lo} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{n}{lo}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{)}
+            \PYG{n}{hi} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{n}{hi}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{)}
+            \PYG{n}{mask} \PYG{o}{|=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{inRange}\PYG{p}{(}\PYG{n}{hsv}\PYG{p}{,} \PYG{n}{lo}\PYG{p}{,} \PYG{n}{hi}\PYG{p}{)}
+
+        \PYG{c+c1}{\PYGZsh{} morphological separation}
+        \PYG{n}{mask} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{morphologyEx}\PYG{p}{(}\PYG{n}{mask}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{MORPH\PYGZus{}OPEN}\PYG{p}{,}  \PYG{n}{open\PYGZus{}kernel}\PYG{p}{)}
+        \PYG{n}{mask} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{morphologyEx}\PYG{p}{(}\PYG{n}{mask}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{MORPH\PYGZus{}CLOSE}\PYG{p}{,} \PYG{n}{close\PYGZus{}kernel}\PYG{p}{)}
+        \PYG{n}{mask} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{morphologyEx}\PYG{p}{(}\PYG{n}{mask}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{MORPH\PYGZus{}OPEN}\PYG{p}{,}  \PYG{n}{separate\PYGZus{}kernel}\PYG{p}{)}
+
+        \PYG{c+c1}{\PYGZsh{} connected components}
+        \PYG{n}{n\PYGZus{}labels}\PYG{p}{,} \PYG{n}{labels}\PYG{p}{,} \PYG{n}{stats}\PYG{p}{,} \PYG{n}{centroids} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{connectedComponentsWithStats}\PYG{p}{(}
+            \PYG{n}{mask}\PYG{p}{,} \PYG{n}{connectivity}\PYG{o}{=}\PYG{l+m+mi}{8}
+        \PYG{p}{)}
+
+        \PYG{c+c1}{\PYGZsh{} random color for components (displayed only)}
+        \PYG{c+c1}{\PYGZsh{} shows separate images for separate disks on black background}
+        \PYG{n}{comp\PYGZus{}vis} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{n}{mask}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{mask}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{l+m+mi}{3}\PYG{p}{),} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{)}
+        \PYG{n}{rng} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{default\PYGZus{}rng}\PYG{p}{(}\PYG{l+m+mi}{42}\PYG{p}{)}
+
+        \PYG{k}{for} \PYG{n}{label} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{n\PYGZus{}labels}\PYG{p}{):}  \PYG{c+c1}{\PYGZsh{} skip background}
+            \PYG{n}{area} \PYG{o}{=} \PYG{n}{stats}\PYG{p}{[}\PYG{n}{label}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{CC\PYGZus{}STAT\PYGZus{}AREA}\PYG{p}{]}
+            \PYG{k}{if} \PYG{n}{area} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{400}\PYG{p}{:}  \PYG{c+c1}{\PYGZsh{} for small noise}
+                \PYG{k}{continue}
+
+            \PYG{c+c1}{\PYGZsh{} centroid}
+            \PYG{n}{cx}\PYG{p}{,} \PYG{n}{cy} \PYG{o}{=} \PYG{n}{centroids}\PYG{p}{[}\PYG{n}{label}\PYG{p}{]}
+            \PYG{n}{u} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n+nb}{round}\PYG{p}{(}\PYG{n}{cx}\PYG{p}{))}
+            \PYG{n}{v} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n+nb}{round}\PYG{p}{(}\PYG{n}{cy}\PYG{p}{))}
+
+            \PYG{c+c1}{\PYGZsh{} store results}
+            \PYG{n}{results}\PYG{o}{.}\PYG{n}{append}\PYG{p}{((}\PYG{n}{color\PYGZus{}name}\PYG{p}{,} \PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{))}
+
+            \PYG{c+c1}{\PYGZsh{} draw centroid}
+            \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{circle}\PYG{p}{(}\PYG{n}{vis\PYGZus{}img}\PYG{p}{,} \PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{),} \PYG{l+m+mi}{4}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{),} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{)}
+            \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{putText}\PYG{p}{(}
+                \PYG{n}{vis\PYGZus{}img}\PYG{p}{,}
+                \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{color\PYGZus{}name}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
+                \PYG{p}{(}\PYG{n}{u} \PYG{o}{+} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{n}{v} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{5}\PYG{p}{),}
+                \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{FONT\PYGZus{}HERSHEY\PYGZus{}SIMPLEX}\PYG{p}{,}
+                \PYG{l+m+mf}{0.4}\PYG{p}{,}
+                \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{),}
+                \PYG{l+m+mi}{1}
+            \PYG{p}{)}
+
+            \PYG{n}{color} \PYG{o}{=} \PYG{n}{rng}\PYG{o}{.}\PYG{n}{integers}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{,} \PYG{n}{size}\PYG{o}{=}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{)}
+            \PYG{n}{comp\PYGZus{}vis}\PYG{p}{[}\PYG{n}{labels} \PYG{o}{==} \PYG{n}{label}\PYG{p}{]} \PYG{o}{=} \PYG{n}{color}
+
+        \PYG{c+c1}{\PYGZsh{} show per color imgs}
+        \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imshow}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{color\PYGZus{}name}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ components (separated)\PYGZdq{}}\PYG{p}{,} \PYG{n}{comp\PYGZus{}vis}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} final}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imshow}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Original with centroids\PYGZdq{}}\PYG{p}{,} \PYG{n}{vis\PYGZus{}img}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} tupple out}
+    \PYG{n}{tuple\PYGZus{}output} \PYG{o}{=} \PYG{p}{[(}\PYG{n}{color}\PYG{p}{,} \PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{))} \PYG{k}{for} \PYG{p}{(}\PYG{n}{color}\PYG{p}{,} \PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{)} \PYG{o+ow}{in} \PYG{n}{results}\PYG{p}{]}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Detected discs (color, (u, v)):\PYGZdq{}}\PYG{p}{)}
+    \PYG{k}{for} \PYG{n}{t} \PYG{o+ow}{in} \PYG{n}{tuple\PYGZus{}output}\PYG{p}{:}
+        \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{t}\PYG{p}{)}
+
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{waitKey}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{)}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{destroyAllWindows}\PYG{p}{()}
+
+    \PYG{k}{return} \PYG{n}{tuple\PYGZus{}output}
+
+
+\PYG{c+c1}{\PYGZsh{} run}
+\PYG{n}{path\PYGZus{}to\PYGZus{}png} \PYG{o}{=} \PYG{l+s+sa}{r}\PYG{l+s+s2}{\PYGZdq{}C:\PYGZbs{}Users\PYGZbs{}Asus\PYGZbs{}Desktop\PYGZbs{}hasti\PYGZbs{}a3.png\PYGZdq{}}   \PYG{c+c1}{\PYGZsh{} edit this as needed}
+\PYG{n}{results} \PYG{o}{=} \PYG{n}{segment\PYGZus{}discs\PYGZus{}and\PYGZus{}show}\PYG{p}{(}\PYG{n}{path\PYGZus{}to\PYGZus{}png}\PYG{p}{)}
+
+\end{MintedVerbatim}

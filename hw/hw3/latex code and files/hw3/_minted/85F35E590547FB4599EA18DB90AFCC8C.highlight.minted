@@ -1,0 +1,22 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} co\PYGZhy{}occurrence matrix}
+\PYG{c+c1}{\PYGZsh{} how often tools are used together}
+\PYG{n}{co} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{((}\PYG{n}{N}\PYG{p}{,} \PYG{n}{N}\PYG{p}{),} \PYG{n}{dtype}\PYG{o}{=}\PYG{n+nb}{int}\PYG{p}{)}
+\PYG{n}{label\PYGZus{}mat} \PYG{o}{=} \PYG{n}{dfs}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}train\PYGZdq{}}\PYG{p}{][}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{]}\PYG{o}{.}\PYG{n}{values}
+
+\PYG{c+c1}{\PYGZsh{} loop that repeats for all imgs (rows of the .csv)}
+\PYG{k}{for} \PYG{n}{row} \PYG{o+ow}{in} \PYG{n}{label\PYGZus{}mat}\PYG{p}{:}
+    \PYG{c+c1}{\PYGZsh{} finds all 1s}
+    \PYG{n}{idxs} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{where}\PYG{p}{(}\PYG{n}{row} \PYG{o}{==} \PYG{l+m+mi}{1}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{c+c1}{\PYGZsh{} finds all possible combos (intersection points)}
+    \PYG{k}{for} \PYG{n}{a}\PYG{p}{,} \PYG{n}{b} \PYG{o+ow}{in} \PYG{n}{combinations}\PYG{p}{(}\PYG{n}{idxs}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{):}
+        \PYG{n}{co}\PYG{p}{[}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{]} \PYG{o}{+=} \PYG{l+m+mi}{1}\PYG{p}{;}  \PYG{n}{co}\PYG{p}{[}\PYG{n}{b}\PYG{p}{,} \PYG{n}{a}\PYG{p}{]} \PYG{o}{+=} \PYG{l+m+mi}{1}
+
+\PYG{c+c1}{\PYGZsh{} final dataFrame}
+\PYG{n}{co\PYGZus{}df} \PYG{o}{=} \PYG{n}{pd}\PYG{o}{.}\PYG{n}{DataFrame}\PYG{p}{(}\PYG{n}{co}\PYG{p}{,} \PYG{n}{index}\PYG{o}{=}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{,} \PYG{n}{columns}\PYG{o}{=}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{co\PYGZus{}df}\PYG{o}{.}\PYG{n}{to\PYGZus{}string}\PYG{p}{())}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+\end{MintedVerbatim}

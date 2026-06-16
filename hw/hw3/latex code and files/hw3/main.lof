@@ -1,0 +1,21 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces نمودار توزیع برچسب‌ها (بدون کلاس‌های آناتومی)}}{18}{figure.caption.14}%
+\contentsline {figure}{\numberline {2}{\ignorespaces خروجی کد (ماتریس هم‌رخدادی)}}{19}{figure.caption.16}%
+\contentsline {figure}{\numberline {3}{\ignorespaces ماتریس هم‌رخدادی (بدون کلاس‌های آناتومی)}}{20}{figure.caption.17}%
+\contentsline {figure}{\numberline {4}{\ignorespaces نمودار توزیع برچسب‌ها (با کلاس‌های آناتومی)}}{22}{figure.caption.21}%
+\contentsline {figure}{\numberline {5}{\ignorespaces نمودار ماتریس هم رخدادی (با کلاس‌های آناتومی)}}{23}{figure.caption.23}%
+\contentsline {figure}{\numberline {6}{\ignorespaces فراوانی داده در هر کلاس (بدون کلاس‌های آناتومی)}}{26}{figure.caption.25}%
+\contentsline {figure}{\numberline {7}{\ignorespaces منحنی لورنتز (بدون کلاس‌های آناتومی)}}{26}{figure.caption.26}%
+\contentsline {figure}{\numberline {8}{\ignorespaces فراوانی داده در هر کلاس (با کلاس‌های آناتومی)}}{28}{figure.caption.28}%
+\contentsline {figure}{\numberline {9}{\ignorespaces منحنی لورنتز (با کلاس‌های آناتومی)}}{28}{figure.caption.29}%
+\contentsline {figure}{\numberline {10}{\ignorespaces توزیع داده ها در هر کلاس روی مجموعه داده های آموزش}}{31}{figure.caption.33}%
+\contentsline {figure}{\numberline {11}{\ignorespaces توزیع داده ها در هر کلاس روی مجموعه داده های اعتبارسنجی}}{31}{figure.caption.34}%
+\contentsline {figure}{\numberline {12}{\ignorespaces توزیع داده ها در هر کلاس روی مجموعه داده های تست}}{32}{figure.caption.35}%
+\contentsline {figure}{\numberline {13}{\ignorespaces تحلیل روند آموزش و اعتبارسنجی (مشاهده پدیده Overfitting بعد از اپوک 2)}}{37}{figure.caption.43}%
+\contentsline {figure}{\numberline {14}{\ignorespaces نمایش ماتریس درهمریختگی برای رویکرد اول}}{39}{figure.caption.46}%
+\contentsline {figure}{\numberline {15}{\ignorespaces نگاشت فضای ویژگی داده های تست در دو بعد}}{40}{figure.caption.52}%
+\contentsline {figure}{\numberline {16}{\ignorespaces تفسیرپذیری مدل با استفاده از \lr {Grad-CAM} در رویکرد اول}}{41}{figure.caption.53}%
+\contentsline {figure}{\numberline {17}{\ignorespaces توزیع داده ها در هر کلاس بعد از آگمنتیشن در رویکرد دوم}}{43}{figure.caption.57}%
+\contentsline {figure}{\numberline {18}{\ignorespaces روند تغییرات خطا و صحت در رویکرد دوم (۱۰ کلاس)}}{44}{figure.caption.59}%
+\contentsline {figure}{\numberline {19}{\ignorespaces ماتریس درهمریختگی مجموعه دادۀ تست برای رویکرد دوم}}{46}{figure.caption.65}%
+\contentsline {figure}{\numberline {20}{\ignorespaces نگاشت فضای ویژگی داده های تست در دو بعد}}{47}{figure.caption.67}%
+\contentsline {figure}{\numberline {21}{\ignorespaces تفسیرپذیری مدل با استفاده از \lr {Grad-CAM} در رویکرد دوم}}{48}{figure.caption.69}%

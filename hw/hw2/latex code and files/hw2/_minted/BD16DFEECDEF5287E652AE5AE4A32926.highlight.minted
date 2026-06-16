@@ -1,0 +1,55 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{numpy} \PYG{k}{as} \PYG{n}{np}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Robot physical parameters}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{ID0}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{,} \PYG{n}{L3} \PYG{o}{=} \PYG{l+m+mf}{0.70}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.30}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Data of detected disks from computer vision (Section A)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imy\PYGZus{}data} \PYG{o}{=} \PYG{p}{[}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.186}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.104}\PYG{p}{)\PYGZcb{},}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}red\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{l+m+mf}{0.103}\PYG{p}{,} \PYG{l+m+mf}{0.052}\PYG{p}{)\PYGZcb{},}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.053}\PYG{p}{,} \PYG{l+m+mf}{0.208}\PYG{p}{)\PYGZcb{},}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}green\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.156}\PYG{p}{,} \PYG{l+m+mf}{0.072}\PYG{p}{)\PYGZcb{},}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{:} \PYG{l+s+s1}{\PYGZsq{}blue\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{:} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.229}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.186}\PYG{p}{)\PYGZcb{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idef} \PYG{n}{find\PYGZus{}best\PYGZus{}ik}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{,} \PYG{n}{L3}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}Finds optimal q2 and q3 using a grid search (Brute\PYGZhy{}force).\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibest\PYGZus{}err} \PYG{o}{=} \PYG{n+nb}{float}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}inf\PYGZsq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibest\PYGZus{}q} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Sampling range for joint angles}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iq2\PYGZus{}samples} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{l+m+mi}{250}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iq3\PYGZus{}samples} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{l+m+mi}{250}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{q2} \PYG{o+ow}{in} \PYG{n}{q2\PYGZus{}samples}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{q3} \PYG{o+ow}{in} \PYG{n}{q3\PYGZus{}samples}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Forward kinematics for the planar 2R part}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ix} \PYG{o}{=} \PYG{n}{L2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{q2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{q2} \PYG{o}{+} \PYG{n}{q3}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iy} \PYG{o}{=} \PYG{n}{L2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{q2}\PYG{p}{)} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{q2} \PYG{o}{+} \PYG{n}{q3}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Euclidean distance error}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idist} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{((}\PYG{n}{x} \PYG{o}{\PYGZhy{}} \PYG{n}{tx}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{p}{(}\PYG{n}{y} \PYG{o}{\PYGZhy{}} \PYG{n}{ty}\PYG{p}{)}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{dist} \PYG{o}{\PYGZlt{}} \PYG{n}{best\PYGZus{}err}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibest\PYGZus{}err} \PYG{o}{=} \PYG{n}{dist}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibest\PYGZus{}q} \PYG{o}{=} \PYG{p}{(}\PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ireturn} \PYG{n}{best\PYGZus{}q}\PYG{p}{,} \PYG{n}{best\PYGZus{}err}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Execution and Result Formatting}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Color\PYGZsq{}}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}8}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Coordinates (m)\PYGZsq{}}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}18}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Error (m)\PYGZsq{}}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}10}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{l+s+s1}{\PYGZsq{}Status\PYGZsq{}}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZdq{}} \PYG{o}{*} \PYG{l+m+mi}{55}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{disk} \PYG{o+ow}{in} \PYG{n}{my\PYGZus{}data}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itx}\PYG{p}{,} \PYG{n}{ty} \PYG{o}{=} \PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}xy\PYGZsq{}}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Perform IK search}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iq\PYGZus{}sol}\PYG{p}{,} \PYG{n}{err} \PYG{o}{=} \PYG{n}{find\PYGZus{}best\PYGZus{}ik}\PYG{p}{(}\PYG{n}{tx}\PYG{p}{,} \PYG{n}{ty}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{,} \PYG{n}{L3}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Check if error is within the 5mm threshold}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ireachable} \PYG{o}{=} \PYG{n}{err} \PYG{o}{\PYGZlt{}} \PYG{l+m+mf}{0.005}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Istatus} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}Success\PYGZdq{}} \PYG{k}{if} \PYG{n}{reachable} \PYG{k}{else} \PYG{l+s+s2}{\PYGZdq{}Out of Range\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{disk}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}color\PYGZsq{}}\PYG{p}{]}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZlt{}8}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | (}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{tx}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZgt{}6.3f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{, }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{ty}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZgt{}6.3f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{) | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{err}\PYG{l+s+si}{:}\PYG{l+s+s2}{.5f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{   | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{status}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

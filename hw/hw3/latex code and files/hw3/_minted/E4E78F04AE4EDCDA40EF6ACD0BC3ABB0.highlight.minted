@@ -1,0 +1,15 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}    (B) LABEL\PYGZhy{}COUNT DISTRIBUTION:   \PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+\PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{SPLITS}\PYG{p}{:}
+    \PYG{n}{lc} \PYG{o}{=} \PYG{n}{dfs}\PYG{p}{[}\PYG{n}{s}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}n\PYGZus{}labels\PYGZdq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{value\PYGZus{}counts}\PYG{p}{()}\PYG{o}{.}\PYG{n}{sort\PYGZus{}index}\PYG{p}{()}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{  [}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{s}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{]\PYGZdq{}}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} print raw num and percentage}
+    \PYG{k}{for} \PYG{n}{k}\PYG{p}{,} \PYG{n}{v} \PYG{o+ow}{in} \PYG{n}{lc}\PYG{o}{.}\PYG{n}{items}\PYG{p}{():}
+       \PYG{n}{pct} \PYG{o}{=} \PYG{p}{(}\PYG{n}{v} \PYG{o}{/} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{dfs}\PYG{p}{[}\PYG{n}{s}\PYG{p}{]))} \PYG{o}{*} \PYG{l+m+mi}{100}
+       \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}  }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{k}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ tool(s): }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{v}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ (}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pct}\PYG{l+s+si}{:}\PYG{l+s+s2}{.1f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZpc{})\PYGZdq{}}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{()}
+\end{MintedVerbatim}

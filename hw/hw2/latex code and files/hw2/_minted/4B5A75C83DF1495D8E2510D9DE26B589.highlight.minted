@@ -1,0 +1,55 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{numpy} \PYG{k}{as} \PYG{n}{np}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{matplotlib}\PYG{o}{.}\PYG{n}{pyplot} \PYG{k}{as} \PYG{n}{plt}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 1. Define physical parameters}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{ID0}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{,} \PYG{n}{L3} \PYG{o}{=} \PYG{l+m+mf}{0.70}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.30}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 2. Create grid for joint variables (Sampling)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Using meshgrid for efficient computation instead of nested loops}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{In} \PYG{o}{=} \PYG{l+m+mi}{50}  \PYG{c+c1}{\PYGZsh{} Increased resolution for smoother visualization}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iq1\PYGZus{}vals} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mf}{0.5}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iq2\PYGZus{}vals} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{n}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iq3\PYGZus{}vals} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{,} \PYG{n}{n}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{IQ2}\PYG{p}{,} \PYG{n}{Q3} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{meshgrid}\PYG{p}{(}\PYG{n}{q2\PYGZus{}vals}\PYG{p}{,} \PYG{n}{q3\PYGZus{}vals}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 3. Calculate spatial coordinates for the entire grid}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ix\PYGZus{}pts}\PYG{p}{,} \PYG{n}{y\PYGZus{}pts}\PYG{p}{,} \PYG{n}{z\PYGZus{}pts} \PYG{o}{=} \PYG{p}{[],} \PYG{p}{[],} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{q1} \PYG{o+ow}{in} \PYG{n}{q1\PYGZus{}vals}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Closed\PYGZhy{}form kinematic equations}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ix} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{*} \PYG{p}{(}\PYG{n}{L2} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q3}\PYG{p}{))} \PYG{o}{\PYGZhy{}} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q3}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iy} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{*} \PYG{p}{(}\PYG{n}{L2} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q3}\PYG{p}{))} \PYG{o}{+} \PYG{n}{L3} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{Q2}\PYG{p}{)} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{Q3}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iz} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{full\PYGZus{}like}\PYG{p}{(}\PYG{n}{x}\PYG{p}{,} \PYG{n}{D0} \PYG{o}{+} \PYG{n}{q1}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Flattening the arrays to append to our main list}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ix\PYGZus{}pts}\PYG{o}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{x}\PYG{o}{.}\PYG{n}{flatten}\PYG{p}{())}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iy\PYGZus{}pts}\PYG{o}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{y}\PYG{o}{.}\PYG{n}{flatten}\PYG{p}{())}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iz\PYGZus{}pts}\PYG{o}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{z}\PYG{o}{.}\PYG{n}{flatten}\PYG{p}{())}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 4. Plotting the results}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifig} \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{figure}\PYG{p}{(}\PYG{n}{figsize}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{14}\PYG{p}{,} \PYG{l+m+mi}{6}\PYG{p}{))}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 3D Workspace plot}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax1} \PYG{o}{=} \PYG{n}{fig}\PYG{o}{.}\PYG{n}{add\PYGZus{}subplot}\PYG{p}{(}\PYG{l+m+mi}{121}\PYG{p}{,} \PYG{n}{projection}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}3d\PYGZsq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isc} \PYG{o}{=} \PYG{n}{ax1}\PYG{o}{.}\PYG{n}{scatter}\PYG{p}{(}\PYG{n}{x\PYGZus{}pts}\PYG{p}{,} \PYG{n}{y\PYGZus{}pts}\PYG{p}{,} \PYG{n}{z\PYGZus{}pts}\PYG{p}{,} \PYG{n}{c}\PYG{o}{=}\PYG{n}{z\PYGZus{}pts}\PYG{p}{,} \PYG{n}{cmap}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}viridis\PYGZsq{}}\PYG{p}{,} \PYG{n}{s}\PYG{o}{=}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax1}\PYG{o}{.}\PYG{n}{set\PYGZus{}title}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Reachable Workspace (3D)\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax1}\PYG{o}{.}\PYG{n}{set\PYGZus{}xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}X (m)\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax1}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Y (m)\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax1}\PYG{o}{.}\PYG{n}{set\PYGZus{}zlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Z (m)\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Top view (XY Plane) plot}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax2} \PYG{o}{=} \PYG{n}{fig}\PYG{o}{.}\PYG{n}{add\PYGZus{}subplot}\PYG{p}{(}\PYG{l+m+mi}{122}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isc2} \PYG{o}{=} \PYG{n}{ax2}\PYG{o}{.}\PYG{n}{scatter}\PYG{p}{(}\PYG{n}{x\PYGZus{}pts}\PYG{p}{,} \PYG{n}{y\PYGZus{}pts}\PYG{p}{,} \PYG{n}{c}\PYG{o}{=}\PYG{n}{z\PYGZus{}pts}\PYG{p}{,} \PYG{n}{cmap}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}viridis\PYGZsq{}}\PYG{p}{,} \PYG{n}{s}\PYG{o}{=}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax2}\PYG{o}{.}\PYG{n}{set\PYGZus{}title}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Top View (XY Plane)\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax2}\PYG{o}{.}\PYG{n}{set\PYGZus{}xlabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}X (m)\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax2}\PYG{o}{.}\PYG{n}{set\PYGZus{}ylabel}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Y (m)\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iax2}\PYG{o}{.}\PYG{n}{axis}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}equal\PYGZsq{}}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Ensure aspect ratio is equal for accurate shape representation}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iplt}\PYG{o}{.}\PYG{n}{colorbar}\PYG{p}{(}\PYG{n}{sc2}\PYG{p}{,} \PYG{n}{label}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Height (z)\PYGZsq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iplt}\PYG{o}{.}\PYG{n}{tight\PYGZus{}layout}\PYG{p}{()}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iplt}\PYG{o}{.}\PYG{n}{show}\PYG{p}{()}
+
+\end{MintedVerbatim}

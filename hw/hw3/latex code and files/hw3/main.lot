@@ -1,0 +1,5 @@
+\contentsline {table}{\numberline {1}{\ignorespaces مقادیر \lr {PR-AUC} برای هر کلاس}}{38}{table.caption.44}%
+\contentsline {table}{\numberline {2}{\ignorespaces گزارش عملکرد مدل \lr {EfficientNet-B3} بر روی داده‌های آزمون (رویکرد اول)}}{38}{table.caption.45}%
+\contentsline {table}{\numberline {3}{\ignorespaces گزارش عملکرد مدل \lr {EfficientNet-B3} در رویکرد دوم (۱۰ کلاس)}}{44}{table.caption.60}%
+\contentsline {table}{\numberline {4}{\ignorespaces مقادیر \lr {PR-AUC} برای ۱۰ کلاس در رویکرد دوم}}{45}{table.caption.62}%
+\contentsline {table}{\numberline {5}{\ignorespaces نتایج اعتبارسنجی متقاطع ۵-تایی برای مدل \lr {EfficientNet-B3}}}{81}{table.caption.74}%

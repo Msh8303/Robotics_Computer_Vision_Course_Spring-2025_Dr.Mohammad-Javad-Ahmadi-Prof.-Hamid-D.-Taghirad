@@ -1,0 +1,149 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{} SECTION 1}
+\PYG{c+c1}{\PYGZsh{} libraries}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{warnings}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{pathlib}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{Path}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{itertools}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{combinations}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{collections}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{Counter}
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{pandas}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{pd}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{matplotlib.pyplot}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{plt}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{matplotlib.patches}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{mpatches}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{matplotlib.gridspec}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{gridspec}
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{seaborn}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{sns}
+
+\PYG{n}{warnings}\PYG{o}{.}\PYG{n}{filterwarnings}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}ignore\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} constants}
+\PYG{n}{DATASET\PYGZus{}ROOT} \PYG{o}{=} \PYG{n}{Path}\PYG{p}{(}\PYG{l+s+sa}{r}\PYG{l+s+s2}{\PYGZdq{}C:\PYGZbs{}Users\PYGZbs{}ASUS\PYGZbs{}Desktop\PYGZbs{}New folder (2)\PYGZbs{}Cataract\PYGZus{}dataset\PYGZus{}classification.v1i.multiclass\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{SPLITS}       \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}train\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}valid\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}test\PYGZdq{}}\PYG{p}{]}
+\PYG{n}{CSV\PYGZus{}NAME}     \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}classes.csv\PYGZdq{}}
+\PYG{n}{OUTPUT\PYGZus{}DIR}   \PYG{o}{=} \PYG{n}{Path}\PYG{p}{(}\PYG{l+s+sa}{r}\PYG{l+s+s2}{\PYGZdq{}C:\PYGZbs{}Users\PYGZbs{}ASUS\PYGZbs{}Desktop\PYGZbs{}New folder (2)\PYGZbs{}analysis\PYGZus{}outputs\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{OUTPUT\PYGZus{}DIR}\PYG{o}{.}\PYG{n}{mkdir}\PYG{p}{(}\PYG{n}{exist\PYGZus{}ok}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} shortened labels for display}
+\PYG{n}{SHORT} \PYG{o}{=} \PYG{p}{\PYGZob{}}
+    \PYG{l+s+s2}{\PYGZdq{}Cannula\PYGZdq{}}          \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Cannula\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Cap Cystotome\PYGZdq{}}    \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Cap Cyst.\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Cap Forceps\PYGZdq{}}      \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Cap Forc.\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Cornea\PYGZdq{}}           \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Cornea\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Forceps\PYGZdq{}}          \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Forceps\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}I\PYGZhy{}A Handpiece\PYGZdq{}}    \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}I\PYGZhy{}A Hand.\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Lens Injector\PYGZdq{}}    \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Lens Inj.\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Phaco Handpiece\PYGZdq{}}  \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Phaco H.\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Primary Knife\PYGZdq{}}    \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Prim. Kn.\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Pupil\PYGZdq{}}            \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Pupil\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Second Instrument\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Sec. Inst.\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Secondary Knife\PYGZdq{}}  \PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Sec. Kn.\PYGZdq{}}\PYG{p}{,}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{\PYGZsh{} step 1: load the data}
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{load\PYGZus{}split}\PYG{p}{(}\PYG{n}{split}\PYG{p}{:} \PYG{n+nb}{str}\PYG{p}{)} \PYG{o}{\PYGZhy{}\PYGZgt{}} \PYG{n}{pd}\PYG{o}{.}\PYG{n}{DataFrame}\PYG{p}{:}
+    \PYG{n}{csv\PYGZus{}path} \PYG{o}{=} \PYG{n}{DATASET\PYGZus{}ROOT} \PYG{o}{/} \PYG{n}{split} \PYG{o}{/} \PYG{n}{CSV\PYGZus{}NAME}
+
+    \PYG{c+c1}{\PYGZsh{} double check if file exists}
+    \PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{csv\PYGZus{}path}\PYG{o}{.}\PYG{n}{exists}\PYG{p}{():}
+        \PYG{k}{raise} \PYG{n+ne}{FileNotFoundError}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Missing CSV file at: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{csv\PYGZus{}path}\PYG{o}{.}\PYG{n}{resolve}\PYG{p}{()}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} load csv as pandas dataFrame}
+    \PYG{n}{df} \PYG{o}{=} \PYG{n}{pd}\PYG{o}{.}\PYG{n}{read\PYGZus{}csv}\PYG{p}{(}\PYG{n}{csv\PYGZus{}path}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} remove extra spaces}
+    \PYG{n}{df}\PYG{o}{.}\PYG{n}{columns} \PYG{o}{=} \PYG{p}{[}\PYG{n}{c}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()} \PYG{k}{for} \PYG{n}{c} \PYG{o+ow}{in} \PYG{n}{df}\PYG{o}{.}\PYG{n}{columns}\PYG{p}{]}
+
+    \PYG{n}{df}\PYG{o}{.}\PYG{n}{rename}\PYG{p}{(}\PYG{n}{columns}\PYG{o}{=}\PYG{p}{\PYGZob{}}\PYG{n}{df}\PYG{o}{.}\PYG{n}{columns}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]:} \PYG{l+s+s2}{\PYGZdq{}filename\PYGZdq{}}\PYG{p}{\PYGZcb{},} \PYG{n}{inplace}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} new column for separating data into train, valid \PYGZam{} test}
+    \PYG{n}{df}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}split\PYGZdq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{split}
+
+    \PYG{k}{return} \PYG{n}{df}
+
+\PYG{c+c1}{\PYGZsh{} step 2: merge data}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZgt{} loading data\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} store each split dataFrame into a dict}
+\PYG{n}{dfs}    \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{n}{s}\PYG{p}{:} \PYG{n}{load\PYGZus{}split}\PYG{p}{(}\PYG{n}{s}\PYG{p}{)} \PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{SPLITS}\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{\PYGZsh{} stack the 3 splits into one dataFrame}
+\PYG{n}{df\PYGZus{}all} \PYG{o}{=} \PYG{n}{pd}\PYG{o}{.}\PYG{n}{concat}\PYG{p}{(}\PYG{n}{dfs}\PYG{o}{.}\PYG{n}{values}\PYG{p}{(),} \PYG{n}{ignore\PYGZus{}index}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} set of the non\PYGZhy{}tool columns (like cornea \PYGZam{} pupil)}
+\PYG{n}{META\PYGZus{}COLS}  \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}filename\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}split\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{\PYGZsh{} list of the tool columns}
+\PYG{n}{CLASS\PYGZus{}COLS} \PYG{o}{=} \PYG{p}{[}\PYG{n}{c} \PYG{k}{for} \PYG{n}{c} \PYG{o+ow}{in} \PYG{n}{df\PYGZus{}all}\PYG{o}{.}\PYG{n}{columns} \PYG{k}{if} \PYG{n}{c} \PYG{o+ow}{not} \PYG{o+ow}{in} \PYG{n}{META\PYGZus{}COLS}\PYG{p}{]}
+\PYG{c+c1}{\PYGZsh{} count of all tool classes}
+\PYG{n}{N}          \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} use the name in SHORT dictionary}
+\PYG{n}{SLABELS}    \PYG{o}{=} \PYG{p}{[}\PYG{n}{SHORT}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{c}\PYG{p}{,} \PYG{n}{c}\PYG{p}{)} \PYG{k}{for} \PYG{n}{c} \PYG{o+ow}{in} \PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} count the num of tools in each image}
+\PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}n\PYGZus{}labels\PYGZdq{}}\PYG{p}{]}    \PYG{o}{=} \PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{]}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{(}\PYG{n}{axis}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{.}\PYG{n}{astype}\PYG{p}{(}\PYG{n+nb}{int}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} if no tools in the image = true (neg frame)}
+\PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}is\PYGZus{}negative\PYGZdq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}n\PYGZus{}labels\PYGZdq{}}\PYG{p}{]} \PYG{o}{==} \PYG{l+m+mi}{0}
+
+\PYG{c+c1}{\PYGZsh{} remove this}
+\PYG{c+c1}{\PYGZsh{}df\PYGZus{}all[\PYGZdq{}source\PYGZus{}type\PYGZdq{}] = df\PYGZus{}all[\PYGZdq{}filename\PYGZdq{}].str.extract(r\PYGZsq{}\PYGZca{}(Video\PYGZbs{}d+|case\PYGZbs{}d+)\PYGZsq{})[0].fillna(\PYGZdq{}other\PYGZdq{})}
+
+\PYG{c+c1}{\PYGZsh{} reseperate df\PYGZus{}all into dictionaries for each split}
+\PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{SPLITS}\PYG{p}{:}
+    \PYG{n}{dfs}\PYG{p}{[}\PYG{n}{s}\PYG{p}{]} \PYG{o}{=} \PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}split\PYGZdq{}}\PYG{p}{]} \PYG{o}{==} \PYG{n}{s}\PYG{p}{]}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} colors for plots}
+\PYG{n}{CMAP}      \PYG{o}{=} \PYG{n}{plt}\PYG{o}{.}\PYG{n}{cm}\PYG{o}{.}\PYG{n}{get\PYGZus{}cmap}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}tab20\PYGZdq{}}\PYG{p}{,} \PYG{n}{N}\PYG{p}{)}
+\PYG{n}{BAR\PYGZus{}COLS}  \PYG{o}{=} \PYG{p}{[}\PYG{n}{CMAP}\PYG{p}{(}\PYG{n}{i}\PYG{p}{)} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{N}\PYG{p}{)]}
+\PYG{n}{SP\PYGZus{}COLORS} \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}train\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}4C72B0\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}valid\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}DD8452\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}test\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}55A868\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{\PYGZsh{} SECTION 2*: TEXT}
+\PYG{c+c1}{\PYGZsh{} SURGICAL TOOLS ONLY (CORNEA AND PUPIL EXCLUDED)}
+
+\PYG{c+c1}{\PYGZsh{} update class list}
+\PYG{n}{CLASS\PYGZus{}COLS} \PYG{o}{=} \PYG{p}{[}\PYG{n}{c} \PYG{k}{for} \PYG{n}{c} \PYG{o+ow}{in} \PYG{n}{CLASS\PYGZus{}COLS} \PYG{k}{if} \PYG{n}{c} \PYG{o+ow}{not} \PYG{o+ow}{in} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}Cornea\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}Pupil\PYGZdq{}}\PYG{p}{]]}
+\PYG{n}{N} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} recalculate num of imgs and neg frames}
+\PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}n\PYGZus{}labels\PYGZdq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{]}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{(}\PYG{n}{axis}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{.}\PYG{n}{astype}\PYG{p}{(}\PYG{n+nb}{int}\PYG{p}{)}
+\PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}is\PYGZus{}negative\PYGZdq{}}\PYG{p}{]} \PYG{o}{=} \PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}n\PYGZus{}labels\PYGZdq{}}\PYG{p}{]} \PYG{o}{==} \PYG{l+m+mi}{0}
+
+\PYG{c+c1}{\PYGZsh{} new values for each split}
+\PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{SPLITS}\PYG{p}{:}
+    \PYG{n}{dfs}\PYG{p}{[}\PYG{n}{s}\PYG{p}{]} \PYG{o}{=} \PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{n}{df\PYGZus{}all}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}split\PYGZdq{}}\PYG{p}{]} \PYG{o}{==} \PYG{n}{s}\PYG{p}{]}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{()}
+
+\PYG{c+c1}{\PYGZsh{} visual}
+\PYG{n}{DIV} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}─\PYGZdq{}} \PYG{o}{*} \PYG{l+m+mi}{65}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}    (A) OVERVIEW:   \PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} count total images}
+\PYG{n}{total} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{df\PYGZus{}all}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}total images: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{total}\PYG{l+s+si}{:}\PYG{l+s+s2}{,}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} num of classes}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}class columns: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{N}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}name of classes: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{CLASS\PYGZus{}COLS}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{()}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}split | images | percentage | negative frames | avg labels\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} loop that repeats 3 times for train, valid \PYGZam{} test}
+\PYG{k}{for} \PYG{n}{s} \PYG{o+ow}{in} \PYG{n}{SPLITS}\PYG{p}{:}
+    \PYG{n}{d}   \PYG{o}{=} \PYG{n}{dfs}\PYG{p}{[}\PYG{n}{s}\PYG{p}{]}
+    \PYG{n}{n}   \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{d}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} num of neg frames}
+    \PYG{n}{neg} \PYG{o}{=} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}is\PYGZus{}negative\PYGZdq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{()}
+
+    \PYG{c+c1}{\PYGZsh{} avg num of tools in images}
+    \PYG{n}{avg} \PYG{o}{=} \PYG{n}{d}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}n\PYGZus{}labels\PYGZdq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{mean}\PYG{p}{()}
+
+    \PYG{c+c1}{\PYGZsh{} calculate percentages}
+    \PYG{n}{pct} \PYG{o}{=} \PYG{p}{(}\PYG{n}{n} \PYG{o}{/} \PYG{n}{total}\PYG{p}{)} \PYG{o}{*} \PYG{l+m+mi}{100}
+    \PYG{n}{neg\PYGZus{}pct} \PYG{o}{=} \PYG{p}{(}\PYG{n}{neg} \PYG{o}{/} \PYG{n}{n}\PYG{p}{)} \PYG{o}{*} \PYG{l+m+mi}{100}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{s}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{n}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pct}\PYG{l+s+si}{:}\PYG{l+s+s2}{.1f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZpc{} | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{neg}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ (}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{neg\PYGZus{}pct}\PYG{l+s+si}{:}\PYG{l+s+s2}{.0f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZpc{}) | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{avg}\PYG{l+s+si}{:}\PYG{l+s+s2}{.2f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{()}
+\end{MintedVerbatim}

@@ -1,0 +1,201 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{c+ch}{\PYGZsh{}!/usr/bin/env python}
+\PYG{c+c1}{\PYGZsh{} coding: utf\PYGZhy{}8}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZsh{} Implementation Code with Modified DH Table}
+
+\PYG{c+c1}{\PYGZsh{} In[12]:}
+
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{mdh\PYGZus{}transformation\PYGZus{}matrix}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{d}\PYG{p}{,} \PYG{n}{theta}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Calculates the homogeneous transformation matrix for a single link }
+\PYG{l+s+sd}{    using the Modified Denavit\PYGZhy{}Hartenberg (MDH / Craig\PYGZsq{}s) convention.}
+
+\PYG{l+s+sd}{    Formula: T = Rot\PYGZus{}x(alpha) * Trans\PYGZus{}x(a) * Rot\PYGZus{}z(theta) * Trans\PYGZus{}z(d)}
+
+\PYG{l+s+sd}{    Parameters:}
+\PYG{l+s+sd}{    alpha (float): Link twist angle in radians (alpha\PYGZus{}\PYGZob{}i\PYGZhy{}1\PYGZcb{})}
+\PYG{l+s+sd}{    a (float): Link length in meters (a\PYGZus{}\PYGZob{}i\PYGZhy{}1\PYGZcb{})}
+\PYG{l+s+sd}{    d (float): Link offset in meters (d\PYGZus{}i)}
+\PYG{l+s+sd}{    theta (float): Joint angle in radians (theta\PYGZus{}i)}
+
+\PYG{l+s+sd}{    Returns:}
+\PYG{l+s+sd}{    numpy.ndarray: 4x4 Homogeneous Transformation Matrix (T\PYGZus{}\PYGZob{}i\PYGZhy{}1\PYGZcb{}\PYGZca{}i)}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{c\PYGZus{}theta} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}
+    \PYG{n}{s\PYGZus{}theta} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}
+    \PYG{n}{c\PYGZus{}alpha} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{)}
+    \PYG{n}{s\PYGZus{}alpha} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} MDH Transformation Matrix elements}
+    \PYG{n}{T} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}
+        \PYG{p}{[}\PYG{n}{c\PYGZus{}theta}\PYG{p}{,}            \PYG{o}{\PYGZhy{}}\PYG{n}{s\PYGZus{}theta}\PYG{p}{,}            \PYG{l+m+mi}{0}\PYG{p}{,}        \PYG{n}{a}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{s\PYGZus{}theta} \PYG{o}{*} \PYG{n}{c\PYGZus{}alpha}\PYG{p}{,}   \PYG{n}{c\PYGZus{}theta} \PYG{o}{*} \PYG{n}{c\PYGZus{}alpha}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{s\PYGZus{}alpha}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{d} \PYG{o}{*} \PYG{n}{s\PYGZus{}alpha}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{s\PYGZus{}theta} \PYG{o}{*} \PYG{n}{s\PYGZus{}alpha}\PYG{p}{,}   \PYG{n}{c\PYGZus{}theta} \PYG{o}{*} \PYG{n}{s\PYGZus{}alpha}\PYG{p}{,}  \PYG{n}{c\PYGZus{}alpha}\PYG{p}{,}  \PYG{n}{d} \PYG{o}{*} \PYG{n}{c\PYGZus{}alpha}\PYG{p}{],}
+        \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}                   \PYG{l+m+mi}{0}\PYG{p}{,}                  \PYG{l+m+mi}{0}\PYG{p}{,}        \PYG{l+m+mi}{1}\PYG{p}{]}
+    \PYG{p}{])}
+
+    \PYG{k}{return} \PYG{n}{T}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{forward\PYGZus{}kinematics}\PYG{p}{(}\PYG{n}{thetas}\PYG{p}{,} \PYG{n}{d\PYGZus{}params}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Calculates the forward kinematics of the 7\PYGZhy{}DOF robot using the MDH table.}
+
+\PYG{l+s+sd}{    Parameters:}
+\PYG{l+s+sd}{    thetas (list or array): List of 7 joint angles [theta1, theta2, ..., theta7] in radians.}
+\PYG{l+s+sd}{    d\PYGZus{}params (list or array): List of d offsets [d1, d3, d5, d7] in meters. }
+\PYG{l+s+sd}{                              (d2, d4, d6 are zero based on the table).}
+
+\PYG{l+s+sd}{    Returns:}
+\PYG{l+s+sd}{    numpy.ndarray: Final 4x4 Transformation Matrix from Base (Frame 0) to End\PYGZhy{}Effector (Frame 7).}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{c+c1}{\PYGZsh{} Unpack joint variables}
+    \PYG{n}{t1}\PYG{p}{,} \PYG{n}{t2}\PYG{p}{,} \PYG{n}{t3}\PYG{p}{,} \PYG{n}{t4}\PYG{p}{,} \PYG{n}{t5}\PYG{p}{,} \PYG{n}{t6}\PYG{p}{,} \PYG{n}{t7} \PYG{o}{=} \PYG{n}{thetas}
+
+    \PYG{c+c1}{\PYGZsh{} Unpack link offsets (d parameters)}
+    \PYG{n}{d1}\PYG{p}{,} \PYG{n}{d3}\PYG{p}{,} \PYG{n}{d5}\PYG{p}{,} \PYG{n}{d7} \PYG{o}{=} \PYG{n}{d\PYGZus{}params}
+
+    \PYG{c+c1}{\PYGZsh{} Define the MDH table parameters: [alpha\PYGZus{}\PYGZob{}i\PYGZhy{}1\PYGZcb{}, a\PYGZus{}\PYGZob{}i\PYGZhy{}1\PYGZcb{}, d\PYGZus{}i, theta\PYGZus{}i]}
+    \PYG{n}{mdh\PYGZus{}table} \PYG{o}{=} \PYG{p}{[}
+        \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}           \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{d1}\PYG{p}{,} \PYG{n}{t1}\PYG{p}{],}  \PYG{c+c1}{\PYGZsh{} Link 1}
+        \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,}    \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{t2}\PYG{p}{],}  \PYG{c+c1}{\PYGZsh{} Link 2}
+        \PYG{p}{[}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,}     \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{d3}\PYG{p}{,} \PYG{n}{t3}\PYG{p}{],}  \PYG{c+c1}{\PYGZsh{} Link 3}
+        \PYG{p}{[}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,}     \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{t4}\PYG{p}{],}  \PYG{c+c1}{\PYGZsh{} Link 4}
+        \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,}    \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{d5}\PYG{p}{,} \PYG{n}{t5}\PYG{p}{],}  \PYG{c+c1}{\PYGZsh{} Link 5}
+        \PYG{p}{[}\PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,}    \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{t6}\PYG{p}{],}  \PYG{c+c1}{\PYGZsh{} Link 6}
+        \PYG{p}{[}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,}     \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{d7}\PYG{p}{,} \PYG{n}{t7}\PYG{p}{]}   \PYG{c+c1}{\PYGZsh{} Link 7}
+    \PYG{p}{]}
+
+    \PYG{c+c1}{\PYGZsh{} Initialize the total transformation matrix as an Identity matrix}
+    \PYG{n}{T\PYGZus{}0\PYGZus{}to\PYGZus{}7} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{eye}\PYG{p}{(}\PYG{l+m+mi}{4}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Iteratively multiply the transformation matrices}
+    \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{p}{):}
+        \PYG{n}{alpha}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{d}\PYG{p}{,} \PYG{n}{theta} \PYG{o}{=} \PYG{n}{mdh\PYGZus{}table}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}
+        \PYG{c+c1}{\PYGZsh{} Get transformation matrix for the current link}
+        \PYG{n}{T\PYGZus{}i} \PYG{o}{=} \PYG{n}{mdh\PYGZus{}transformation\PYGZus{}matrix}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{d}\PYG{p}{,} \PYG{n}{theta}\PYG{p}{)}
+
+        \PYG{c+c1}{\PYGZsh{} Multiply with the cumulative transformation matrix}
+        \PYG{c+c1}{\PYGZsh{} T\PYGZus{}0\PYGZca{}n = T\PYGZus{}0\PYGZca{}1 * T\PYGZus{}1\PYGZca{}2 * ... * T\PYGZus{}\PYGZob{}n\PYGZhy{}1\PYGZcb{}\PYGZca{}n}
+        \PYG{n}{T\PYGZus{}0\PYGZus{}to\PYGZus{}7} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{dot}\PYG{p}{(}\PYG{n}{T\PYGZus{}0\PYGZus{}to\PYGZus{}7}\PYG{p}{,} \PYG{n}{T\PYGZus{}i}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{n}{T\PYGZus{}0\PYGZus{}to\PYGZus{}7}
+
+\PYG{c+c1}{\PYGZsh{} ==========================================}
+\PYG{c+c1}{\PYGZsh{} Example Usage and Testing}
+\PYG{c+c1}{\PYGZsh{} ==========================================}
+\PYG{k}{if} \PYG{n+nv+vm}{\PYGZus{}\PYGZus{}name\PYGZus{}\PYGZus{}} \PYG{o}{==} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZus{}main\PYGZus{}\PYGZus{}\PYGZdq{}}\PYG{p}{:}
+    \PYG{c+c1}{\PYGZsh{} Example joint angles in radians (e.g., all joints at zero position)}
+    \PYG{n}{example\PYGZus{}thetas} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{]}
+
+    \PYG{c+c1}{\PYGZsh{} Example link offsets in meters (replace with actual robot dimensions from datasheet)}
+    \PYG{n}{d1}\PYG{p}{,} \PYG{n}{d3}\PYG{p}{,} \PYG{n}{d5}\PYG{p}{,} \PYG{n}{d7} \PYG{o}{=} \PYG{l+m+mf}{0.34}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.126}
+    \PYG{n}{example\PYGZus{}d\PYGZus{}params} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mf}{0.34}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.126}\PYG{p}{]} 
+
+    \PYG{c+c1}{\PYGZsh{} Calculate Forward Kinematics}
+    \PYG{n}{final\PYGZus{}transformation} \PYG{o}{=} \PYG{n}{forward\PYGZus{}kinematics}\PYG{p}{(}\PYG{n}{example\PYGZus{}thetas}\PYG{p}{,} \PYG{n}{example\PYGZus{}d\PYGZus{}params}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Extract position (X, Y, Z) and rotation matrix}
+    \PYG{n}{position} \PYG{o}{=} \PYG{n}{final\PYGZus{}transformation}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{]}
+    \PYG{n}{rotation\PYGZus{}matrix} \PYG{o}{=} \PYG{n}{final\PYGZus{}transformation}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{]}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Final Homogeneous Transformation Matrix (T\PYGZus{}0\PYGZca{}7):\PYGZdq{}}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Using np.round to clean up very small floating\PYGZhy{}point errors (like 1e\PYGZhy{}17)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{final\PYGZus{}transformation}\PYG{p}{,} \PYG{n}{decimals}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{))}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{End\PYGZhy{}Effector Position (X, Y, Z) in meters:\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{position}\PYG{p}{,} \PYG{n}{decimals}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{))}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZhy{}\PYGZhy{} Scenario 2: Joint 2 bent at 90 degrees \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZdq{}}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} Joint 2 with angle pi/2}
+    \PYG{n}{thetas\PYGZus{}2} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{n}{T2} \PYG{o}{=} \PYG{n}{forward\PYGZus{}kinematics}\PYG{p}{(}\PYG{n}{thetas\PYGZus{}2}\PYG{p}{,}   \PYG{n}{example\PYGZus{}d\PYGZus{}params}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Expected Z:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d1}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}| Expected X:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d3} \PYG{o}{+} \PYG{n}{d5} \PYG{o}{+} \PYG{n}{d7}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Calculated Pos (X, Y, Z):\PYGZdq{}}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{T2}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{],} \PYG{l+m+mi}{4}\PYG{p}{),} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZhy{}\PYGZhy{} Scenario 3: Joint 4 bent at 90 degrees \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZdq{}}\PYG{p}{)}
+    \PYG{c+c1}{\PYGZsh{} joint 4 with angle pi/2}
+    \PYG{n}{thetas\PYGZus{}3} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{n}{T3} \PYG{o}{=} \PYG{n}{forward\PYGZus{}kinematics}\PYG{p}{(}\PYG{n}{thetas\PYGZus{}3}\PYG{p}{,} \PYG{n}{example\PYGZus{}d\PYGZus{}params}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Expected Z:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d1} \PYG{o}{+} \PYG{n}{d3}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}| Expected X or Y extension:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d5} \PYG{o}{+} \PYG{n}{d7}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Calculated Pos (X, Y, Z):\PYGZdq{}}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{T3}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{],} \PYG{l+m+mi}{4}\PYG{p}{),} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+
+\PYG{c+c1}{\PYGZsh{} \PYGZsh{} Implementation Code with Standard DH Table}
+
+\PYG{c+c1}{\PYGZsh{} In[14]:}
+
+
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{numpy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{np}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{dh\PYGZus{}transform}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{,} \PYG{n}{d}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{alpha}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}Calculates the standard DH transformation matrix.\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{k}{return} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}
+        \PYG{p}{[}\PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{),} \PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),}  \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),} \PYG{n}{a}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)],}
+        \PYG{p}{[}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{),}  \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),} \PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),} \PYG{n}{a}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)],}
+        \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}              \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),}                \PYG{n}{np}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),}               \PYG{n}{d}\PYG{p}{],}
+        \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}              \PYG{l+m+mi}{0}\PYG{p}{,}                            \PYG{l+m+mi}{0}\PYG{p}{,}                           \PYG{l+m+mi}{1}\PYG{p}{]}
+    \PYG{p}{])}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{forward\PYGZus{}kinematics\PYGZus{}kuka\PYGZus{}iiwa}\PYG{p}{(}\PYG{n}{q}\PYG{p}{,} \PYG{n}{link\PYGZus{}offsets}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+sd}{    Calculates the forward kinematics of the KUKA LBR iiwa robot using Standard DH parameters.}
+\PYG{l+s+sd}{    q: List of joint angles [theta1, ..., theta7] in radians.}
+\PYG{l+s+sd}{    link\PYGZus{}offsets: List of Z\PYGZhy{}axis offsets [d1, d3, d5, d7].}
+\PYG{l+s+sd}{    \PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{c+c1}{\PYGZsh{} Assign offsets to d variables}
+    \PYG{n}{d1}\PYG{p}{,} \PYG{n}{d3}\PYG{p}{,} \PYG{n}{d5}\PYG{p}{,} \PYG{n}{d7} \PYG{o}{=} \PYG{n}{link\PYGZus{}offsets}
+
+    \PYG{c+c1}{\PYGZsh{} DH table: [theta, d, a, alpha]}
+    \PYG{n}{dh\PYGZus{}table} \PYG{o}{=} \PYG{p}{[}
+        \PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{d1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{n}{d3}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{],} \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{],} \PYG{n}{d5}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{5}\PYG{p}{],} \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{],}
+        \PYG{p}{[}\PYG{n}{q}\PYG{p}{[}\PYG{l+m+mi}{6}\PYG{p}{],} \PYG{n}{d7}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,}  \PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{p}{]}
+
+    \PYG{c+c1}{\PYGZsh{} Initialize base transformation matrix as identity}
+    \PYG{n}{T\PYGZus{}end\PYGZus{}effector} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{eye}\PYG{p}{(}\PYG{l+m+mi}{4}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Multiply transformation matrices to find the final pose}
+    \PYG{k}{for} \PYG{n}{params} \PYG{o+ow}{in} \PYG{n}{dh\PYGZus{}table}\PYG{p}{:}
+        \PYG{n}{A\PYGZus{}i} \PYG{o}{=} \PYG{n}{dh\PYGZus{}transform}\PYG{p}{(}\PYG{n}{params}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{params}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{params}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{],} \PYG{n}{params}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{])}
+        \PYG{n}{T\PYGZus{}end\PYGZus{}effector} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{dot}\PYG{p}{(}\PYG{n}{T\PYGZus{}end\PYGZus{}effector}\PYG{p}{,} \PYG{n}{A\PYGZus{}i}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{n}{T\PYGZus{}end\PYGZus{}effector}
+
+\PYG{c+c1}{\PYGZsh{} \PYGZhy{}\PYGZhy{}\PYGZhy{} Numerical test example \PYGZhy{}\PYGZhy{}\PYGZhy{}}
+\PYG{k}{if} \PYG{n+nv+vm}{\PYGZus{}\PYGZus{}name\PYGZus{}\PYGZus{}} \PYG{o}{==} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZus{}main\PYGZus{}\PYGZus{}\PYGZdq{}}\PYG{p}{:}
+    \PYG{n}{example\PYGZus{}thetas} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{,} \PYG{l+m+mf}{0.0}\PYG{p}{]}
+
+    \PYG{n}{d1}\PYG{p}{,} \PYG{n}{d3}\PYG{p}{,} \PYG{n}{d5}\PYG{p}{,} \PYG{n}{d7} \PYG{o}{=} \PYG{l+m+mf}{0.34}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{l+m+mf}{0.126}
+    \PYG{n}{example\PYGZus{}d\PYGZus{}params} \PYG{o}{=} \PYG{p}{[}\PYG{n}{d1}\PYG{p}{,} \PYG{n}{d3}\PYG{p}{,} \PYG{n}{d5}\PYG{p}{,} \PYG{n}{d7}\PYG{p}{]} 
+
+    \PYG{n}{final\PYGZus{}transformation} \PYG{o}{=} \PYG{n}{forward\PYGZus{}kinematics\PYGZus{}kuka\PYGZus{}iiwa}\PYG{p}{(}\PYG{n}{example\PYGZus{}thetas}\PYG{p}{,} \PYG{n}{example\PYGZus{}d\PYGZus{}params}\PYG{p}{)}
+    \PYG{n}{position} \PYG{o}{=} \PYG{n}{final\PYGZus{}transformation}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{]}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Final Homogeneous Transformation Matrix (T\PYGZus{}0\PYGZca{}7):\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{final\PYGZus{}transformation}\PYG{p}{,} \PYG{n}{decimals}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{))}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{End\PYGZhy{}Effector Position (X, Y, Z) in meters:\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{position}\PYG{p}{,} \PYG{n}{decimals}\PYG{o}{=}\PYG{l+m+mi}{4}\PYG{p}{))}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{\PYGZhy{}\PYGZhy{}\PYGZhy{} Scenario 2: Joint 2 bent at 90 degrees \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZdq{}}\PYG{p}{)}
+    \PYG{n}{thetas\PYGZus{}2} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{n}{T2} \PYG{o}{=} \PYG{n}{forward\PYGZus{}kinematics\PYGZus{}kuka\PYGZus{}iiwa}\PYG{p}{(}\PYG{n}{thetas\PYGZus{}2}\PYG{p}{,} \PYG{n}{example\PYGZus{}d\PYGZus{}params}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Expected Z:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d1}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}| Expected X/Y:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d3} \PYG{o}{+} \PYG{n}{d5} \PYG{o}{+} \PYG{n}{d7}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Calculated Pos (X, Y, Z):\PYGZdq{}}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{T2}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{],} \PYG{l+m+mi}{4}\PYG{p}{))}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{\PYGZhy{}\PYGZhy{}\PYGZhy{} Scenario 3: Joint 4 bent at 90 degrees \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZdq{}}\PYG{p}{)}
+    \PYG{n}{thetas\PYGZus{}3} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{n}{T3} \PYG{o}{=} \PYG{n}{forward\PYGZus{}kinematics\PYGZus{}kuka\PYGZus{}iiwa}\PYG{p}{(}\PYG{n}{thetas\PYGZus{}3}\PYG{p}{,} \PYG{n}{example\PYGZus{}d\PYGZus{}params}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Expected Z:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d1} \PYG{o}{+} \PYG{n}{d3}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}| Expected X/Y:\PYGZdq{}}\PYG{p}{,} \PYG{n}{d5} \PYG{o}{+} \PYG{n}{d7}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Calculated Pos (X, Y, Z):\PYGZdq{}}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{round}\PYG{p}{(}\PYG{n}{T3}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{3}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{],} \PYG{l+m+mi}{4}\PYG{p}{))}
+
+\end{MintedVerbatim}

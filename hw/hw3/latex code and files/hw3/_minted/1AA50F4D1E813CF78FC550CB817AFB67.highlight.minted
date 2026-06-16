@@ -1,0 +1,44 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb}{print}\PYG{p}{()}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}    (C) PER\PYGZhy{}CLASS FREQUENCY:    \PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Class | Train | Val | Test | Total | \PYGZpc{} Total | Severity\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{DIV}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} loop that repeats for each class}
+\PYG{k}{for} \PYG{n+nb+bp}{cls} \PYG{o+ow}{in} \PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{:}
+
+    \PYG{c+c1}{\PYGZsh{} per split values}
+    \PYG{n}{train\PYGZus{}num} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{dfs}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}train\PYGZdq{}}\PYG{p}{][}\PYG{n+nb+bp}{cls}\PYG{p}{]}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{())}
+    \PYG{n}{valid\PYGZus{}num} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{dfs}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}valid\PYGZdq{}}\PYG{p}{][}\PYG{n+nb+bp}{cls}\PYG{p}{]}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{())}
+    \PYG{n}{test\PYGZus{}num}  \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{dfs}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}test\PYGZdq{}}\PYG{p}{][}\PYG{n+nb+bp}{cls}\PYG{p}{]}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{())}
+
+    \PYG{c+c1}{\PYGZsh{} adds per split values}
+    \PYG{n}{tot} \PYG{o}{=} \PYG{n}{train\PYGZus{}num} \PYG{o}{+} \PYG{n}{valid\PYGZus{}num} \PYG{o}{+} \PYG{n}{test\PYGZus{}num}
+
+    \PYG{c+c1}{\PYGZsh{} (data set that has this tool/ total data set)\PYGZpc{}}
+    \PYG{n}{pct} \PYG{o}{=} \PYG{n}{tot} \PYG{o}{/} \PYG{n}{total} \PYG{o}{*} \PYG{l+m+mi}{100}
+
+    \PYG{c+c1}{\PYGZsh{} imbalance label}
+    \PYG{c+c1}{\PYGZsh{} \PYGZgt{} 15 (ok), 10 \PYGZlt{} \PYGZlt{} 15 (mod.), \PYGZlt{} 10 (sev.)}
+    \PYG{k}{if} \PYG{n}{pct} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{15}\PYG{p}{:}
+        \PYG{n}{sev} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}OK\PYGZdq{}}
+    \PYG{k}{elif} \PYG{n}{pct} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{10}\PYG{p}{:}
+        \PYG{n}{sev} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}moderate\PYGZdq{}}
+    \PYG{k}{else}\PYG{p}{:}
+        \PYG{n}{sev} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}severe\PYGZdq{}}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb+bp}{cls}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{train\PYGZus{}num}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{valid\PYGZus{}num}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{test\PYGZus{}num}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{tot}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{pct}\PYG{l+s+si}{:}\PYG{l+s+s2}{.1f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZpc{} | }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{sev}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} num of appearances of each class in train}
+\PYG{n}{train\PYGZus{}counts} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{([}\PYG{n}{dfs}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}train\PYGZdq{}}\PYG{p}{][}\PYG{n}{c}\PYG{p}{]}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{()} \PYG{k}{for} \PYG{n}{c} \PYG{o+ow}{in} \PYG{n}{CLASS\PYGZus{}COLS}\PYG{p}{],} \PYG{n}{dtype}\PYG{o}{=}\PYG{n+nb}{float}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} imbalance ratio (most freq/least freq)}
+\PYG{n}{max\PYGZus{}val} \PYG{o}{=} \PYG{n}{train\PYGZus{}counts}\PYG{o}{.}\PYG{n}{max}\PYG{p}{()}
+\PYG{n}{min\PYGZus{}val} \PYG{o}{=} \PYG{n+nb}{max}\PYG{p}{(}\PYG{n}{train\PYGZus{}counts}\PYG{o}{.}\PYG{n}{min}\PYG{p}{(),} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} prevents dividing by zero if a class has 0 counts}
+\PYG{n}{ratio} \PYG{o}{=} \PYG{n}{max\PYGZus{}val} \PYG{o}{/} \PYG{n}{min\PYGZus{}val}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{max\PYGZhy{}to\PYGZhy{}min imbalance ratio (in train): }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{max\PYGZus{}val}\PYG{l+s+si}{:}\PYG{l+s+s2}{.0f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ / }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{min\PYGZus{}val}\PYG{l+s+si}{:}\PYG{l+s+s2}{.0f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{ratio}\PYG{l+s+si}{:}\PYG{l+s+s2}{.1f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{x\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

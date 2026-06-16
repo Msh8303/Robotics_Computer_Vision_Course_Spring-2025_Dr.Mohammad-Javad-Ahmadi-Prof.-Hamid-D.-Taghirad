@@ -1,0 +1,76 @@
+\contentsline {section}{\numberline {1}سینماتیک مستقیم ربات \lr {KUKA iiwa}}{5}{section.1}%
+\contentsline {subsection}{\numberline {1.1}استخراج DH}{5}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}معرفی و بررسی قراردادهای دناویت-هارتنبرگ (DH)}{5}{subsubsection.1.1.1}%
+\contentsline {paragraph}{قرارداد استاندارد دناویت-هارتنبرگ \lr {(Standard DH)}}{5}{section*.6}%
+\contentsline {paragraph}{قرارداد اصلاح‌شده دناویت-هارتنبرگ \lr {(Modified DH)}}{5}{section*.8}%
+\contentsline {paragraph}{مقایسه و انتخاب قرارداد مبنا برای مسئله حاضر}{6}{section*.9}%
+\contentsline {subsubsection}{\numberline {1.1.2}استخراج نهایی جدول DH بر اساس تصویر مسئله}{6}{subsubsection.1.1.2}%
+\contentsline {paragraph}{جدول پارامترهای DH اصلاح‌شده (مبنای حل)}{6}{section*.10}%
+\contentsline {subsection}{\numberline {1.2}پیاده‌سازی سینماتیک مستقیم \lr {(Forward Kinematics Implementation)}}{6}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}کد}{6}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}بررسی الگوریتم‌ها و ماتریس‌های تبدیل}{12}{subsubsection.1.2.2}%
+\contentsline {paragraph}{حالت اول: پیاده‌سازی بر اساس قرارداد اصلاح‌شده \lr {(Modified DH)}}{12}{section*.12}%
+\contentsline {paragraph}{حالت دوم: پیاده‌سازی بر اساس قرارداد استاندارد \lr {(Standard DH)}}{12}{section*.13}%
+\contentsline {subsubsection}{\numberline {1.2.3}تحلیل نتایج به دست آمده}{12}{subsubsection.1.2.3}%
+\contentsline {subsubsection}{\numberline {1.2.4}نتیجه‌گیری}{13}{subsubsection.1.2.4}%
+\contentsline {section}{\numberline {2}شبیه سازی سناریوی صنعتی سیستم بازرسی خودکار}{13}{section.2}%
+\contentsline {subsection}{\numberline {2.1}بخش A --- پیاده‌سازی سیستم بینایی ماشین \lr {(OpenCV)}}{13}{subsection.2.1}%
+\contentsline {paragraph}{قرارداد مختصات در این مسئله}{13}{section*.14}%
+\contentsline {subsubsection}{\numberline {2.1.1}تسک \lr {A.1} --- شبیه‌سازی و تولید تصویر میز کار}{14}{subsubsection.2.1.1}%
+\contentsline {paragraph}{اعوجاج پرسپکتیو \lr {(Keystone Distortion)}:}{15}{section*.18}%
+\contentsline {paragraph}{ نویز گاوسی \lr {(Guassian Noise)}:}{15}{section*.19}%
+\contentsline {paragraph}{اثر تاریکی گوشه‌های لنز \lr {(Vignetting)}:}{16}{section*.20}%
+\contentsline {subsubsection}{\numberline {2.1.2}تسک \lr {A.2} --- شناسایی چهار نشانگر گوشه میز}{16}{subsubsection.2.1.2}%
+\contentsline {paragraph}{فضاهای رنگی \lr {(Color Spaces)} و تاثیر آن‌ها بر پردازش تصویر}{16}{section*.21}%
+\contentsline {paragraph}{تعریف آستانه \lr {(Threshold)}}{17}{section*.22}%
+\contentsline {paragraph}{کانتور \lr {(Contour)} و لبه \lr {(Edge)}}{18}{section*.23}%
+\contentsline {paragraph}{کد پیاده‌سازی شده و توضیحات آن}{18}{section*.24}%
+\contentsline {paragraph}{خروجی کد}{22}{section*.25}%
+\contentsline {subsubsection}{\numberline {2.1.3}تسک \lr {A.3} --- اصلاح پرسپکتیو تصویر (تبدیل به نمای عمودی)}{22}{subsubsection.2.1.3}%
+\contentsline {paragraph}{ماتریس هوموگرافی}{23}{section*.27}%
+\contentsline {paragraph}{کد پیاده‌سازی شده و توضیحات آن}{23}{section*.28}%
+\contentsline {paragraph}{خروجی کد}{27}{section*.29}%
+\contentsline {subsubsection}{\numberline {2.1.4}تسک \lr {A.4} --- بخش‌بندی و پیدا کردن دیسک‌ها در فضای \lr {HSV}}{27}{subsubsection.2.1.4}%
+\contentsline {paragraph}{1. رنگ قرمز در فضای \lr {HSV}:}{28}{section*.32}%
+\contentsline {paragraph}{2. اثر تیرگی و سایه روشن لنز پس از اصلاح تصویر}{28}{section*.33}%
+\contentsline {paragraph}{3. احتمال به هم چسبیده بودن دیسک‌های هم‌رنگ}{28}{section*.34}%
+\contentsline {paragraph}{کد پیاده‌سازی شده}{28}{section*.35}%
+\contentsline {paragraph}{خروجی کد}{31}{section*.36}%
+\contentsline {subsubsection}{\numberline {2.1.5}تسک \lr {A.5} --- تبدیل مختصات به دستگاه ربات و تکمیل نهایی پایپ لاین}{33}{subsubsection.2.1.5}%
+\contentsline {paragraph}{به دست آوردن مختصات واقعی و خطای الگوریتم بینایی}{33}{section*.39}%
+\contentsline {paragraph}{تجمیع توابع}{35}{section*.40}%
+\contentsline {subsection}{\numberline {2.2}بخش \lr {B} --- سینماتیک مستقیم \lr {(Forward Kinematics)} ربات \lr {PRR}}{47}{subsection.2.2}%
+\contentsline {paragraph}{معرفی ربات و ساختار کلی آن}{47}{section*.41}%
+\contentsline {paragraph}{مشخصات مفاصل و پارامترهای فیزیکی}{47}{section*.42}%
+\contentsline {subsubsection}{\numberline {2.2.1}تسک \lr {B.1} -- جدول پارامترهای دناویت-هاروتنبرگ (DH)}{48}{subsubsection.2.2.1}%
+\contentsline {paragraph}{نحوه کارکرد و تحلیل حرکتی}{48}{section*.44}%
+\contentsline {subsubsection}{\numberline {2.2.2}تسک\lr {B.2} — محاسبات نمادین با \lr {SymPy}}{48}{subsubsection.2.2.2}%
+\contentsline {paragraph}{نحوه پیاده‌سازی کد و محاسبه ماتریس‌ها}{48}{section*.45}%
+\contentsline {paragraph}{کد پایتون پیاده‌سازی‌شده}{48}{section*.46}%
+\contentsline {paragraph}{خروجی‌های به‌دست‌آمده (ماتریس و معادلات موقعیت)}{50}{section*.47}%
+\contentsline {paragraph}{تحلیل نتایج و تایید صحت عملکرد ربات}{50}{section*.48}%
+\contentsline {subsubsection}{\numberline {2.2.3}تسک \lr {B.3} — پیاده سازی عددی و اعتبارسنجی با \lr {Numpy}}{51}{subsubsection.2.2.3}%
+\contentsline {paragraph}{توضیح پیاده‌سازی و کد پایتون}{51}{section*.49}%
+\contentsline {paragraph}{نتایج اجرای کد}{52}{section*.50}%
+\contentsline {paragraph}{تحلیل نتایج}{53}{section*.51}%
+\contentsline {subsubsection}{\numberline {2.2.4}تسک \lr {B.4} — رسم فضای کاری ربات \lr {(Reachable Workspace)}}{53}{subsubsection.2.2.4}%
+\contentsline {paragraph}{معرفی تسک و هدف}{53}{section*.52}%
+\contentsline {paragraph}{توضیح کد پایتون پیاده‌سازی‌شده}{53}{section*.53}%
+\contentsline {paragraph}{تحلیل و تفسیر نمودار سه‌بعدی فضای کاری}{55}{section*.55}%
+\contentsline {paragraph}{تحلیل دقیق نمای بالا (صفحه \pLRE {XY}) و مرزهای فضای کاری}{55}{section*.56}%
+\contentsline {subsubsection}{\numberline {2.2.5}تسک \lr {B.5} — رسیدن به قطعات با روش جستجوی سینماتیک مستقیم}{56}{subsubsection.2.2.5}%
+\contentsline {paragraph}{شرح پیاده‌سازی و روش کار}{56}{section*.57}%
+\contentsline {paragraph}{کد پایتون پیاده‌سازی‌شده}{56}{section*.58}%
+\contentsline {paragraph}{نتایج و تحلیل بررسی خطاها}{57}{section*.59}%
+\contentsline {subsection}{\numberline {2.3}بخش \lr {D} --- سوالات تحلیلی}{58}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}پاسخ سوال اول}{58}{subsubsection.2.3.1}%
+\contentsline {paragraph}{ارتباط با ابعاد میز و ناحیه پوشش داده شده}{59}{section*.60}%
+\contentsline {subsubsection}{\numberline {2.3.2}پاسخ سوال دوم}{59}{subsubsection.2.3.2}%
+\contentsline {paragraph}{جدول جستجوی پیش‌محاسبه‌شده}{59}{section*.61}%
+\contentsline {paragraph}{تحلیل هزینه}{59}{section*.62}%
+\contentsline {subsubsection}{\numberline {2.3.3}پاسخ سوال سوم}{60}{subsubsection.2.3.3}%
+\contentsline {paragraph}{۱. اعوجاج شعاعی \lr {(Radial Distortion)}}{60}{section*.63}%
+\contentsline {paragraph}{۲. اعوجاج مماسی \lr {(Tangential Distortion)}}{60}{section*.64}%
+\contentsline {paragraph}{۳. سایر اعوجاج‌های محیط صنعتی}{60}{section*.65}%
+\contentsline {subsubsection}{\numberline {2.3.4}سوال چهارم}{61}{subsubsection.2.3.4}%
+\contentsline {subsubsection}{\numberline {2.3.5}سوال پنجم}{61}{subsubsection.2.3.5}%

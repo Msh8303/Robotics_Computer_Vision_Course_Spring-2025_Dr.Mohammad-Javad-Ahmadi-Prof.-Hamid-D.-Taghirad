@@ -1,0 +1,6 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{world\PYGZus{}to\PYGZus{}pixel}\PYG{p}{(}\PYG{n}{world\PYGZus{}x}\PYG{p}{,} \PYG{n}{world\PYGZus{}y}\PYG{p}{,} \PYG{n}{center\PYGZus{}u}\PYG{o}{=}\PYG{l+m+mi}{300}\PYG{p}{,} \PYG{n}{center\PYGZus{}v}\PYG{o}{=}\PYG{l+m+mi}{300}\PYG{p}{,} \PYG{n}{scale}\PYG{o}{=}\PYG{l+m+mi}{1000}\PYG{p}{):}
+    \PYG{n}{u} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{center\PYGZus{}u} \PYG{o}{\PYGZhy{}} \PYG{n}{world\PYGZus{}y} \PYG{o}{*} \PYG{n}{scale}\PYG{p}{)}
+    \PYG{n}{v} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{center\PYGZus{}v} \PYG{o}{\PYGZhy{}} \PYG{n}{world\PYGZus{}x} \PYG{o}{*} \PYG{n}{scale}\PYG{p}{)}
+    \PYG{k}{return} \PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{)}
+\end{MintedVerbatim}

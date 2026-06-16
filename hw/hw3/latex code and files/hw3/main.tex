@@ -1,0 +1,1543 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage[sorting=none]{biblatex}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+%\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{lmodern} % فونت بهتر برای لاتین
+\usepackage{xcolor}
+\usepackage{minted}
+\usepackage{fvextra}
+
+\setminted{
+	linenos,
+	breaklines=true,
+	breakanywhere=true,
+	encoding=utf8,
+	autogobble=true,
+	fontsize=\small,
+	frame=single,
+	tabsize=4,
+	obeytabs=true,
+	mathescape=false,
+	texcomments=false
+}
+\usepackage{amssymb}
+\usepackage{longtable} % برای جداول طولانی
+\usepackage{enumitem} % برای کنترل لیست‌ها
+\usepackage{booktabs} % برای جداول حرفه‌ای
+\hypersetup{
+	colorlinks=true,
+	linkcolor=teal,
+	filecolor=magenta,      
+	urlcolor=teal,
+	citecolor=teal
+}
+\usepackage{xepersian}
+
+
+
+
+\setlength\headheight{28pt} 
+\addbibresource{bibliography.bib}
+\settextfont[Path={./font/}, Scale=1.3]{IRLotus}
+\setlatintextfont[Scale=1]{Times New Roman}
+\renewcommand{\baselinestretch}{1.5}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{تمرین سری سوم رباتیک و بینایی ماشین}
+\chead{\includegraphics[width=1cm]{img/Logo.png}}
+\rhead{\thepage}
+
+\rfoot{محمدامین محمدیون شبستری}
+\cfoot{هستی محمدی}
+\lfoot{محمدسبحان سخایی}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\AtBeginDocument{
+	\def\chapterautorefname{فصل}%
+	\def\sectionautorefname{پاسخ سوال}%
+	\def\subsectionautorefname{بخش}%
+	\def\subsubsectionautorefname{بخش}%
+	\def\equationautorefname{رابطهٔ}%
+    \def\lstlistingautorefname{برنامۀ}%
+}
+\renewcommand{\lstlistingname}{Code}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+
+
+\lstset{style=mystyle}
+
+\begin{document}
+\input{titlepage}
+
+\tableofcontents \clearpage
+\listoffigures \clearpage
+\listoftables \clearpage
+\lstlistoflistings \clearpage
+\newpage
+\section{پرسش اول: شناخت دامنه، تحلیل اکتشافی داده‌ها \lr{EDA} و استراتژی‌های پیش‌پردازش}
+\subsection{درک سناریوی بالینی}
+
+\subsubsection{شرح جراحی آب مروارید و فازهای اصلی آن}
+
+در جراحی آب‌مروارید یا کاتاراکت \lr{(Cataract)} عدسی طبیعی چشم بیمار که کدر شده است را با یک عدسی مصنوعی شفاف تعویض می‌کنند. خارج کردن عدسی کدر شده معمولا از طریق امولسیفیکیشن \lr{(Emulsification)} انجام می‌شود که در آن با استفاده از امواج فراصوت عدسی خرد می‌شود و می‌توان آن را از طریق برشی کوچک (در حدود 3 میلی‌متر) خارج و جایگزین کرد. اما در مواردی که پیشرفت بیماری بیشتر باشد، عدسی سفت شده ممکن است با امواج فراصوت خرد نشود و لازم است آن را به صورت کامل خارج و جایگزین کرد که به برش بزرگ‌تری بین 6 تا 10 میلی‌متر نیاز دارد. واضح است که در روش دوم دوره نقاهت بیمار طولانی‌تر خواهد بود. جراحی آب مروارید به طور معمول بین 10 تا 15 دقیقه زمان می‌برد و با بی‌حسی موضعی انجام می‌شود. 
+
+به طور کلی می‌توان 10 فاز اصلی برای جراحی کاتاراکت در نظر گرفت که در ادامه به بررسی این فازها و ابزارهای مورد استفاده در هر یک می‌پردازیم.
+
+\begin{enumerate}
+\item برش جانبی \lr{(Side Incision)}:
+نخستین مرحله در جراحی آب‌مروارید به شمار می‌رود که در آن یک با چند برش ثانویه کوچک در محیط قرنیه ایجاد می‌شود. این برش‌ معمولا ابعادی در حدود $0.8mm$ تا $1.2mm$ دارد هدف اصلی آن فراهم کردن امکان ورود ابزارهای کمکی، انجام تزریق‌های لازم و دستکاری بافت‌های داخل چشم در مراحل بعدی جراحی است. 
+
+ابزار‌ اصلی مورد استفاده چاقوی لنس \lr{(Lance tip Knife)} یا چاقوی الماسه \lr{(Diamond Knife)} است که هر دو دارای زوایایی تیز برای ایجاد برش‌های دقیق هستند.
+
+
+\item برش اصلی \lr{(Main Incision)}:
+در این مرحله، برش اصلی برای ورود ابزارهای جراحی قرنیه ایجاد می‌شود. این برش معمولا ابعادی در حدود $2.2mm$ تا $3.0mm$ داشته و به گونه‌ای طراحی می‌شود که پایداری ساختاری چشم را حفظ کرده و نشت مایعات پس از عمل را کاهش دهد.
+
+ابزار اصلی مورد استفاده چاقوی کراتوم (\lr{Keratome blade}) با پهنای کالیبره‌شده با توجه به ابعاد برش است.
+
+\item کپسولورکسیس \lr{(Capsulorrhexis)}:
+یکی از حساس‌ترین بخش‌های جراحی محسوب می‌شود و در آن یک برش دایره‌ای، پیوسته و متقارن در کپسول قدامی عدسی چشم برای دسترسی مستقیم به هسته کاتاراکت ایجاد می‌شود.
+
+ابزارهای مورد استفاده شامل پنس کپسولورکسیس (\lr{Capsorhexis forceps}) یا سیستیتوم (\lr{Cystotome}) \footnote{یک سوزن ظریف و خمیده برای هدایت پارگی کپسول} هستند. 
+
+
+\item هیدرودیسکشن (\lr{Hydrodissection}):
+در این مرحله با تزریق ملایم و کنترل‌شده مایع بین کپسول عدسی و هسته عدسی، چسبندگی‌های موجود آزاد می‌شوند. به طور دقیق‌تر، هسته (\lr{Nucleus}) و قشر (\lr{Cortex}) عدسی از کپسول محیطی جدا می‌شوند و امکان چرخش آزادانه عدسی را فراهم می‌شود.
+ابزارهای مورد استفاده شامل کانولای هیدرودیسکسیون (\lr{Hydrodissection cannula}) متصل به سرنگ حاوی محلول نمکی متعادل‌شده (\lr{Balanced Salt Solution - BSS}).
+
+\item فاکوامولسیفیکاسیون (\lr{Phacoemulsification}):
+مرحله اصلی برداشت آب‌مروارید است که در آن با استفاده از امواج فراصوت با فرکانس بالا، هسته سخت کاتاراکت خرد می‌شود و همزمان ذرات خرد شده توسط سیستم مکش از چشم خارج می‌شوند. 
+
+هندپیس یا پروب فاکو (\lr{Phacoemulsification probe}) به عنوان ابزار فعال اصلی و ابزار کمکی چاپر (\lr{Chopper}) جهت شکستن مکانیکی هسته به قطعات کوچک‌تر استفاده می‌شوند.
+
+\item فاز حذف قشر عدسی (\lr{Cortical Removal}):
+پس از خروج هسته، لایه‌های قشری نرم باقی‌مانده که به دیواره کپسول چسبیده‌اند، پاکسازی و مکش می‌شوند تا کیسه کپسول کاملا شفاف و آماده پذیرش لنز شود.
+
+در این مرحله از ابزار هندپیس شستشو و مکش (\lr{Irrigation/Aspiration handpiece - I/A}) که می‌تواند به صورت هم‌محور (\lr{Coaxial}) یا دو کاناله مجزا (\lr{Bimanual}) باشد، استفاده می‌شود.
+
+\item کاشت عدسی (\lr{Lens Insertion}):
+در این فاز لازم است یک لنز داخل چشمی تاشو (\lr{Intraocular Lens - IOL}) درون کیسه کپسولی تزریق و جایگذاری شود. عدسی مصنوعی پس از خروج از ابزار تزریق \lr{(Injector)}، به آرامی باز شده و در موقعیت مناسب قرار داده می‌شود.
+
+از انژکتور لنز (\lr{IOL Injector}) مجهز به کارتریج مخصوص (\lr{Cartridge system}) برای متراکم و هدایت کردن لنز تاشو برای این کار استفاده می‌شود.
+
+\item حذف ماده ویسکوالاستیک (\lr{Ophthalmic Viscosurgical Device Removal}):
+در طول جراحی از مواد ویسکوالاستیک برای حفظ فضای داخل چشم و محافظت از بافت‌های حساس استفاده می‌شود. پس از کاشت لنز، این مواد باید کاملا خارج شوند تا از افزایش فشار داخل چشمی پس از عمل جلوگیری شود.
+
+برای این کار مجددا از هندپیس شستشو و مکش (\lr{I/A handpiece}) برای پاکسازی کامل فضای داخل چشمی استفاده می‌شود.
+
+\item بستن زخم با هیدراتاسیون قرنیه (\lr{Wound Closure - Corneal Hydration}):
+
+در بسیاری از جراحی‌های مدرن، برش‌های کوچک به‌صورت خودبسته‌شونده طراحی می‌شوند. در این مرحله با تزریق مایع به استرومای قرنیه در اطراف محل برش، لبه‌های زخم متورم شده و به یکدیگر فشرده می‌شوند که موجب آب‌بندی برش می‌گردد.
+در این مرحله با تزریق متمرکز مایع به لبه‌های قرنیه در محل برش‌های اصلی و جانبی بافت لبه‌های زخم متورم شده و به یکدیگر فشرده می‌شوند تا بدون نیاز به بخیه، پایداری ساختاری چشم تامین شود.
+
+ابزار مورد استفاده در این مرحله کانولای هیدراتاسیون ظریف مانند کانولای رایکرافت (\lr{Rycroft cannula}) متصل به سرنگ حاوی (\lr{BSS}) است.
+
+\item بستن زخم با بخیه زدن (\lr{Wound Closure - Suturing Incision}):
+این فاز پایان رسمی جراحی را نشان می‌دهد که در آن در شرایطی که برش پایدار نباشد یا احتمال نشت وجود داشته باشد، از بخیه برای بستن محل برش استفاده می‌شود. این روش بیشتر در برش‌های بزرگ یا موارد پیچیده کاربرد دارد.
+
+برای بخیه از نخ بخیه نایلونی غیرقابل جذب بسیار ظریف با سایز $10-0$ (\lr{10-0 Nylon suture})، پنس بخیه (\lr{Suture forceps}) و سوزن‌گیر مخصوص میکروجراحی (\lr{Micro-needle holder}) استفاده می‌شود.
+\end{enumerate}
+
+\subsubsection{اهمیت آگاهی از فازهای جراحی برای سیستم‌های دستیار هوشمند}
+فرآیند جراحی کاتاراکت را می‌توان به عنوان یک مسئله زمان‌مند مدل‌سازی کرد که در آن فاز جراحی در زمان $t$ به صورت تابعی از ویژگی‌های بصری استخراج‌شده از فریم میکروسکوپ جراحی و وضعیت ابزارهای جراحی شناسایی‌شده در محیط متغیر عمل نوشته می‌شود.
+
+در معماری سیستم‌های هوشمند کمکی و بازوهای رباتیک مورد استفاده در جراحی، مدل‌سازی رفتار سیستم و اتخاذ سیاست‌های ایمنی، تابعی مستقیم از حالت پویای محیط عملیاتی است و به همین دلیل آگاهی آنی از فاز جاری جراحی اهمیت بسیاری پیدا می‌کند.
+
+شرط پایداری و ایمنی سیستم هوشمند این است که فاز تخمین شده توسط الگوریتم بینایی کامپیوتر و فاز واقعی فعلی در جراحی یکی باشند؛ در صورت بروز تاخیر زمانی، تخمین سیستم در لحظات انتقال فاز، دیگر با فاز واقعی جراحی تطابق ندارد.
+\paragraph{دلایل ضرورت آگاهی بلادرنگ از فاز جراحی} \mbox{}
+\begin{description}
+\item نتظیم محدودیت‌های مجازی:
+در جراحی رباتیک، محدودیت‌های مجازی حرکتی برای جلوگیری از ورود ابزار به نواحی آناتومیک حساس تعریف می‌شوند. هندسه این نواحی ممنوعه در هر فاز متفاوت است. بر فرض مثال، در فاز کپسولورکسیس مرزهای حرکتی باید بازوی رباتیک را به یک مسیر مدور دو بعدی روی کپسول قدامی مقید کنند، در حالی که در فاز فاکوامولسیفیکاسیون، این مرزها باید به صورت سه بعدی تغییر کرده و مانع از حرکت پروب به سمت کپسول خلفی شوند.
+
+\item مدیریت هوشمند جریان کار و پارامترهای جانبی:
+سیستم هوشمند جراحی نه تنها بازوی رباتیک، بلکه تجهیزات جانبی مانند نرخ شستشو (\lr{Irrigation rate})، میزان مکش (\lr{Aspiration suction}) و توان امواج اولتراسونیک را کنترل می‌کند. تنظیم دقیق فشار داخل چشمی (\lr{IOP}) برای جلوگیری از فروپاشی اتاق قدامی چشم، نیازمند نگاشت بلادرنگ بین فاز فعلی جراحی و تنظیمات دستگاه است.
+
+\item مدیریت محدودیت‌های سینماتیکی بازوی رباتیک:
+پیشتر در بررسی سینماتیک رباتیک، متوجه نقص‌هایی در بیان ریاضی موقعیت ابزار نهایی \lr{(End-Effector)} شدیم که \lr{Gimbal Lock} نام دارد و ناشی از وجود تکینگی \lr{(Singularity)} در برخی نقاط خاص است. در این حالت درجه آزادی ربات از دید سیستم یک واحد کم شده است، در حالی که از لحاظ فیزیکی هیچ مشکلی در ربات ایجاد نشده است که می‌تواند رفتار سیستم را غیرقابل پیش‌بینی و الگوریتم‌های کنترل و تخمین را سردرگم کند. در کاربردهای پزشکی خصوصا جراحی‌های چشم مانند جراحی آب‌مروارید که محدوده حرکتی در ابعاد میلی‌متری تعریف می‌شود، این مسئله می‌تواند منجر به عواقب آناتومیک جبران‌ناپذیر شود. 
+بنابراین، پیش از ورود به فازهایی که نیازمند دامنه حرکتی وسیع‌تر یا تعویض ابزار هستند (مانند انتقال از فاز هیدرودیسکسیون به فاکوامولسیفیکاسیون)، سیستم باید موقعیت محل برش را نسبت به پایه ربات ارزیابی کند و فضای کاری ایمنِ بدون تکینگی (\lr{Singularity-free workspace}) تضمین شود تا بازوی رباتیک در حین جراحی مجبور به تغییر آرایش ناگهانی نشود. اما این برنامه‌ریزی پیش از شروع فاز به دلیل پویا \lr{(Dynamic)} بودن محیط، جابجایی احتمالی سر بیمار یا نیاز جراح به مانورهای پیش‌بینی‌نشده کافی نیست و الگوریتم کنترل ربات باید معیار تکینگی را محاسبه کند تا هنگام نزدیک شدن به نقاط تکینگی، با استفاده از روش‌های مناسب سرعت را به طور ایمن محدود یا آرایش مفاصل ربات را بدون تغییر در موقعیت ابزار داخل چشم اصلاح کند.
+\end{description}
+
+\paragraph{پیامدهای عدم تشخیص یا تشخیص نادرست فاز جراحی} \mbox{}\\
+اگر سیستم دچار خطای طبقه‌بندی (\lr{Misclassification}) شود یا به دلیل تاخیر در پردازش فریم‌های ویدئویی، تغییر فاز را بلافاصله درک نکند، ممکن است سناریوهای زیر رخ دهند:
+\begin{description}
+\item پارگی کپسول خلفی:
+سهمگین‌ترین عارضه در جراحی کاتاراکت، پارگی کپسول خلفی است. اگر ربات به اشتباه تصور کند سیستم همچنان در فاز حذف قشر عدسی است در حالی که جراح وارد فاز حذف ماده ویسکوالاستیک شده است، محدودیت‌های حرکتی لازم را اعمال نکرده و یک حرکت ناخواسته یا اعمال نیروی بیش از حد می‌تواند منجر به سوراخ شدن کپسول خلفی و خروج زجاجیه شود.
+\item اعمال اشتباه و آسیب‌زای نیرو یا انرژی:
+چنانچه سیستم هوشمند فاز فاکوامولسیفیکاسیون (که نیازمند امواج فراصوت است) را با فازهای حساس دیگر مانند هیدرودیسکسیون یا کاشت لنز اشتباه بگیرد، ممکن است سیگنال فعال‌سازی انرژی فراصوت را در زمان یا مکان نادرست صادر کند. این امر منجر به سوختگی حرارتی شدید بافت قرنیه و تخریب سلول‌ها می‌شود که غیرقابل بازگشت است.
+\item عدم همگام‌سازی سیستم همکار با جراح:
+در تعامل انسان و ربات، اگر سیستم پشتیبان فاز متفاوتی را فرض کند، رفتاری متناقض با قصد جراح نشان خواهد داد. این پدیده موجب مقاومت مکانیکی بازو در برابر حرکت دست جراح یا هدایت اشتباه ابزار شده و تعادل جراح را برهم می‌زند و ریسک خطا را به صورت افزایش می‌دهد.
+\end{description}
+
+\subsection{فرمول‌بندی مسئله}
+در تحلیل ویدیوهای جراحی و سیستم‌های بینایی ماشین در اتاق عمل دو روش‌ یادگیری عمیق \lr{Single-Label} و چندبرچسبی \lr{Multi-Label} برای طبقه‌بندی ویژگی‌ها وجود دارد. انتخاب بین این دو رویکرد مستقیماً بر معماری لایه نهایی شبکه و طراحی تابع زیان (\lr{Loss Function}) تأثیرگذار است.
+\subsubsection{طبقه‌بندی‌های \lr{Single-Label} و \lr{Multi-Label} و تفاوت‌های آن‌ها}
+
+\paragraph{1. روش \lr{Single-Label}}\mbox{}\\
+در این روش، کلاس‌های تعریف‌شده در مسئله همگی از نظر معنایی یکتا و دارای انحصار متقابل با یکدیگر هستند؛ به این معنی که هر نمونه ورودی (مانند یک فریم ویدیو) در لحظه تنها می‌تواند متعلق به یک کلاس باشد. در این حالت تعداد نورون‌های لایه خروجی شبکه عصبی با تعداد کلاس‌ها برابر است و  شبکه عصبی برای هر نمونه، برداری از لاجیت‌ها (\lr{logits}) به نام $z$ تولید می‌کند. سپس با اعمال تابع \lr{Softmax}، این لاجیت‌ها به توزیع احتمالی بین کلاس‌ها تبدیل می‌شوند:
+\[ 
+p_i = \frac{e^{z_i}}{\sum_j e^{z_j}}
+\]
+
+\paragraph{2. روش \lr{Multi-Lable}}\mbox{}\\
+در این روش، فرض انحصار متقابل کلاس‌ها حذف می‌شود؛ به این معنی که کلاس‌های مختلف دیگر مستقل از یکدیگر در نظر گرفته می‌شوند و یک فریم ورودی می‌تواند به طور هم‌زمان شامل هیچ، یک، یا چند برچسب باشد. در لایه نهایی این شبکه، همچنان تعداد نورون‌ها برابر با تعداد کلاس‌ها است اما این کلاس‌ها دیگر با یکدیگر رقابت نمی‌کنند. بنابراین به جای تابع \lr{Softmax}، تابع \lr{Sigmoid} به صورت مستقل روی هر لاجیت اعمال می‌شود تا احتمال حضور هر برچسب به طور جداگانه بین $0$ و $1$ محاسبه شود. تابع فعال‌سازی \lr{Sigmoid} به صورت زیر تعریف می‌شود:
+$$ P(y_c = 1 \mid x) = \frac{1}{1 + e^{-z_c}} $$
+
+\paragraph{3. تفاوت‌های اصلی دو روش}\mbox{}\\
+\begin{enumerate}
+\item انحصار متقابل کلاس‌ها (\lr{Mutual Exclusivity}): در روش تک‌برچسبی، کلاس‌ها رقیب یکدیگرند و مجموع احتمالات خروجی تمام نورون‌ها همواره برابر با $1$ است. در روش چندبرچسبی، خروجی‌ها مستقل از یکدیگرند و مجموع آن‌ها محدودیتی ندارد.
+
+\item مکانیزم فعال‌سازی (\lr{Activation Mechanism}): تابع \lr{Softmax} با بزرگ شدن خروجی یک کلاس، به شدت احتمالات سایر کلاس‌ها را سرکوب می‌کند. در مقابل، تابع \lr{Sigmoid} اجازه می‌دهد افزایش احتمال حضور یک ابزار هیچ اثر کاهنده‌ای بر احتمال حضور ابزار دیگر نداشته باشد.
+
+\item ساختار \lr{Ground Truth Vector}: بردار هدف در روش \lr{Single-Label} یک بردار با تنها یک مقدار $1$ و مابقی $0$ است \lr{(One-hot)}، در حالی که در روش \lr{Multi-Label} بردار هدف یک بردار چند‌مقداری است که می‌تواند حاوی چندین مقدار $1$ به صورت هم‌زمان باشد (\lr{Multi-hot}).
+
+\item حساسیت به عدم تعادل داده‌ها (\lr{Data Imbalance Sensitivity}):
+ تابع هزینه \lr{Multi-Label} به دلیل بررسی مستقل حضور یا عدم حضور هر کلاس، به شدت در معرض چالش عدم تعادل داده‌ها قرار دارد. چرا که در بیشتر فریم‌های جراحی، اکثر ابزارها غایب هستند و مقدار پیش‌فرض برچسب آن‌ها $0$ است. این امر گاهی جابجایی به توابع پیشرفته‌تر مانند زیان فوکال \lr{Focal Loss} را الزامی می‌کند، در حالی که تابع استاندارد\lr {Cross-Entropy} در روش \lr{Single-Label}، پایداری بهتری در برابر این پدیده دارد.
+\end{enumerate}
+
+\subsubsection{طبقه‌بندی مناسب برای سناریو جراحی آب مروارید}
+
+با توجه به اینکه ممکن است چند ابزار به صورت هم‌زمان در میدان دید وجود داشته باشند، روش \lr{Multi-Label} تنها گزینه معتبر و کاربردی است. در جراحی کاتاراکت، جراح به طور مداوم از ترکیب هم‌زمان ابزارها استفاده می‌کند. به عنوان مثال در فاز فاکوامولسیفیکاسیون، پروب فاکو و ابزار چاپر در یک فریم حضور دارند. بنابراین \lr{Single-Label} فرض کردن مسئله به دلیل ترکیب‌های متنوع ابزارها، منجر به از بین رفتن کارایی مدل می‌شود. 
+
+
+\subsubsection{ تابع زیان مناسب در صورت انتخاب روش \lr{Multi-Label}}
+
+ در روش \lr{Multi-Label} تابع زیان به صورت \lr{Binary cross-entropy with logits} برای تک‌تک کلاس‌ها تعریف می‌شود:
+$$ L = -\sum_{c=1}^C \left[ y_c \log(P(y_c = 1 \mid x)) + (1 - y_c) \log(1 - P(y_c = 1 \mid x)) \right] $$
+
+از آنجا که در محیط‌های عملیاتی با کلاس‌های نامتوازن (\lr{Imbalanced Classes}) مواجه هستیم، استفاده از تابع زیان \lr{Focal} نیز ضروری است:
+$$ \mathcal{L}_{\text{focal}} = -(1 - p_y)^\gamma \log p_y $$
+این تابع با اعمال ضریب $(1 - p_y)^\gamma$، وزن نمونه‌های ساده (\lr{easy examples}) را کاهش داده و گرادیان را به سمت داده‌های سخت \lr{(Hard ones)} هدایت می‌کند.
+\subsubsection{محدودیت‌های تابع \lr{Cross-Entropy} استاندارد و رویکرد جایگزین برای آن}
+
+تابع زیان در حالت \lr{Single-Label}، \lr{Cross-entropy} استاندارد است که خطا را برای برچسب واقعی $y$ به صورت زیر محاسبه می‌کند:
+\[
+\mathcal{L} = -\log p_y 
+\]
+در \lr{PyTorch}، برای اعمال آن از دستور \mintinline{python}{nn.CrossEntropyLoss} استفاده می‌شود که برای حفظ پایداری عددی، لاجیت‌های خام (نه خروجی تابع \lr{Softmax}) را به عنوان ورودی دریافت می‌کند. 
+
+تابع زیان \lr{Cross-Entropy} با وجود کارآمد بودن در روش \lr{Single-Label} دارای برخی محدودیت‌های ساختاری و عملیاتی است: 
+\begin{itemize}
+\item ایجاد \lr{Overconfidence} در شبکه:
+ساختار ریاضی این تابع به گونه‌ای است که لاجیت‌های مربوط به کلاس صحیح را به سمت مثبت بی‌نهایت و لاجیت‌های سایر کلاس‌ها را به سمت منفی بی‌نهایت میل می‌دهد تا احتمال کلاس هدف به عدد $1$ برسد. این امر باعث کاهش تعمیم‌پذیری مدل و کالیبراسیون می‌شود. برای بهبود این مشکلات، از \lr{Label smoothing} استفاده می‌شود که برچسب‌های \lr{one-hot} به صورت $[0, 0, 1, 0 , ... ]$ را به $[\frac{\epsilon}{K - 1}, \frac{\epsilon}{K - 1}, 1-\frac{\epsilon}{K - 1}, \frac{\epsilon}{K - 1} , ...]$ تبدیل می‌کند. در این حالت مقدار $\epsilon$ کوچک (مثلا $0.1$) انتخاب شده و اهداف تبدیل به \lr{Soft Targets} می‌شوند.
+
+\item آسیب‌پذیری در برابر عدم توازن کلاس‌ها:
+این تابع زیان برای تمامی نمونه‌ها وزن یکسانی در محاسبه گرادیان قائل است. در کاربردهایی مانند جراحی کاتاراکت، برخی فازها مانند فاکوامولسیفیکاسیون مدت زمان بسیار طولانی‌تری نسبت به فازهای کوتاهی مانند برش قرنیه دارند. در نتیجه مدل، فازهای اقلیت را نادیده می‌گیرد.
+\item حساسیت به برچسب‌های نویزدار:
+به دلیل ماهیت لگاریتمی تابع، ممکن است مدل برای یک نمونه نویزدار یا با برچسب‌گذاری‌ اشتباه، پیش‌بینی نادرستی با اطمینان بالا انجام دهد که عواقب بسیار سنگینی را در پی دارد.
+\end{itemize}
+
+از طرف دیگر تابع زیان \lr{Cross-Entropy} در روش \lr{Multi-Label} غیرقابل استفاده است. این مسئله ناشی از فرضیات ریاضی در تابع فعال‌سازی \lr{Softmax} است.
+در تابع \lr{Softmax}، احتمالات خروجی به یکدیگر وابسته هستند و مجموع احتمالات برای تمامی کلاس‌ها الزاماً برابر با $1$ خواهد بود؛ به عبارت دیگر افزایش احتمال حضور یک کلاس (مثلا حضور پنس)، الزاما باعث کاهش احتمال حضور دیگر کلاس‌ها (مثلا حضور چاپر) در پیش‌بینی شبکه می‌شود. این ویژگی کاملا با ماهیت سیستم \lr{Multi-Label} متناقض است. در این سیستم خروجی شبکه باید برای هر کلاس یک احتمال مستقل بین $0$ و $1$ باشد و مجموع احتمالات کلاس‌ها می‌تواند از 1 بزرگ‌تر باشد.
+
+بنابراین به جای استفاده از ترکیب، تابع فعال‌سازی \lr{Sigmoid} برای هر لاجیت به طور مستقل استفاده میشود تا احتمالات خروجی نیز مستقل باشند. سپس تابع \lr{Binary Cross-Entropy with Logits} برای هر کلاس اعمال می‌شود که تک تک کلاس‌ها را به عنوان یک مسئله دسته‌بندی باینری مستقل مدیریت می‌کند.
+
+\subsection{تحلیل داده‌ها و چالش‌های بصری}
+
+\subsubsection{تحلیل آماری و توصیفی از توزیع کلاس‌ها}
+
+برای تحلیل داده‌ها، می‌توان کلاس‌های آناتومی (\lr{Cornea} و \lr{Pupil}) را حذف کرد و تنها ابزارهای جراحی را بررسی کرد یا همه کلاس‌ها را همزمان بررسی کرد.
+در ادامه داده‌های مربوط به هر دو رویکرد آمده‌اند، اما رویکرد اول داده‌های معنادارتری در اختیار ما می‌گذارد چرا که دو کلاس آناتومی مذکور تقریبا در همه فریم‌ها وجود دارند.
+\subsubsection*{رویکرد اول (بدون کلاس‌های آناتومی)}
+\paragraph{اطلاعات جامع در مورد داده‌ها}\mbox{}\\
+در بخش اول، اطلاعات کلی و جامع در رابطه با داده‌های موجود با استفاده از کد زیر در پایتون استخراج می‌کنیم. 
+
+لازم به ذکر است، در همه تحلیل‌ها، کلاس‌های آناتومیک \lr{Cornea} و \lr{Pupil} کنار گذاشته شده‌اند (چرا که تقریبا در همه فریم‌ها وجود دارند) و تنها ابزارهای جراحی مورد بررسی‌اند.
+
+\addcontentsline{lol}{lstlisting}{تحلیل جامع دیتاست}
+\begin{latin}
+\begin{LTR}
+\begin{minted}{python}
+# SECTION 1
+# libraries
+import warnings
+from pathlib import Path
+from itertools import combinations
+from collections import Counter
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.gridspec as gridspec
+import seaborn as sns
+
+warnings.filterwarnings("ignore")
+
+# constants
+DATASET_ROOT = Path(r"C:\Users\ASUS\Desktop\New folder (2)\Cataract_dataset_classification.v1i.multiclass")
+SPLITS       = ["train", "valid", "test"]
+CSV_NAME     = "_classes.csv"
+OUTPUT_DIR   = Path(r"C:\Users\ASUS\Desktop\New folder (2)\analysis_outputs")
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+# shortened labels for display
+SHORT = {
+    "Cannula"          : "Cannula",
+    "Cap Cystotome"    : "Cap Cyst.",
+    "Cap Forceps"      : "Cap Forc.",
+    "Cornea"           : "Cornea",
+    "Forceps"          : "Forceps",
+    "I-A Handpiece"    : "I-A Hand.",
+    "Lens Injector"    : "Lens Inj.",
+    "Phaco Handpiece"  : "Phaco H.",
+    "Primary Knife"    : "Prim. Kn.",
+    "Pupil"            : "Pupil",
+    "Second Instrument": "Sec. Inst.",
+    "Secondary Knife"  : "Sec. Kn.",
+}
+
+# step 1: load the data 
+def load_split(split: str) -> pd.DataFrame:
+    csv_path = DATASET_ROOT / split / CSV_NAME
+    
+    # double check if file exists
+    if not csv_path.exists():
+        raise FileNotFoundError(f"Missing CSV file at: {csv_path.resolve()}")
+
+    # load csv as pandas dataFrame    
+    df = pd.read_csv(csv_path)
+
+    # remove extra spaces 
+    df.columns = [c.strip() for c in df.columns]
+
+    df.rename(columns={df.columns[0]: "filename"}, inplace=True)
+
+    # new column for separating data into train, valid & test
+    df["split"] = split
+
+    return df
+
+# step 2: merge data
+print("-> loading data")
+
+# store each split dataFrame into a dict
+dfs    = {s: load_split(s) for s in SPLITS}
+
+# stack the 3 splits into one dataFrame
+df_all = pd.concat(dfs.values(), ignore_index=True)
+
+# set of the non-tool columns (like cornea & pupil)
+META_COLS  = {"filename", "split"}
+
+# list of the tool columns
+CLASS_COLS = [c for c in df_all.columns if c not in META_COLS]
+# count of all tool classes
+N          = len(CLASS_COLS)
+# use the name in SHORT dictionary
+SLABELS    = [SHORT.get(c, c) for c in CLASS_COLS]
+
+# count the num of tools in each image
+df_all["n_labels"]    = df_all[CLASS_COLS].sum(axis=1).astype(int)
+# if no tools in the image = true (neg frame)
+df_all["is_negative"] = df_all["n_labels"] == 0
+
+# remove this
+#df_all["source_type"] = df_all["filename"].str.extract(r'^(Video\d+|case\d+)')[0].fillna("other")
+
+# reseperate df_all into dictionaries for each split
+for s in SPLITS:
+    dfs[s] = df_all[df_all["split"] == s].copy()
+
+# colors for plots
+CMAP      = plt.cm.get_cmap("tab20", N)
+BAR_COLS  = [CMAP(i) for i in range(N)]
+SP_COLORS = {"train": "#4C72B0", "valid": "#DD8452", "test": "#55A868"}
+
+# SECTION 2*: TEXT
+# SURGICAL TOOLS ONLY (CORNEA AND PUPIL EXCLUDED)
+
+# update class list 
+CLASS_COLS = [c for c in CLASS_COLS if c not in ["Cornea", "Pupil"]]
+N = len(CLASS_COLS)
+
+# recalculate num of imgs and neg frames
+df_all["n_labels"] = df_all[CLASS_COLS].sum(axis=1).astype(int)
+df_all["is_negative"] = df_all["n_labels"] == 0
+
+# new values for each split
+for s in SPLITS:
+    dfs[s] = df_all[df_all["split"] == s].copy()
+
+# visual
+DIV = "─" * 65
+
+print(DIV)
+print(f"    (A) OVERVIEW:   ")
+print(DIV)
+
+# count total images
+total = len(df_all)
+print(f"total images: {total:,}")
+
+# num of classes
+print(f"class columns: {N}")
+print(f"name of classes: {CLASS_COLS}")
+print()
+print("split | images | percentage | negative frames | avg labels")
+print(DIV)
+
+# loop that repeats 3 times for train, valid & test
+for s in SPLITS:
+    d   = dfs[s]
+    n   = len(d)
+
+    # num of neg frames
+    neg = d["is_negative"].sum()
+
+    # avg num of tools in images
+    avg = d["n_labels"].mean()
+
+    # calculate percentages
+    pct = (n / total) * 100
+    neg_pct = (neg / n) * 100
+
+    print(f"{s} | {n} | {pct:.1f}% | {neg} ({neg_pct:.0f}%) | {avg:.2f}")
+
+print()
+\end{minted}
+\end{LTR}
+\end{latin}
+
+این کد پس از خواندن داده‌ها، مجموع تعداد عکس‌ها، تعداد و اسم کلاس‌ها را محاسبه کرده و سپس تعداد تصاویر بدون ابزار \lr{(Negative Frames)}، سهم هر کدام از داده‌های \lr{test}، \lr{validation} و \lr{train} را به نسبت کل داده‌ها تعیین می‌کند. در نهایت میانگین تعداد برچسب در فریم‌های هر بخش داده را محاسبه می‌کند.
+
+خروجی کد به صورت زیر است
+
+
+\begin{latin}
+\begin{LTR}
+\begin{verbatim}
+─────────────────────────────────────────────────────────────────
+    (A) OVERVIEW:   
+─────────────────────────────────────────────────────────────────
+total images: 6,962
+class columns: 10
+name of classes: ['Cannula', 'Cap Cystotome', 'Cap Forceps', 'Forceps', 'I-A Handpiece', 'Lens Injector', 'Phaco Handpiece', 'Primary Knife', 'Second Instrument', 'Secondary Knife']
+
+split | images | percentage | negative frames | avg labels
+─────────────────────────────────────────────────────────────────
+train | 5136 | 73.8% | 527 (10%) | 1.12
+valid | 991 | 14.2% | 100 (10%) | 1.16
+test | 835 | 12.0% | 121 (14%) | 1.07
+\end{verbatim}
+\end{LTR}
+\end{latin}
+
+و نشان می‌دهد، مجموعه داده مورد بررسی شامل 6962 تصویر از جراحی کاتاراکت است. این داده‌ها به سه بخش \lr{train} ($73.8\%$)، \lr{validate} ($14.2\%$) و \lr{test} ($12.0\%$) تقسیم شده‌اند. نکته آماری حائز اهمیت در این فایل، وجود فریم‌های منفی (\lr{Negative Frames}) است که در آن‌ها هیچ ابزاری دیده نمی‌شود. این فریم‌ها \lr{10\%} از بخش آموزش، \lr{10\%} از بخش ارزیابی و \lr{14\%} از بخش تست را به خود اختصاص داده‌اند. در بینایی ماشین، وجود فریم‌های منفی برای کاهش خطای مثبت کاذب (\lr{False Positive Rate}) بسیار حیاتی است، زیرا به مدل آموزش می‌دهد که در غیاب ابزار، برچسب اشتباهی صادر نکند.
+\paragraph{بررسی توزیع برچسب‌ها}\mbox{}\\
+در قسمت بعدی، توزیع برچسب‌ها یا به عبارتی توزیع تعداد ابزارها در هر فریم با کد زیر بررسی شده‌ است. 
+
+\addcontentsline{lol}{lstlisting}{بررسی توزیع برچسب‌ها}
+\begin{latin}
+\begin{LTR}
+\begin{minted}{python}
+print(DIV)
+print(f"    (B) LABEL-COUNT DISTRIBUTION:   ")
+print(DIV)
+for s in SPLITS:
+    lc = dfs[s]["n_labels"].value_counts().sort_index()
+    print(f"\n  [{s}]")
+
+    # print raw num and percentage
+    for k, v in lc.items():
+       pct = (v / len(dfs[s])) * 100
+       print(f"  {k} tool(s): {v} ({pct:.1f}%)")
+
+print()
+\end{minted}
+\end{LTR}
+\end{latin}
+
+خروجی کد به صورت زیر است
+
+\begin{latin}
+\begin{LTR}
+\begin{verbatim}
+─────────────────────────────────────────────────────────────────
+    (B) LABEL-COUNT DISTRIBUTION:   
+─────────────────────────────────────────────────────────────────
+
+  [train]
+  0 tool(s): 527 (10.3%)
+  1 tool(s): 3463 (67.4%)
+  2 tool(s): 1146 (22.3%)
+
+  [valid]
+  0 tool(s): 100 (10.1%)
+  1 tool(s): 629 (63.5%)
+  2 tool(s): 262 (26.4%)
+
+  [test]
+  0 tool(s): 121 (14.5%)
+  1 tool(s): 532 (63.7%)
+  2 tool(s): 181 (21.7%)
+  3 tool(s): 1 (0.1%)
+\end{verbatim}
+\end{LTR}
+\end{latin}
+
+و نشان‌دهنده چگالی کم برچسب‌ها در تصاویر است. از نظر آماری:
+\begin{itemize}
+\item
+\lr{0 tool(s)}: فریم‌های منفی که بین \lr{10.1\%} تا \lr{14.5\%} داده‌ها را در بخش‌های مختلف تشکیل می‌دهند.
+\item
+\lr{1 tool(s)}: بالاترین فراوانی آماری را دارد و حدود \lr{63.5\%} تا \lr{67.4\%} تصاویر را شامل می‌شود. این وضعیت نشان می‌دهد که در بیشتر مراحل جراحی، تنها یک ابزار به طور فعال در میدان دید دوربین قرار دارد.
+\item
+\lr{2 tool(s)}: بین \lr{21.7\%} تا \lr{26.4\%} تصاویر را شامل می‌شود که بازتاب‌دهنده جراحی دو دستی است.
+\item
+\lr{3 tool(s)}: بسیار نادر است و تنها یک فریم (\lr{0.1\%}) در مجموعه تست آن را ثبت کرده است.
+\end{itemize}
+
+نمودار این داده‌ها در شکل \ref{fig:label} قابل مشاهده است.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/fig1.png}
+    \caption{نمودار توزیع برچسب‌ها (بدون کلاس‌های آناتومی)}
+    \label{fig:label}
+\end{figure}
+
+\paragraph{ماتریس هم‌رخدادی \lr{Co-occurance Matrix}}\mbox{}\\
+با استفاده از کد زیر محاسبه می‌شود:
+\addcontentsline{lol}{lstlisting}{ماتریس هم‌رخدادی}
+\begin{latin}
+\begin{LTR}
+\begin{minted}{python}
+# co-occurrence matrix 
+# how often tools are used together
+co = np.zeros((N, N), dtype=int)
+label_mat = dfs["train"][CLASS_COLS].values
+
+# loop that repeats for all imgs (rows of the .csv)
+for row in label_mat:
+    # finds all 1s
+    idxs = np.where(row == 1)[0]
+    # finds all possible combos (intersection points)
+    for a, b in combinations(idxs, 2):
+        co[a, b] += 1;  co[b, a] += 1
+
+# final dataFrame
+co_df = pd.DataFrame(co, index=CLASS_COLS, columns=CLASS_COLS)
+
+print(DIV)
+print(co_df.to_string())
+
+print(DIV)
+\end{minted}
+\end{LTR}
+\end{latin}
+خروجی آن به صورت زیر است:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/c_matrix.png}
+    \caption{خروجی کد (ماتریس هم‌رخدادی)}
+    \label{fig:1}
+\end{figure}
+
+ماتریس هم‌رخدادی در این ساختار، الگوهای تعامل ابزارها با یکدیگر را بدون در نظر گرفتن ساختار چشم نشان می‌دهد:
+\begin{itemize}
+\item
+هم‌رخدادی غالب: بیشترین هم‌زمانی مربوط به جفت \lr{Phaco Handpiece} و \lr{Second Instrument} با \lr{639} مرتبه تکرار است. این داده بازتاب‌دهنده فاز \lr{Phacoemulsification} در جراحی کاتاراکت است که در آن هر دو دست جراح فعال هستند.  
+\item
+هم‌رخدادی‌های ثانویه: جفت‌های \lr{Second Instrument} و \lr{I-A Handpiece} با \lr{182} بار تکرار و همچنین \lr{Forceps} و \lr{Secondary Knife} با \lr{133} بار تکرار  پیوندهای فرآیندی مهمی را نشان می‌دهند.  
+\item
+وابستگی‌های صفر (\lr{Zero Co-occurrences}): بسیاری از ابزارها دارای نرخ هم‌رخدادی صفر با یکدیگر هستند. به عنوان مثال، \lr{Primary Knife} و \lr{Phaco Handpiece} هرگز با هم ظاهر نشده‌اند. این ویژگی آماری به مدل اجازه می‌دهد تا در لایه‌های تصمیم‌گیری نهایی، احتمال حضور هم‌زمان دو ابزار غیرمرتبط را فیلتر کند.
+\end{itemize}
+
+این ماتریس به صورت نمودار (با حذف کردن قطر اصلی) در شکل \ref{fig:cmatrix} قابل مشاهده است.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/fig3.png}
+    \caption{ماتریس هم‌رخدادی (بدون کلاس‌های آناتومی)}
+    \label{fig:cmatrix}
+\end{figure}
+
+
+\subsubsection*{رویکرد دوم (با کلاس‌های آناتومی)}
+کدهای این بخش مشابه بخش قبل هستند و تنها تفاوت‌هایی جزئی دارند. بنابراین تنها خروجی کد‌ها در این بخش مورد بررسی قرار گرفته‌ است.
+\paragraph{اطلاعات جامع در مورد داده‌ها}\mbox{}\\
+خروجی به شکل زیر می‌باشد:
+\begin{latin}
+\begin{LTR}
+\begin{verbatim}
+─────────────────────────────────────────────────────────────────
+    (A) OVERVIEW:   
+─────────────────────────────────────────────────────────────────
+total images: 6,962
+class columns: 12
+name of classes: ['Cannula', 'Cap Cystotome', 'Cap Forceps', 'Cornea', 'Forceps', 'I-A Handpiece', 'Lens Injector', 'Phaco Handpiece', 'Primary Knife', 'Pupil', 'Second Instrument', 'Secondary Knife']
+
+split | images | percentage | negative frames | avg labels
+─────────────────────────────────────────────────────────────────
+train | 5136 | 73.8% | 0 (0%) | 3.07
+valid | 991 | 14.2% | 0 (0%) | 3.13
+test | 835 | 12.0% | 0 (0%) | 3.06
+\end{verbatim}
+\end{LTR}
+\end{latin}
+
+این مجموعه داده با اضافه شدن دو کلاس آناتومیک کلیدی چشم، یعنی \lr{Cornea} و \lr{Pupil}، به مجموع $12$ کلاس مقیاس‌پذیری یافته است. تعداد فریم‌ها کاملاً مشابه فایل اول (\lr{6,962}) است ، اما تغییرات آماری در توزیع برچسب‌ها رخ داده است:  
+\begin{itemize}
+\item \lr{Train}: شامل \lr{5136} تصویر (\lr{73.8\%}) با میانگین $3.07$ برچسب در هر فریم.  
+\item \lr{Validation}: شامل \lr{991} تصویر (\lr{14.2\%}) با میانگین $3.13$ برچسب در هر فریم. 
+\item \lr{Test}: شامل \lr{835} تصویر (\lr{12.0\%}) با میانگین $3.06$ برچسب در هر فریم. 
+\end{itemize}
+
+تفاوت بنیادین در این فایل، کاهش درصد فریم‌های منفی به \lr{0\%} در تمامی بخش‌ها است. از منظر آمار وبینایی ماشین، وقتی دو جزء ثابت آناتومیک که تقریباً در تمام فریم‌های ویدیو جراحی حضور دارند به سیستم معرفی می‌شوند، دیگر هیچ فریم خالی یا منفی وجود نخواهد داشت و میانگین تعداد برچسب‌ها از حدود $1$ به بالای $3$ افزایش می‌یابد.
+\paragraph{بررسی توزیع برچسب‌ها}\mbox{}\\
+خروجی به صورت زیر است:
+
+\begin{latin}
+\begin{LTR}
+\begin{verbatim}
+─────────────────────────────────────────────────────────────────
+    (B) LABEL-COUNT DISTRIBUTION:   
+─────────────────────────────────────────────────────────────────
+
+  [train]
+  1 class(es): 115 (2.2%)
+  2 class(es): 556 (10.8%)
+  3 class(es): 3343 (65.1%)
+  4 class(es): 1122 (21.8%)
+
+  [valid]
+  1 class(es): 11 (1.1%)
+  2 class(es): 104 (10.5%)
+  3 class(es): 619 (62.5%)
+  4 class(es): 257 (25.9%)
+
+  [test]
+  1 class(es): 5 (0.6%)
+  2 class(es): 124 (14.9%)
+  3 class(es): 526 (63.0%)
+  4 class(es): 179 (21.4%)
+  5 class(es): 1 (0.1%)
+
+\end{verbatim}
+\end{LTR}
+\end{latin}
+واضح است که توزیع کلاسی در هر فریم به شدت تحت تاثیر کلاس‌های آناتومیک قرار گرفته است:
+\begin{itemize}
+\item \lr{1 class(es)}: سهم بسیار ناچیزی دارد (\lr{0.6\%} تا \lr{2.2\%}). این فریم‌ها نشان‌دهنده موقعیت‌هایی هستند که به دلیل زوم شدید یا جابجایی دوربین، تنها یکی از ساختارهای قرنیه یا مردمک بدون هیچ ابزاری دیده شده است. 
+\item \lr{2 class(es)}: بین \lr{10.5\%} تا \lr{14.9\%} داده‌ها را شامل می‌شود. این فریم‌ها فاقد ابزار بوده و فقط شامل \lr{Cornea} و \lr{Pupil} هستند (معادل همان فریم‌های منفی فایل اول).  
+\item \lr{3 class(es)}: بالاترین فراوانی را با سهمی حدود \lr{62.5\%} تا \lr{65.1\%} دارد. این مقدار نمایانگر حالت استاندارد جراحی است: قرنیه + مردمک + یک ابزار جراحی فعال.  
+\item \lr{4 class(es)}: بین \lr{21.4\%} تا \lr{25.9\%} فریم‌ها را تشکیل می‌دهد که نشان‌دهنده حضور هم‌زمان دو ابزار در کنار قرنیه و مردمک است
+\end{itemize}
+
+نمودار این داده‌ها در شکل \ref{fig:label} قابل مشاهده است.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/figa.png}
+    \caption{نمودار توزیع برچسب‌ها (با کلاس‌های آناتومی)}
+    \label{fig:label}
+\end{figure}
+
+\paragraph{ماتریس هم‌رخدادی \lr{Co-occurance Matrix}}\mbox{}\\
+این ماتریس (در شکل \ref{fig:figc}) اطلاعات زیر را در اختیار ما می‌گذارد:
+\begin{itemize}
+\item تعاملات آناتومیک: هم‌رخدادی بین دو کلاس \lr{Cornea} و \lr{Pupil} برابر با \lr{4,988} فریم در داده‌های آموزش است. این همبستگی بسیار بالا مبرهن می‌سازد که این دو ساختار فضا-زمانی کاملاً به یکدیگر وابسته هستند.
+\item نگاشت ابزار به آناتومی: تمام ابزارهای جراحی نرخ هم‌رخدادی تقریباً کاملی با قرنیه و مردمک دارند. به عنوان مثال، کلاس \lr{Cannula} از مجموع \lr{1457} حضور خود در فاز آموزش ، در \lr{1411} فریم با \lr{Cornea} و در \lr{1407} فریم با \lr{Pupil} هم‌رخداد بوده است. این به مدل هوش مصنوعی یاد می‌دهد که ابزارها همواره در بستر آناتومیک چشم کار می‌کنند. 
+\item حفظ روابط ابزار-ابزار: الگوهای هم‌رخدادی بین ابزارها بدون تغییر باقی مانده است؛ جفت \lr{Phaco Handpiece} و \lr{Second Instrument} کماکان با \lr{639} رخداد هم‌زمانی، فعال‌ترین زوج ابزاری جراحی هستند. 
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/figc.png}
+    \caption{نمودار ماتریس هم رخدادی (با کلاس‌های آناتومی)}
+    \label{fig:figc}
+\end{figure}
+
+\subsubsection{بررسی توازن کلاس‌ها \lr{(Class Imbalance)}}
+
+\paragraph{بدون کلاس‌های آناتومی}\mbox{}\\
+برای بررسی توازن کلاس‌ها، درصد فراوانی هر یک را محاسبه کرده و به صورت مقابل طبقه‌بندی می‌کنیم: بالای 15 درصد خوب \lr{(OK)}، بین 10 تا 15 درصد متوسط \lr{(moderate)} و زیر 10 درصد شدید \lr{(severe)}.
+
+با استفاده از کد زیر فراوانی کلاس‌ها را به دست اورده و آن‌ها را طبقه‌بندی می‌کنیم:
+
+\addcontentsline{lol}{lstlisting}{بررسی فراوانی کلاس‌ها و توازن داده‌ها}
+\begin{latin}
+\begin{LTR}
+\begin{minted}{python}
+print()
+print(DIV)
+print(f"    (C) PER-CLASS FREQUENCY:    ")
+print(DIV)
+
+print("Class | Train | Val | Test | Total | % Total | Severity")
+print(DIV)
+
+# loop that repeats for each class
+for cls in CLASS_COLS:
+
+    # per split values
+    train_num = int(dfs["train"][cls].sum())
+    valid_num = int(dfs["valid"][cls].sum())
+    test_num  = int(dfs["test"][cls].sum())
+
+    # adds per split values 
+    tot = train_num + valid_num + test_num
+
+    # (data set that has this tool/ total data set)%
+    pct = tot / total * 100
+
+    # imbalance label 
+    # > 15 (ok), 10 < < 15 (mod.), < 10 (sev.)
+    if pct >= 15:
+        sev = "OK"
+    elif pct >= 10:
+        sev = "moderate"
+    else:
+        sev = "severe"
+
+    print(f"{cls} | {train_num} | {valid_num} | {test_num} | {tot} | {pct:.1f}% | {sev}")
+
+# num of appearances of each class in train
+train_counts = np.array([dfs["train"][c].sum() for c in CLASS_COLS], dtype=float)
+
+# imbalance ratio (most freq/least freq)
+max_val = train_counts.max()
+min_val = max(train_counts.min(), 1) # prevents dividing by zero if a class has 0 counts
+ratio = max_val / min_val
+
+print(f"\nmax-to-min imbalance ratio (in train): {max_val:.0f} / {min_val:.0f} = {ratio:.1f}x")
+\end{minted}
+\end{LTR}
+\end{latin}
+
+خروجی کد به صورت زیر خواهد بود:
+\begin{latin}
+\begin{LTR}
+\begin{verbatim}
+───────────────────────────────────────────────
+    (C) PER-CLASS FREQUENCY:    
+───────────────────────────────────────────────
+Class | Train | Val | Test | Total | % Total | Severity
+───────────────────────────────────────────────
+Cannula | 1457 | 237 | 226 | 1920 | 27.6% | OK
+Cap Cystotome | 393 | 72 | 59 | 524 | 7.5% | severe
+Cap Forceps | 177 | 30 | 21 | 228 | 3.3% | severe
+Forceps | 311 | 36 | 66 | 413 | 5.9% | severe
+I-A Handpiece | 914 | 213 | 105 | 1232 | 17.7% | OK
+Lens Injector | 346 | 64 | 64 | 474 | 6.8% | severe
+Phaco Handpiece | 722 | 181 | 100 | 1003 | 14.4% | moderate
+Primary Knife | 239 | 37 | 60 | 336 | 4.8% | severe
+Second Instrument | 951 | 244 | 149 | 1344 | 19.3% | OK
+Secondary Knife | 245 | 39 | 47 | 331 | 4.8% | severe
+
+max-to-min imbalance ratio (in train): 1457 / 177 = 8.2x
+───────────────────────────────────────────────
+\end{verbatim}
+\end{LTR}
+\end{latin}
+سه کلاس اکثریت یعنی \lr{Cannula} (با \lr{27.6\%})، \lr{Second Instrument} (با \lr{19.3\%}) و \lr{I-A Handpiece} (با \lr{17.7\%}) بخش اعظم داده‌ها را به خود اختصاص داده‌اند.  کلاس‌های کم‌یاب شامل ابزارهایی مانند \lr{Cap Forceps} (با \lr{3.3\%}) و \lr{Primary Knife} (با \lr{4.8\%}) در انتهای نمودار قرار دارند. این موضوع یک هشدار آماری برای مدل محسوب می‌شود؛ زیرا شبکه ممکن است در تشخیص این ابزارهای حیاتی دچار سوگیری منفی شود.
+نسبت حداکثر به حداقل فراوانی \lr{(Imbalance Ratio)} در داده‌های \lr{train} برابر با $\frac{1457}{177} = 8.2x$ است. این ناهمگونی $8.2$ برابری بدین معناست که مدل در حین بهینه‌سازی توابع هدف، به سمت کلاس‌های اکثریت (\lr{Cannula}) متمایل خواهد شد. برای جبران این پدیده آماری، استفاده از روش‌های مناسب افزونگی داده الزامی است.
+
+برای این بخش دو نمودار شکل \ref{fig:perClass} و \ref{fig:lorenz} رسم شده‌اند که عدم توازن داده‌ها را به خوبی نمایش می‌دهند. 
+
+در منحنی لورنتز، خط‌چین قرمز نشان‌دهنده یک الگوی ایده‌آل توزیع یکنواخت داده است. انحراف شدید منحنی آبی (داده‌های فعلی ما) از این خط، شدت نابرابری را تایید می‌کند.
+همان‌طور که در نمودار مشهود است، ۶ کلاس اول جراحی (از \lr{Cap Forc.} تا \lr{Cap Cyst.}) روی‌هم‌رفته تنها حدود ۳۰ درصد از کل برچسب‌ها را تشکیل می‌دهند. در مقابل، بازه تند منحنی نشان می‌دهد که تنها ۴ کلاس برتر (\lr{Phaco H.}, \lr{I-A Hand.}, \lr{Sec. Inst.}, \lr{Cannula})، ۷۰ درصد باقی‌مانده از حجم کل برچسب‌ها را تشکیل می‌دهند. این منحنی اثبات می‌کند که در این سناریو استفاده از توابع زیان استاندارد مانند \lr{Cross-Entropy} بدون اعمال وزن کلاسی، قطعاً شکست مدل را به همراه خواهد داشت. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/fig2.png}
+    \caption{فراوانی داده در هر کلاس (بدون کلاس‌های آناتومی)}
+    \label{fig:perClass}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/fig4.png}
+    \caption{منحنی لورنتز (بدون کلاس‌های آناتومی)}
+    \label{fig:lorenz}
+\end{figure}
+
+\paragraph{با کلاس‌های آناتومی}\mbox{}\\
+خروجی کد به صورت زیر است:
+\begin{latin}
+\begin{LTR}
+\begin{verbatim}
+─────────────────────────────────────────────────────────────────
+    (C) PER-CLASS FREQUENCY:    
+─────────────────────────────────────────────────────────────────
+Class | Train | Val | Test | Total | % Total | Severity
+─────────────────────────────────────────────────────────────────
+Cannula | 1457 | 237 | 226 | 1920 | 27.6% | moderate
+Cap Cystotome | 393 | 72 | 59 | 524 | 7.5% | severe
+Cap Forceps | 177 | 30 | 21 | 228 | 3.3% | severe
+Cornea | 4997 | 976 | 828 | 6801 | 97.7% | OK
+Forceps | 311 | 36 | 66 | 413 | 5.9% | severe
+I-A Handpiece | 914 | 213 | 105 | 1232 | 17.7% | moderate
+Lens Injector | 346 | 64 | 64 | 474 | 6.8% | severe
+Phaco Handpiece | 722 | 181 | 100 | 1003 | 14.4% | moderate
+Primary Knife | 239 | 37 | 60 | 336 | 4.8% | severe
+Pupil | 4992 | 975 | 827 | 6794 | 97.6% | OK
+Second Instrument | 951 | 244 | 149 | 1344 | 19.3% | moderate
+Secondary Knife | 245 | 39 | 47 | 331 | 4.8% | severe
+
+max-to-min imbalance ratio (in train): 4997 / 177 = 28.2x
+\end{verbatim}
+\end{LTR}
+\end{latin}
+مشاهده میشود که ورود کلاس‌های آناتومیک، توزیع فراوانی را به طور کامل تغییر داده است:دو کلاس \lr{Cornea} (\lr{97.7\%}) و \lr{Pupil} (\lr{97.6\%}) در بالاترین سطح فراوانی قرار دارند و وضعیت آن‌ها \lr{OK} است.  فراوانی ابزارهای جراحی در این فایل دقیقاً مشابه فایل اول است (برای مثال \lr{Cannula} با \lr{1457} فریم آموزش) ، اما وضعیت شدت نابرابری ابزارها به دلیل مقایسه با کلاس‌های آناتومیک تغییر کرده و کلاس‌هایی مانند \lr{Cannula} از وضعیت \lr{OK} به \lr{moderate} تبدیل شده‌اند.  \lr{Imbalance Ratio}: نسبت حداکثر به حداقل فراوانی در داده‌های آموزش به شدت جهش یافته و به $\frac{4997}{177} = 28.2x$ تغییر پیدا کرده است.
+این نابرابری $28.2$ برابری یک چالش آماری بسیار بزرگ برای مدل ایجاد می‌کند. لایه‌های کانولوشنی شبکه متمایل به پیش‌بینی دائمی \lr{Cornea} و \lr{Pupil} خواهند بود.
+
+در اینجا نیز دو نمودار لورنتز (شکل \ref{fig:figd}) و نمودار توزیع داده (\ref{fig:figb}) رسم شده‌اند.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/fig2.png}
+    \caption{فراوانی داده در هر کلاس (با کلاس‌های آناتومی)}
+    \label{fig:perClass}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{img/fig4.png}
+    \caption{منحنی لورنتز (با کلاس‌های آناتومی)}
+    \label{fig:lorenz}
+\end{figure}
+
+
+\subsubsection{روش‌های پیشنهادی افزایش داده}
+
+در سناریوی جراحی آب‌مروارید، وظیفه‌ی اصلی تشخیص ابزارهای جراحی با طبقه‌بندی \lr{multi-label} در فریم‌های ویدئویی عمل آب‌مروارید است. مجموعه‌داده شامل ۶۹۶۲ تصویر با ابعاد \lr{640×640} پیکسل و ۱۲ کلاس ابزار است. تحلیل آماری این مجموعه از ‌داده دو  چالش اساسی را آشکار کرد :
+
+\begin{itemize}
+    \item 
+عدم تعادل شدید کلاسی: نسبت فراوانی بیشینه به کمینه در مجموعه‌ی آموزشی از مرز $10\times$ فراتر می‌رود؛ کلاس‌هایی نظیر \lr{Cannula} و \lr{Secondary Knife} در کمتر از ۱۰٪ از تصاویر حضور دارند.
+    \item
+ماهیت بصری محیط جراحی: حضور بافت‌های زنده، خون، بازتاب نور تجهیزات، و انسداد جزئی (\lr{occlusion}) ابزارها توسط یکدیگر، توزیع پیکسلی تصاویر را به‌شدت متغیر می‌کند.
+\end{itemize}
+
+بنابراین انتخاب روش افزایش داده باید از دو نظر چالش‌های بصری و ساختار داده بررسی شده و محدودیت‌های لازم در جراحی آب‌مروارید نیز در نظر گرفته شود.
+
+\paragraph{1. چالش‌های بصری و روش بهبود آن‌ها}\mbox{}
+\begin{itemize}
+\item انسداد (\lr{Occlusion}):
+در فریم‌های جراحی، ابزارها غالباً به‌صورت جزئی توسط بافت، خون، یا سایر ابزارها پوشانده می‌شوند. ماتریس هم‌حضوری کلاس‌ها نشان می‌دهد که \lr{Phaco Handpiece} و \lr{I-A Handpiece} اغلب همزمان در صحنه حضور دارند و فضای دید یکدیگر را محدود می‌کنند. بنابراین مدل باید قادر باشد یک ابزار را از روی بخشی از شکل آن شناسایی کند.
+روش \lr{CoarseDropout} (معادل \lr{Cutout}) که در آن مجموعه‌ای از نواحی مستطیلی به ‌صورت تصادفی با مقدار صفر (سیاه) پوشانده می‌شوند، می‌تواند برای بهبود این مسئله استفاده شود. این روش مدل را مجبور می‌کند به ویژگی‌های باقیمانده‌ی ابزار متکی باشد، نه الگوی کامل آن.
+روش دیگری که می‌تواند مورد استفاده قرار گیرد \lr{GridMask} است که الگوی شبکه‌ای منظمی از پیکسل‌ها را پنهان می‌کند و نوعی انسداد ریز و متناوب را شبیه‌سازی می‌کند.
+
+\item تغییرپذیری مقیاس و موضع ابزار:
+ابزارها در فریم‌های مختلف در مقیاس‌ها و موضع‌های متفاوتی ظاهر می‌شوند و در حین جراحی گاهی به دوربین نزدیک‌ترند (بزرگ‌تر دیده می‌شوند) و گاهی دورترند (کوچک‌تر دیده می‌شوند).
+
+روش \lr{RandomResizedCrop} با پارامتر مقیاس مناسب به مدل یاد می‌دهد که اندازه ابزار در تشخیص آن اثری نداشته باشد و جایگاه‌های مختلف ابزار در صفحه را بشناسد. این روش ابتدا یک بخش تصادفی از تصویر برش خرده و سپس بخش برش‌خورده را دوباره بزرگ می‌کند تا به اندازه اصلی تصویر (\lr{640×640}) برسد. 
+
+\item تغییرات نوری و بازتاب:
+نور تجهیزات بازتاب‌های شدیدی روی سطح ابزارهای فلزی ایجاد می‌کند و روشنایی صحنه در طول عمل تغییر می‌کند.
+روش \lr{ColorJitter} با پارامترهای محدود مدل را در برابر تغییرات نوری مقاوم می‌کند.
+این روش مقادیر روشنایی (\lr{brightness})، کنتراست (\lr{contrast})، اشباع (\lr{saturation}) تصویر را به صورت تصادفی و اندک تغییر می‌دهد. اگر لازم باشد در رنگ  (\lr{hue}) نیز تغییرات اعمال شود، دامنه تغییرات باید بسیار محدود انتخاب شوند؛ چرا که رنگ بافت و خون اهمیت تشخیصی بالایی دارد و نباید تغییر غیرواقعی کند.
+
+\item تاری حرکتی و خارج از فوکوس:
+ماهیت ویدئویی داده‌ها به این معناست که برخی فریم‌ها دارای تاری ناشی از حرکت دست جراح یا تنظیم فوکوس دوربین هستند.
+می‌توان با اعمال \lr{GaussianBlur} مات‌شدگی را شبیه‌سازی کرد‌ تا مدل در مواجهه با فریم‌های تارِ ویدئو ابزارها را گم نکند.
+
+\item تقارن افقی:
+در جراحی چشم، جراح ممکن است از سمت چپ یا راست کار کند و ساختار آناتومیک چشم متقارن است. این کار بدون اینکه معنای تصویر را خراب کند یا برچسب‌ها را تغییر دهد، تنوع جهات ورود ابزار را دو برابر می‌کند. بنابراین با استفاده از \lr{HorizantalFlip} و آینه کردن تصویر این مشکل حل می‌شود.
+
+\item چرخش‌های کوچک و محدود:
+دوربین اندوسکوپی معمولاً در زاویه‌ای ثابت نصب شده است؛ بنابراین چرخش‌های بزرگ در یک جراحی واقعی دیده نمی‌شود. اما چرخش‌های کوچک و لرزش دوربین ممکن است. بنابراین با روش \lr{Rotate} به اندازه چند درجه محدود، می‌توان این مسئله را شبیه‌سازی کرد تا مدل آن‌ها را یاد بگیرد.
+\end{itemize}
+
+\paragraph{2. چالش‌های مربوط به ساختار داده و عدم تعادل کلاس‌ها}\mbox{}\\
+
+با توجه به ماهیت چندبرچسبی مسئله و هم‌حضوری بالای برخی کلاس‌ها، \lr{MixUp} می‌تواند مرزهای تصمیم‌گیری را نرم‌تر (\lr{Label Smoothing}) کند و مانع از این می‌شود که مدل بر کلاس‌های اکثریت بیش از حد اطمینان کند. این کار به شناخت کلاس‌های نادر کمک زیادی می‌کند.
+این روش، دو تصویر مختلف از مجموعه ‌داده را برمی‌دارد و آن‌ها را به صورت شفاف روی هم می‌اندازد (\lr{Linear Combination}) و برچسب‌های آن‌ها را هم با همان نسبت با هم ترکیب می‌کند. 
+
+\paragraph{3. بررسی محدودیت‌های جراحی}\mbox{}\\
+محدودیت‌های موجود در حوزه پزشکی و سناریو جراحی آب‌مروارید، استفاده از برخی روش‌ها را غیرمجاز می‌کند. چهار مورد از این روش‌ها به شرح زیر می‌باشند:
+\begin{itemize}
+    \item چرخش بزرگ (بیش از 15 درجه): میدان جراحی از منظر دوربینی با زاویه‌ی ثابت تصویربرداری می‌شود؛ چرخش زیاد داده‌های غیرواقعی تولید می‌کند.
+    \item وارونگی عمودی (\lr{Vertical Flip}): از نظر آناتومیک معتبر نیست؛ ساختار چشم و جایگاه ابزارها در صحنه‌ی جراحی دارای جهت‌گیری طبیعی هستند.
+    \item تغییر شدید \lr{hue}: رنگ ابزارهای جراحی و بافت‌های بیولوژیک دارای معنای تشخیصی است؛ تغییر رنگ زیاد این اطلاعات را از بین می‌برد.
+    \item تبدیل به \lr{grayscale}: تمایز بین خون، بافت، و ابزار فلزی به اطلاعات رنگی وابسته است.
+\end{itemize}
+
+\section{پرسش دوم: طراحی معماری، تنظیم فرآیند آموزش و تفسیرپذیری مدل \lr{(XAI)}}
+در این تمرین، مسئله ما یک طبقه‌بندی \lr{Multi-label} شامل ۱۲ کلاس مختلف از ابزارهای جراحی آب‌مروارید است. 
+هر تصویر می‌تواند به‌طور همزمان شامل چند ابزار باشد. بررسی نمودارهای توزیع داده در مجموعه‌های 
+\lr{Train}، \lr{Validation} و \lr{Test} نشان می‌دهد که دیتاست به‌شدت نامتوازن (\lr{Severely Imbalanced}) است.
+
+به‌طور مشخص، کلاس‌های \lr{Cornea} و \lr{Pupil} تقریباً در اکثر تصاویر حضور دارند، در حالی که 
+ابزارهایی مانند \lr{Cap Forceps}، \lr{Lens Injector} یا \lr{Secondary Knife} تعداد نمونه بسیار کمتری دارند. 
+این عدم تعادل باعث می‌شود مدل به سمت یادگیری کلاس‌های پرتکرار گرایش پیدا کند.
+
+در چنین شرایطی، اگر تنها معیار ما \lr{Accuracy} باشد، مدل می‌تواند با یادگیری بسیار خوب کلاس‌های 
+\lr{Cornea} و \lr{Pupil} به دقت بالایی برسد، در حالی که در تشخیص ابزارهای کم‌نمونه عملکرد ضعیفی داشته باشد. 
+این مسئله به‌خصوص در تنظیم \lr{Subset Accuracy} (که نیازمند پیش‌بینی صحیح تمام برچسب‌های یک تصویر است) 
+می‌تواند گمراه‌کننده باشد.
+
+بنابراین چالش اصلی این پروژه، مقابله با عدم تعادل کلاس‌ها در یک مسئله چندبرچسبی پزشکی است.
+در زیر نمودار توزیع دیتاها برای هر کلاس برای مجموعه داده های \lr{train}،
+\lr{validation}
+و \lr{test} آورده شده است:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{img/train.png}
+	\caption{توزیع داده ها  در هر کلاس روی مجموعه داده های آموزش}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{img/validation.png}
+	\caption{توزیع داده ها  در هر کلاس روی مجموعه داده های اعتبارسنجی}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{img/test.png}
+	\caption{توزیع داده ها  در هر کلاس روی مجموعه داده های تست}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{انتخاب معماری و یادگیری انتقال \lr{(Transfer Learning)}}
+
+\subsubsection{انتخاب معماری}
+
+از میان معماری‌های مدرن بینایی ماشین مانند \lr{ResNet}، \lr{ConvNeXt} و \lr{EfficientNet}،
+مدل \lr{EfficientNet-B3} انتخاب شد.
+
+دلیل انتخاب این معماری:
+
+\begin{itemize}
+	\item تعادل مناسب بین دقت و پیچیدگی محاسباتی
+	\item استفاده از \lr{Compound Scaling} (مقیاس‌دهی همزمان عمق، عرض و رزولوشن)
+	\item عملکرد بسیار قوی در مسائل طبقه‌بندی تصویر پزشکی
+	\item مصرف حافظه کمتر نسبت به مدل‌های بسیار عمیق‌تر
+\end{itemize}
+
+در این پروژه، لایه نهایی مدل به صورت زیر تغییر داده شد تا با مسئله ۱۲ کلاسه ما سازگار شود:
+
+
+\begin{LTR}
+	\begin{verbatim}
+		model = models.efficientnet_b3(
+		weights=models.EfficientNet_B3_Weights.IMAGENET1K_V1
+		)
+		num_ftrs = model.classifier[1].in_features
+		model.classifier[1] = nn.Linear(num_ftrs, 12)
+		=================================
+	\end{verbatim}
+\end{LTR}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{چرا آموزش از صفر (From-Scratch) مناسب نیست؟}
+
+در داده‌های پزشکی معمولاً حجم دیتاست محدود است. آموزش یک شبکه عمیق از ابتدا باعث:
+
+\begin{itemize}
+	\item بیش‌برازش شدید (\lr{Overfitting})
+	\item ناپایداری در همگرایی
+	\item نیاز به داده بسیار زیاد
+	\item زمان آموزش طولانی‌تر
+\end{itemize}
+
+شبکه‌های عمیق میلیون‌ها پارامتر دارند و بدون داده کافی قادر به یادگیری نمایش‌های پایدار نیستند.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{استفاده از وزن‌های از پیش آموزش دیده ImageNet}
+
+در این پروژه از وزن‌های آموزش‌دیده روی دیتاست \lr{ImageNet} استفاده شد.
+
+\paragraph{مزایا:}
+
+\begin{itemize}
+	\item استخراج ویژگی‌های عمومی مانند لبه‌ها، بافت‌ها و الگوهای پایه
+	\item تسریع همگرایی
+	\item کاهش نیاز به داده زیاد
+	\item کاهش ریسک بیش‌برازش
+\end{itemize}
+
+نرمال‌سازی ورودی‌ها نیز مطابق استاندارد ImageNet انجام شد:
+
+\begin{LTR}
+	\begin{verbatim}
+		transforms.Normalize(
+		mean=[0.485, 0.456, 0.406],
+		std=[0.229, 0.224, 0.225]
+		)
+	\end{verbatim}
+\end{LTR}
+
+این کار تضمین می‌کند که توزیع داده‌های ورودی با توزیع داده‌های زمان پیش‌آموزش هم‌راستا باشد.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{استراتژی آموزش و بهینه‌سازی}
+
+\subsubsection{جستجوی فراپارامترها با Optuna}
+
+برای یافتن بهترین تنظیمات آموزشی، از چارچوب \lr{Optuna} استفاده شد. 
+پارامترهای زیر جستجو شدند:
+
+\begin{itemize}
+	\item نرخ یادگیری (\lr{Learning Rate})
+	\item نوع بهینه‌ساز (\lr{AdamW} یا \lr{SGD with Momentum})
+	\item \lr{Weight Decay}
+\end{itemize}
+
+نمونه‌ای از فضای جستجو:
+
+\begin{LTR}
+	\begin{verbatim}
+		lr = trial.suggest_float("lr", 1e-5, 1e-3, log=True)
+		optimizer_name = trial.suggest_categorical(
+		"optimizer", ["AdamW", "SGD"]
+		)
+		weight_decay = trial.suggest_float(
+		"weight_decay", 1e-6, 1e-3)
+	\end{verbatim}
+\end{LTR}
+
+\paragraph{مقایسه AdamW و SGD}
+
+\begin{itemize}
+	\item \lr{AdamW}: همگرایی سریع‌تر و مناسب برای دیتاست‌های کوچک
+	\item \lr{SGD + Momentum}: تعمیم‌پذیری بهتر در برخی موارد
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{مقایسه \lr{Focal Loss} و \lr{Label Smoothing} برای مقابله با عدم تعادل کلاس‌ها}
+
+در مسائل طبقه‌بندی چندبرچسبی، به‌ویژه در داده‌های پزشکی، یکی از چالش‌های مهم عدم تعادل شدید بین کلاس‌ها است. 
+در دیتاست مورد استفاده در این تمرین نیز چنین شرایطی وجود دارد؛ به‌طوری که برخی کلاس‌ها مانند 
+\lr{Cornea} و \lr{Pupil} در اکثر تصاویر حضور دارند، در حالی که ابزارهایی مانند 
+\lr{Cap Forceps} یا \lr{Lens Injector} نمونه‌های بسیار کمتری دارند. 
+
+در چنین شرایطی، اگر از تابع زیان استاندارد مانند \lr{Binary Cross Entropy} استفاده شود، 
+مدل تمایل دارد بیشتر بر روی کلاس‌های پرتکرار تمرکز کند و در نتیجه عملکرد ضعیفی روی کلاس‌های کم‌نمونه داشته باشد. 
+برای کاهش اثر این مشکل، دو رویکرد متداول در طراحی تابع زیان مطرح می‌شود: 
+\lr{Label Smoothing} و \lr{Focal Loss}.
+
+\paragraph{\lr{Label Smoothing}}
+
+در روش \lr{Label Smoothing}، برچسب‌های قطعی (۰ و ۱) کمی نرم‌تر می‌شوند. 
+به عبارت دیگر، به جای استفاده از برچسب‌های کاملاً قطعی، مقدار احتمال اندکی به سایر کلاس‌ها اختصاص داده می‌شود.
+
+برای مثال:
+
+\[
+y = 1 \rightarrow 0.9, \quad
+y = 0 \rightarrow 0.1
+\]
+
+هدف اصلی این روش جلوگیری از اطمینان بیش از حد (\lr{Overconfidence}) مدل است. 
+این تکنیک معمولاً باعث بهبود تعمیم‌پذیری مدل می‌شود و از بیش‌برازش جلوگیری می‌کند.
+
+با این حال، \lr{Label Smoothing} مستقیماً مشکل عدم تعادل کلاس‌ها را هدف قرار نمی‌دهد، 
+بلکه بیشتر بر تنظیم توزیع احتمالات خروجی تمرکز دارد. 
+در نتیجه در دیتاست‌هایی که عدم تعادل شدید دارند، اثر آن محدودتر خواهد بود.
+
+\paragraph{\lr{Focal Loss}}
+
+تابع زیان \lr{Focal Loss} به طور خاص برای مقابله با عدم تعادل داده‌ها طراحی شده است. 
+ایده اصلی آن کاهش وزن نمونه‌های آسان و افزایش اهمیت نمونه‌های سخت در فرآیند یادگیری است.
+
+فرمول آن به صورت زیر است:
+
+\[
+FL(p_t) = \alpha (1 - p_t)^\gamma \cdot BCE(p_t)
+\]
+
+که در آن:
+
+\begin{itemize}
+	\item $p_t$ احتمال پیش‌بینی صحیح نمونه است
+	\item $\gamma$ پارامتر تمرکز (\lr{focusing parameter}) است که میزان کاهش وزن نمونه‌های آسان را کنترل می‌کند
+	\item $\alpha$ وزن‌دهی به کلاس‌ها را تنظیم می‌کند
+\end{itemize}
+
+وقتی مقدار $\gamma$ افزایش می‌یابد، نمونه‌هایی که به راحتی طبقه‌بندی می‌شوند 
+(مانند کلاس‌های پرتکرار) وزن کمتری در تابع زیان دریافت می‌کنند. 
+در مقابل، نمونه‌های دشوار یا کم‌نمونه تأثیر بیشتری در فرآیند آموزش خواهند داشت.
+
+\paragraph{دلیل انتخاب \lr{Focal Loss} در این تمرین}
+
+در این تمرین به دلیل وجود عدم تعادل شدید بین کلاس‌ها، استفاده از \lr{Focal Loss} 
+گزینه مناسب‌تری نسبت به \lr{Label Smoothing} محسوب می‌شود. 
+زیرا:
+
+\begin{itemize}
+	\item تمرکز آموزش را از کلاس‌های بسیار پرتکرار به سمت نمونه‌های دشوارتر هدایت می‌کند.
+	\item باعث می‌شود مدل نسبت به ابزارهای کم‌نمونه حساسیت بیشتری پیدا کند.
+	\item در مسائل \lr{Multi-label} با داده‌های نامتوازن عملکرد بهتری نسبت به زیان استاندارد دارد.
+\end{itemize}
+
+در این پروژه مقدار $\gamma = 2$ برای تابع \lr{Focal Loss} انتخاب شد که یکی از مقادیر متداول در ادبیات یادگیری عمیق است و تعادل مناسبی بین تمرکز بر نمونه‌های سخت و پایداری آموزش ایجاد می‌کند.
+
+در نتیجه، استفاده از \lr{Focal Loss} در کنار تنظیم فراپارامترها با استفاده از \lr{Optuna} 
+به بهبود یادگیری کلاس‌های کم‌نمونه و افزایش تعادل عملکرد مدل در میان کلاس‌های مختلف کمک می‌کند.
+
+پیاده‌سازی:
+
+\begin{LTR}
+	\begin{verbatim}
+		class FocalLoss(nn.Module):
+		def __init__(self, alpha=1, gamma=2):
+		super(FocalLoss, self).__init__()
+		self.alpha = alpha
+		self.gamma = gamma
+		
+		def forward(self, inputs, targets):
+		bce_loss = F.binary_cross_entropy_with_logits(
+		inputs, targets, reduction='none'
+		)
+		pt = torch.exp(-bce_loss)
+		focal_loss = self.alpha * (1 - pt)**self.gamma * bce_loss
+		return focal_loss.mean()
+	\end{verbatim}
+\end{LTR}
+
+استفاده از $\gamma=2$ باعث شد مدل تمرکز بیشتری بر ابزارهای کم‌نمونه داشته باشد.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{دو رویکرد آموزشی}
+
+\paragraph{رویکرد اول:}
+
+\begin{itemize}
+	\item حفظ تمام ۱۲ کلاس (شامل \lr{Pupil} و \lr{Cornea})
+	\item بدون اعمال Augmentation
+	\item استفاده از \lr{Transfer Learning}
+	\item استفاده از \lr{Focal Loss}
+	\item تنظیم فراپارامترها با \lr{Optuna}
+\end{itemize}
+
+
+\paragraph{رویکرد دوم:}
+
+\begin{itemize}
+	\item حذف کلاس‌های بسیار پرتکرار (\lr{Pupil} و \lr{Cornea})
+	\item اعمال Augmentation برای متعادل‌سازی
+	\item آموزش مجدد مدل
+\end{itemize}
+
+در این حالت تمرکز مدل بر تشخیص ابزارها افزایش یافت و ارزیابی واقعی‌تری از عملکرد آن به‌دست آمد. در رویکرد دوم نیز فراپارامترها تنظیم شد و از \lr{Transfer Learning} و \lr{Focal Loss} برای یادگیری بهتر استفاده گردید.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{پیاده‌سازی رویکرد اول: یادگیری چندبرچسبی با استفاده از EfficientNet-B3}
+
+در رویکرد اول، هدف آموزش یک مدل طبقه‌بندی چندبرچسبی (\lr{Multi-label Classification}) برای تشخیص هم‌زمان ۱۲ کلاس (شامل ابزارهای جراحی و ساختارهای آناتومیک مانند قرنیه و مردمک) بود. برای این منظور از معماری پیشرفته \lr{EfficientNet-B3} استفاده شد که توازن مناسبی میان دقت و هزینه محاسباتی برقرار می‌کند.
+
+\subsubsection{ساختار خط لوله (\lr{Pipeline}) پیاده‌سازی}
+فرآیند آموزش شامل مراحل زیر بود:
+\begin{itemize}
+	\item \textbf{پیش‌پردازش و نرمال‌سازی:} تصاویر به ابعاد $300 \times 300$ تغییر سایز داده شده و با میانگین و انحراف معیار مجموعه‌داده \lr{ImageNet} استانداردسازی شدند.
+	\item \textbf{بهینه‌سازی فراپارامترها با \lr{Optuna}:} برای یافتن بهترین نرخ یادگیری (\lr{Learning Rate})، نوع بهینه‌ساز (\lr{AdamW} یا \lr{SGD}) و ضریب جریمه (\lr{Weight Decay})، از چارچوب \lr{Optuna} با ۵ تکرار استفاده شد.
+	\item \textbf{تابع زیان (\lr{Loss Function}):} به منظور مقابله با عدم تعادل کلاس‌ها، تابع زیان \lr{Focal Loss} با پارامتر $\gamma=2$ جایگزین \lr{BCE} استاندارد شد تا تمرکز مدل بر روی نمونه‌های سخت (ابزارهای کم‌تکرار) افزایش یابد.
+\end{itemize}
+
+\subsubsection{نتایج بهینه‌سازی و تحلیل روند آموزش}
+بر اساس جستجوی \lr{Optuna}، بهترین فراپارامترها به شرح زیر استخراج شدند:
+\begin{itemize}
+	\item \textbf{بهینه‌ساز:} \lr{AdamW}
+	\item \textbf{نرخ یادگیری:} $6.047 \times 10^{-4}$
+	\item \textbf{وزن جریمه (\lr{Weight Decay}):} $0.0009$
+\end{itemize}
+
+روند آموزش در ۱۰ اپوک انجام شد. مطابق با مقادیر ثبت شده، در اپوک دوم مدل به بهترین مقدار \lr{Validation Loss} ($0.0189$) دست یافت. با این حال، با ادامه آموزش، شکاف میان مقدار خطای آموزش ($0.0051$) و خطای اعتبارسنجی شروع به افزایش کرد که نشان‌دهنده وقوع \textbf{بیش‌برازش (\lr{Overfitting})} است. 
+
+% محل قرارگیری نمودارهای Accuracy و Loss
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/a-acloss.png}
+	\caption{تحلیل روند آموزش و اعتبارسنجی (مشاهده پدیده Overfitting بعد از اپوک 2)}
+\end{figure}
+
+\subsubsection{ارزیابی مدل بر روی داده‌های تست}
+
+برای ارزیابی دقیق‌تر در مسائل نامتوازن، معیار \lr{PR-AUC} محاسبه گردید:
+\begin{table}[H]
+	\centering
+	\caption{مقادیر \lr{PR-AUC} برای هر کلاس}
+	\label{tab:pr_auc}
+	\renewcommand{\arraystretch}{1.2}
+	\footnotesize
+	\begin{LTR}
+		\begin{tabular}{lc|lc}
+			\toprule
+			\textbf{Class} & \textbf{PR-AUC} & \textbf{Class} & \textbf{PR-AUC} \\
+			\midrule
+			Cannula & \lr{0.9306} & Lens Injector & \lr{0.9773} \\
+			Cap Cystotome & \lr{0.8795} & Phaco Handpiece & \lr{0.9905} \\
+			Cap Forceps & \lr{0.8376} & Primary Knife & \lr{0.8894} \\
+			Cornea & \lr{0.9923} & Pupil & \lr{0.9919} \\
+			Forceps & \lr{0.7448} & Second Instrument & \lr{0.9719} \\
+			I-A Handpiece & \lr{0.9564} & Secondary Knife & \lr{0.9486} \\
+			\bottomrule
+		\end{tabular}
+	\end{LTR}
+\end{table}
+نتایج ارزیابی نهایی بر روی داده‌های آزمون در جدول زیر ارائه شده است.
+\begin{table}[H]
+	\centering
+	\caption{گزارش عملکرد مدل \lr{EfficientNet-B3} بر روی داده‌های آزمون (رویکرد اول)}
+	\label{tab:efficientnet_results}
+	\renewcommand{\arraystretch}{1.2}
+	\footnotesize
+	\begin{LTR}
+		\begin{tabular}{lcccc}
+			\toprule
+			\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+			\midrule
+			Cannula           & \lr{0.87} & \lr{0.86} & \lr{0.86} & \lr{226} \\
+			Cap Cystotome     & \lr{0.77} & \lr{0.75} & \lr{0.76} & \lr{59} \\
+			Cap Forceps       & \lr{0.64} & \lr{0.76} & \lr{0.70} & \lr{21} \\
+			Cornea            & \lr{0.99} & \lr{1.00} & \lr{1.00} & \lr{828} \\
+			Forceps           & \lr{0.77} & \lr{0.61} & \lr{0.68} & \lr{66} \\
+			I-A Handpiece     & \lr{0.78} & \lr{0.99} & \lr{0.87} & \lr{105} \\
+			Lens Injector     & \lr{0.95} & \lr{0.91} & \lr{0.93} & \lr{64} \\
+			Phaco Handpiece   & \lr{1.00} & \lr{0.95} & \lr{0.97} & \lr{100} \\
+			Primary Knife     & \lr{0.94} & \lr{0.83} & \lr{0.88} & \lr{60} \\
+			Pupil             & \lr{0.99} & \lr{1.00} & \lr{1.00} & \lr{827} \\
+			Second Instrument & \lr{0.93} & \lr{0.87} & \lr{0.90} & \lr{149} \\
+			Secondary Knife   & \lr{1.00} & \lr{0.68} & \lr{0.81} & \lr{47} \\
+			\midrule
+			\textbf{Micro Avg}    & \lr{0.95} & \lr{0.95} & \lr{0.95} & \lr{2552} \\
+			\textbf{Macro Avg}    & \lr{0.89} & \lr{0.85} & \lr{0.86} & \lr{2552} \\
+			\textbf{Weighted Avg} & \lr{0.95} & \lr{0.95} & \lr{0.95} & \lr{2552} \\
+			\textbf{Samples Avg}  & \lr{0.95} & \lr{0.95} & \lr{0.94} & \lr{2552} \\
+			\bottomrule
+		\end{tabular}
+	\end{LTR}
+\end{table}
+ماتریس درهمریختگی حاصل نیز به صورت زیر است:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/c1.png}
+	\caption{نمایش ماتریس درهمریختگی برای رویکرد اول}
+\end{figure}
+\paragraph{تحلیل غلبه آماری کلاس‌های آناتومیک:} 
+مطابق ماتریس درهم‌ریختگی، دو کلاس \lr{Cornea} و \lr{Pupil} با مقادیر ۸۲۸ و ۸۲۷ در قطر اصلی، بالاترین دقت تشخیص را دارند. نکته قابل توجه در این ماتریس، حضور ستون‌های پررنگ برای این دو کلاس در تمامی ردیف‌های دیگر است. این موضوع تأیید می‌کند که در یک محیط جراحی چندبرچسبی، این دو ساختار تقریباً در تمام فریم‌ها در کنار ابزارهای دیگر حضور دارند (\lr{Co-occurrence}). مدل به‌خوبی یاد گرفته است که حضور ابزار جراحی به معنای نفی حضور قرنیه یا مردمک نیست.
+
+\paragraph{عملکرد تخصصی ابزارهای جراحی:} 
+ابزارهایی مانند \lr{Phaco Handpiece} (۹۵ تشخیص درست از ۱۰۰)، \lr{Lens Injector} (۵۸ تشخیص درست از ۶۴) و \lr{Cannula} (۱۹۴ تشخیص درست از ۲۲۶) عملکرد بسیار مطلوبی در قطر اصلی نشان می‌دهند. این نشان‌دهنده آن است که مدل \lr{EfficientNet-B3} ویژگی‌های بصری منحصربه‌فرد این ابزارها، مانند شکل بدنه و بازتاب نور از سطح فلزی آن‌ها را به‌خوبی استخراج کرده است.
+
+\paragraph{تحلیل خطاهای طبقه‌بندی و هم‌پوشانی ویژگی‌ها:} 
+برخی ابزارها دارای درهم‌ریختگی نسبی هستند؛ به عنوان مثال، کلاس \lr{Secondary Knife} در ۲۰ مورد به اشتباه به عنوان \lr{Forceps} تشخیص داده شده است. این خطا می‌تواند ناشی از شباهت هندسی بخش‌های انتهایی (دسته) این دو ابزار یا نحوه به دست گرفتن آن‌ها توسط جراح باشد. همچنین در ردیف \lr{Second Instrument}، هم‌پوشانی قابل توجهی با \lr{Phaco Handpiece} (۸۶ مورد) دیده می‌شود که نشان‌دهنده حضور هم‌زمان این دو ابزار در مراحل خاصی از جراحی (مانند مرحله فیکو) است که مدل را در تفکیک دقیق مرزهای برچسب‌زنی دچار چالش می‌کند.
+
+\paragraph{تأثیر عدم تعادل داده‌ها (\lr{Data Imbalance}):} 
+کلاس‌هایی با پشتیبانی (\lr{Support}) کمتر، مانند \lr{Cap Forceps} (۲۱ نمونه)، اگرچه در قطر اصلی ۱۶ مورد درست دارند، اما نسبت به کلاس‌های پرجمعیت‌تر، حساسیت بیشتری به نویز نشان می‌دهند. با این حال، غلبه رنگ آبی در اکثر عناصر قطر اصلی نشان‌دهنده این است که استراتژی استفاده از \lr{Focal Loss} موفقیت‌آمیز بوده و مدل اجازه نداده است کلاس‌های پرتکرار، فرآیند یادگیری ابزارهای کمیاب را کاملاً سرکوب کنند.
+
+
+
+\paragraph{تحلیل نتایج:} 
+همان‌طور که مشاهده می‌شود، کلاس‌های \lr{Cornea} و \lr{Pupil} به \lr{Precision} و \lr{Recall} نزدیک به ۱۰۰٪ رسیده‌اند. دلیل این امر حضور دائمی این دو کلاس درتصاویر آموزشی است. این موضوع باعث شده مدل بخش بزرگی از ظرفیت یادگیری خود را صرف این دو کلاس پایدار کند. در مقابل، ابزارهایی مانند \lr{Forceps} به دلیل تعداد نمونه کمتر و تنوع ظاهری، مقادیر کمتری در \lr{F1-score} و{PR-AUC}\lr برابر با \lr{0.75} ثبت کرده‌اند. اگرچه \lr{Focal Loss} تا حدی این نابرابری را جبران کرده، اما غلبه آماری کلاس‌های آناتومیک همچنان مشهود است. همچنین چون \lr{Cornea} و \lr{Pupil} بزرگ هستند، عملا بخش بزرگی از فضای ویژگی را به خود اختصاص می دهند و این باعث می شود که مدل بیشتر آنها را ببیند درحالیکه برخی ابزارهای ما به نسبت نازکتر و کوچکترند.
+
+\subsubsection{تحلیل فضای ویژگی با \lr{t-SNE}}
+الگوریتم \lr{t-SNE} یک روش کاهش ابعاد غیرخطی است که برای تجسم داده‌های با ابعاد بالا در فضای دو یا سه بعدی استفاده می‌شود. این روش با حفظ فاصله‌های محلی، خوشه‌های داده را مشخص می‌کند. در خروجی حاصل از مدل ما بر روی داده‌های تست، مشاهده شد که خوشه‌های مربوط به هر کلاس به‌خوبی از یکدیگر تفکیک شده‌اند. این امر نشان‌دهنده توانایی بالای استخراج ویژگی (\lr{Feature Extraction}) توسط هسته \lr{EfficientNet-B3} است که توانسته نگاشتی متمایز برای هر ابزار جراحی در فضای ویژگی ایجاد کند.
+در تصویر زیر این نتیجه قابل مشاهده است:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/tsne1.png}
+	\caption{نگاشت فضای ویژگی داده های تست در دو بعد}
+\end{figure}
+
+
+\subsubsection{تفسیرپذیری مدل با استفاده از \lr{Grad-CAM}}
+روش \lr{Grad-CAM} با استفاده از گرادیان‌های آخرین لایه کانولوشنی، نقشه‌های حرارتی ایجاد می‌کند که نشان می‌دهد مدل برای پیش‌بینی هر کلاس به کدام نواحی تصویر توجه کرده است.
+\begin{itemize}
+	\item \textbf{در مورد ابزارهای جراحی:} نقشه‌های حرارتی به‌دقت بر روی بدنه ابزار و نوک آن (جایگاه اثرگذاری در جراحی) متمرکز شده‌اند. این نشان می‌دهد مدل ویژگی‌های هندسی و بافتی صحیح ابزارها را فرا گرفته است.
+	\item \textbf{در مورد \lr{Cornea} و \lr{Pupil}:} برخلاف ابزارها، در این دو کلاس مدل تمایل دارد کل ناحیه چشم را به‌عنوان ناحیه فعال در نظر بگیرد. این رفتار تأیید می‌کند که به دلیل تکرار بیش از حد این کلاس‌ها در تمام تصاویر، مدل به جای یادگیری مرزهای دقیق، کل پس‌زمینه جراحی را به این دو کلاس نسبت داده است.
+\end{itemize}
+نمونه تصاویری که بر روی آنها \lr{Grad-CAM} زده شده است به صورت زیر می باشند(از تمامی کلاس ها یک تصویر آورده شده است):
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/g1.png}
+	\caption{تفسیرپذیری مدل با استفاده از \lr{Grad-CAM} در رویکرد اول}
+\end{figure}
+\paragraph{تفسیر بصری تمرکز مدل بر روی ابزارها:} 
+نقشه‌های حرارتی حاصل از \lr{Grad-CAM} نشان می‌دهند که مدل در تشخیص اکثر ابزارهای جراحی مانند \lr{Cannula}، \lr{I-A Handpiece} و \lr{Phaco Handpiece}، به‌درستی بر روی بدنه فلزی و ناحیه عملیاتی ابزار (نوک ابزار در محل تماس با بافت چشم) متمرکز شده است. این موضوع تأیید می‌کند که مدل ویژگی‌های ریخت‌شناختی (\lr{Morphological}) ابزارها را به جای نویزهای پس‌زمینه یاد گرفته است.
+
+\paragraph{تحلیل نقاط داغ در ابزارهای خاص:} 
+در مواردی مانند \lr{Lens Injector} و \lr{Primary Knife}، تمرکز اصلی نقشه حرارتی دقیقاً در مرکز تصویر و بر روی محل ورود ابزار قرار دارد. این دقت بالا نشان‌دهنده توانایی شبکه در تفکیک ابزارهای باریک از بافت‌های مشابه در محیط مرطوب جراحی است. در کلاس‌هایی مانند \lr{Second Instrument}، مدل علاوه بر ابزار، به نواحی اطراف آن نیز حساس است که نشان‌دهنده یادگیری وابستگی‌های مکانی ابزار نسبت به ساختار چشم است.
+
+
+\paragraph{ارزیابی اعتبار تصمیم‌گیری مدل:} 
+به طور کلی، انطباق بالای نقاط داغ (\lr{Hotspots}) با مکان واقعی ابزارها در تصاویر خروجی، گواهی بر این است که نرخ دقت بالای مدل ناشی از یادگیری صحیح ویژگی‌های بصری است و نه میان‌برهای آماری یا بیش‌برازش بر روی المان‌های نامرتبط در محیط اتاق عمل.
+\subsection{پیاده‌سازی رویکرد دوم: حذف ساختارهای آناتومیک و موازنه ابزارها}
+
+در رویکرد دوم، با هدف متمرکز کردن مدل بر روی ویژگی‌های ظریف ابزارهای جراحی و جلوگیری از غلبه آماری ساختارهای دائمی، تغییرات بنیادینی در خط لوله (\lr{Pipeline}) داده‌ها ایجاد شد.
+
+\subsubsection{تعدیل برچسب‌ها و استراتژی موازنه (\lr{Data Balancing})}
+در این مرحله، کلاس‌های \lr{Cornea} و \lr{Pupil} که تقریباً در اکثر تصاویر حضور داشتند، از مجموعه برچسب‌ها حذف شدند.
+\begin{itemize}
+	\item \textbf{دلیل حذف:} حضور دائمی این دو کلاس فضای ویژگی (\lr{Feature Space}) را اشغال کرده و به دلیل ابعاد بزرگشان نسبت به ابزارها، مدل را به سمت یادگیری ویژگی‌های درشت‌دانه سوق می‌دادند. حذف آن‌ها مدل را مجبور می‌کند تا ظرفیت یادگیری خود را صرفاً روی ۱۰ ابزار جراحی متمرکز کند.
+	\item \textbf{تولید داده‌های افزایشی (\lr{Augmentation}):} برای مقابله با عدم تعادل میان ابزارها، کلاس \lr{Cannula} با ۱۴۵۷ نمونه به عنوان هدف (\lr{Target}) در نظر گرفته شد. سایر کلاس‌ها با استفاده از تکنیک‌های \lr{Horizontal Flip}، \lr{Rotate} و \lr{Brightness Contrast} به این سطح رسانده شدند.
+	\item \textbf{نتیجه نهایی:} حجم مجموعه‌داده آموزش پس از حذف تصاویر فاقد ابزار و انجام آگمنتیشن به ۱۳,۴۲۴ تصویر رسید که توزیع یکنواخت‌تری میان ۱۰ کلاس باقی‌مانده برقرار کرد.
+\end{itemize}
+تصویر زیر توزیع داده ها را پس از آگمنتیشن نشان می دهد:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/d2.png}
+	\caption{توزیع داده ها در هر کلاس بعد از آگمنتیشن در رویکرد دوم}
+\end{figure}
+
+\subsubsection{بهینه‌سازی فراپارامترها با \lr{Optuna}}
+برای این رویکرد جدید، جستجوی فراپارامترها مجدداً توسط \lr{Optuna} انجام شد. نتایج ۵ تکرار (\lr{Trial}) نشان داد که بهینه‌ساز \lr{AdamW} به طور معناداری بهتر از \lr{SGD} عمل می‌کند.
+\begin{itemize}
+	\item \textbf{بهترین مقادیر یافت شده:} نرخ یادگیری $4.91 \times 10^{-5}$ و وزن جریمه $0.00057$.
+	\item \textbf{تحلیل:} انتخاب نرخ یادگیری پایین‌تر توسط \lr{Optuna} نشان‌دهنده نیاز مدل به یادگیری دقیق‌تر و آرام‌تر بر روی داده‌های متوازن شده است تا از پرش‌های تند در فضای بهینه جلوگیری شود.
+\end{itemize}
+
+\subsubsection{روند آموزش و تحلیل بیش‌برازش (\lr{Overfitting})}
+مدل با تابع زیان \lr{Focal Loss} ($\gamma=2$) آموزش داده شد. مطابق خروجی‌ها، بهترین مدل در اپوک دوم با \lr{Val Loss: 0.0135} ذخیره شد.
+\paragraph{تحلیل نمودارهای \lr{Loss} و \lr{Accuracy}:} 
+در این رویکرد، اگرچه مقدار مطلق \lr{Loss} نسبت به رویکرد اول کاهش یافته و مدل سریع‌تر به دقت بالای ۹۰٪ رسیده است، اما پدیده \textbf{بیش‌برازش (\lr{Overfitting})} همچنان مشهود است. شکاف میان دقت آموزش ($99.1\%$) و اعتبارسنجی ($90.6\%$) در اپوک‌های پایانی نشان می‌دهد که مدل علی‌رغم آگمنتیشن سنگین، تمایل به حفظ کردن جزئیات تصاویر آموزشی دارد. با این حال، کاهش مقدار \lr{Validation Loss} نسبت به حالت قبل نشان‌دهنده موفقیت نسبی در متمرکز کردن مدل بر روی ابزارهاست.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/ac-loss2.png}
+	\caption{روند تغییرات خطا و صحت در رویکرد دوم (۱۰ کلاس)}
+\end{figure}
+
+\subsubsection{ارزیابی نهایی و مقایسه با رویکرد اول}
+نتایج حاصل از تست بر روی ۱۰ کلاس در جدول زیر ارائه شده است.
+
+\begin{table}[H]
+	\centering
+	\caption{گزارش عملکرد مدل \lr{EfficientNet-B3} در رویکرد دوم (۱۰ کلاس)}
+	\label{tab:results_v2}
+	\renewcommand{\arraystretch}{1.2}
+	\footnotesize
+	\begin{LTR}
+		\begin{tabular}{lcccc}
+			\toprule
+			\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+			\midrule
+			Cannula           & \lr{0.83} & \lr{0.91} & \lr{0.87} & \lr{226} \\
+			Cap Cystotome     & \lr{0.82} & \lr{0.69} & \lr{0.75} & \lr{59} \\
+			Cap Forceps       & \lr{0.90} & \lr{0.90} & \lr{0.90} & \lr{21} \\
+			Forceps           & \lr{0.61} & \lr{0.67} & \lr{0.64} & \lr{66} \\
+			I-A Handpiece     & \lr{0.80} & \lr{0.99} & \lr{0.89} & \lr{105} \\
+			Lens Injector     & \lr{0.94} & \lr{0.94} & \lr{0.94} & \lr{64} \\
+			Phaco Handpiece   & \lr{0.97} & \lr{0.98} & \lr{0.98} & \lr{100} \\
+			Primary Knife     & \lr{1.00} & \lr{0.78} & \lr{0.88} & \lr{60} \\
+			Second Instrument & \lr{0.95} & \lr{0.87} & \lr{0.91} & \lr{149} \\
+			Secondary Knife   & \lr{0.94} & \lr{1.00} & \lr{0.97} & \lr{47} \\
+			\midrule
+			\textbf{Micro Avg}    & \lr{0.86} & \lr{0.89} & \lr{0.88} & \lr{897} \\
+			\textbf{Macro Avg}    & \lr{0.88} & \lr{0.87} & \lr{0.87} & \lr{897} \\
+			\bottomrule
+		\end{tabular}
+	\end{LTR}
+\end{table}
+
+\paragraph{تحلیل مقایسه‌ای:} 
+با حذف کلاس‌های غالب (\lr{Cornea/Pupil})، میانگین دقت کل (\lr{Micro Avg}) از ۹۵٪ به ۸۸٪ کاهش یافته است. این کاهش کاملاً قابل انتظار بود، زیرا در رویکرد اول، تشخیص بسیار آسان دو کلاس حجیم، میانگین دقت را به طور کاذب بالا می‌برد. 
+در رویکرد دوم، بهبودهای مهمی در کلاس‌های سخت مشاهده می‌شود؛ برای مثال دقت کلاس \lr{Cap Forceps} از ۰.۷۰ به ۰.۹۰ ارتقا یافته است. این امر نشان‌دهنده قدرت رویکرد دوم در استخراج ویژگی‌های تخصصی ابزارها پس از حذف بخش آناتومیک است.
+
+\begin{table}[H]
+	\centering
+	\caption{مقادیر \lr{PR-AUC} برای ۱۰ کلاس در رویکرد دوم}
+	\label{tab:pr_auc_v2}
+	\renewcommand{\arraystretch}{1.2}
+	\footnotesize
+	\begin{LTR}
+		\begin{tabular}{lc|lc}
+			\toprule
+			\textbf{Class} & \textbf{PR-AUC} & \textbf{Class} & \textbf{PR-AUC} \\
+			\midrule
+			Cannula & \lr{0.8834} & Lens Injector & \lr{0.9403} \\
+			Cap Cystotome & \lr{0.7701} & Phaco Handpiece & \lr{0.9765} \\
+			Cap Forceps & \lr{0.9062} & Primary Knife & \lr{0.9008} \\
+			Forceps & \lr{0.6543} & Second Instrument & \lr{0.9240} \\
+			I-A Handpiece & \lr{0.8959} & Secondary Knife & \lr{0.9700} \\
+			\bottomrule
+		\end{tabular}
+	\end{LTR}
+\end{table}
+
+\paragraph{بصری‌سازی و تفسیر:} 
+در ادامه، با استفاده از تحلیل‌های \lr{t-SNE}، \lr{Confusion Matrix} و \lr{Grad-CAM}، کیفیت تفکیک ابزارها در فضای ویژگی و تمرکز مدل بر روی لبه‌های تیز ابزارها مورد بررسی قرار می‌گیرد که تأییدکننده بهبود قدرت تفکیک مدل در غیاب کلاس‌های غالب است.
+\paragraph{تحلیل ماتریس درهم‌ریختگی و الگوهای هم‌رخدادی (\lr{Co-occurrence}):}
+با بررسی ماتریس درهم‌ریختگی رویکرد دوم، مشخص می‌شود که مدل در تشخیص کلاس‌های منفرد و متمایز مانند \lr{Phaco Handpiece} (۹۸ تشخیص درست) و \lr{Cannula} (۲۰۶ تشخیص درست) بسیار دقیق عمل می‌کند. با این حال، به دلیل ماهیت چندبرچسبی (\lr{Multi-label}) مسئله و ماهیت جراحی آب‌مروارید، الگوهای خاصی از تداخل در ماتریس مشاهده می‌شود:
+
+\begin{itemize}
+	\item \textbf{تداخل ابزارهای کمکی:} بیشترین میزان تداخل بین \lr{Second Instrument} با کلاس‌های \lr{Phaco Handpiece} (۹۱ مورد) و \lr{I-A Handpiece} (۴۲ مورد) دیده می‌شود. این موضوع به دلیل هم‌رخدادی همیشگی ابزار ثانویه برای نگه داشتن لنز یا تثبیت چشم هنگام کار با هندپیس‌های اصلی است. در واقع، مدل یاد گرفته است که این ابزارها معمولاً به صورت جفت در تصویر ظاهر می‌شوند.
+	\item \textbf{دقت در کلاس‌های خاص:} کلاس‌هایی مانند \lr{Lens Injector} و \lr{Cap Forceps} کمترین میزان خطا و تداخل را با سایر ابزارها دارند که نشان‌دهنده ویژگی‌های بصری منحصربه‌فرد آن‌ها (مانند بدنه ضخیم‌تر اینجکتور) است که توسط مدل \lr{EfficientNet-B3} به خوبی استخراج شده است.
+\end{itemize}
+
+به طور کلی، ماتریس درهم‌ریختگی تایید می‌کند که حذف کلاس‌های غالب (\lr{Cornea/Pupil}) نه تنها باعث سردرگمی مدل نشده، بلکه باعث شده است مدل بر روی روابط منطقی و هم‌رخدادی ابزارهای جراحی در محیط عملیاتی تمرکز بهتری داشته باشد.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/c2.png}
+	\caption{ماتریس درهمریختگی مجموعه دادۀ تست برای رویکرد دوم}
+\end{figure}
+\paragraph{تحلیل بصری فضای ویژگی با استفاده از \lr{t-SNE}:}
+نمودار \lr{t-SNE} حاصل از استخراج ویژگی‌های لایه پیش‌آخر شبکه \lr{EfficientNet-B3}، گویای موفقیت مدل در تفکیک خوشه‌های مربوط به هر ابزار است. تحلیل این نگاشت دو بعدی نتایج زیر را به همراه دارد:
+
+\begin{itemize}
+	\item \textbf{تشکیل خوشه‌های متراکم و مجزا:} اکثر کلاس‌ها مانند \lr{Phaco Handpiece} (رنگ صورتی)، \lr{I-A Handpiece} (رنگ بنفش) و \lr{Lens Injector} (رنگ قهوه‌ای) خوشه‌های کاملاً مجزایی را تشکیل داده‌اند. این موضوع نشان می‌دهد که حذف کلاس‌های آناتومیک (\lr{Cornea/Pupil}) فضا را برای یادگیری ویژگی‌های تمایزدهنده (\lr{Discriminative Features}) ابزارهای جراحی باز کرده است.
+	\item \textbf{تفسیر نزدیکی خوشه‌ها:} نزدیکی و درهم‌تنیدگی جزئی در مرکز نمودار میان کلاس‌هایی همچون \lr{Cannula} (آبی) و \lr{Cap Cystotome} (نارنجی) مشاهده می‌شود. این نزدیکی در فضای ویژگی کاملاً منطقی است، زیرا این ابزارها از نظر ساختار فیزیکی (بدنه فلزی لوله‌ای) شباهت بسیار زیادی به یکدیگر دارند.
+	\item \textbf{توزیع کلاس‌های چندگانه:} پراکندگی کلاس \lr{Second Instrument} (زرد/سبز لیمویی) در میان سایر خوشه‌ها نشان‌دهنده حضور همزمان این ابزار با سایر ابزارهای جراحی است. از آنجا که تصویر حاوی هر دو ابزار است، بردار ویژگی استخراج شده مقادیر مشترکی از هر دو کلاس را در خود دارد که باعث می‌شود این نقاط در مرزهای خوشه‌های دیگر قرار گیرند.
+\end{itemize}
+
+در مجموع، شفافیت خوشه‌ها در این نمودار ثابت می‌کند که مدل علی‌رغم پیچیدگی محیط جراحی و ابعاد کوچک ابزارها، توانسته است بازنمایی‌های (\lr{Representations}) بسیار قدرتمند و تفکیک‌پذیری را برای هر کلاس یاد بگیرد.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/tsne2.png}
+	\caption{نگاشت فضای ویژگی داده های تست در دو بعد}
+\end{figure}
+\paragraph{تفسیر مدل و بصری‌سازی نواحی تصمیم‌ساز با \lr{Grad-CAM}:}
+به منظور ارزیابی میزان انطباق تصمیمات مدل با واقعیت‌های جراحی، از تکنیک \lr{Grad-CAM} برای بصری‌سازی نقشه‌های حرارتی (\lr{Heatmaps}) استفاده شد. این نقشه‌ها نشان می‌دهند که نورون‌های لایه‌های نهایی مدل بر روی کدام پیکسل‌ها متمرکز شده‌اند:
+
+\begin{itemize}
+	\item \textbf{تمرکز بر نوک ابزار (\lr{Functional Ends}):} در اکثر تصاویر، به ویژه کلاس‌های \lr{Cannula}، \lr{Cap Cystotome} و \lr{Primary Knife}، مدل به طور دقیق بر روی بخش عملیاتی ابزار (نوک تیز یا محلی که وارد قرنیه می‌شود) متمرکز شده است. این نشان می‌دهد که مدل به جای تکیه بر پس‌زمینه، ویژگی‌های ریخت‌شناختی خود ابزار را یاد گرفته است.
+	\item \textbf{تفکیک در حضور چندین ابزار:} در تصویر مربوط به \lr{Second Instrument}، مشاهده می‌شود که نقشه حرارتی دقیقاً بر روی ابزار جانبی (سمت چپ تصویر) قرار گرفته و از ابزار اصلی در مرکز چشم صرف‌نظر کرده است. این موضوع دقت مدل در مسئله چندبرچسبی را اثبات می‌کند که می‌تواند همزمان چندین ناحیه را برای کلاس‌های مختلف پایش کند.
+	\item \textbf{تشخیص هندپیس‌های حجیم:} در کلاس‌هایی مانند \lr{Phaco Handpiece} و \lr{I-A Handpiece}، مدل علاوه بر نوک ابزار، بدنه و زاویه ورود ابزار به تصویر را نیز در نظر می‌گیرد. گستردگی ناحیه قرمز در این تصاویر نشان‌دهنده یادگیری ویژگی‌های مقیاس‌بزرگ (\lr{Global Features}) توسط معماری \lr{EfficientNet-B3} است.
+	\item \textbf{عدم حساسیت به بافت‌های آناتومیک:} نکته بسیار مهم این است که نواحی قرمز رنگ (بیشترین وزن در تصمیم‌گیری) به ندرت بر روی نواحی خونی یا بافت‌های محیطی چشم قرار گرفته‌اند. این امر تایید می‌کند که حذف کلاس‌های \lr{Cornea} و \lr{Pupil} در رویکرد دوم، باعث شده است مدل نسبت به نویزهای بیولوژیکی مقاوم شده و فقط به هندسه ابزارهای فلزی حساس باشد.
+\end{itemize}
+
+در مجموع، نتایج \lr{Grad-CAM} تایید می‌کند که مدل توسعه داده شده نه تنها از نظر آماری دقیق است، بلکه از نظر بالینی نیز به ویژگی‌های درست و منطقی برای تشخیص ابزارهای جراحی استناد می‌کند.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{img/g2.png}
+	\caption{تفسیرپذیری مدل با استفاده از \lr{Grad-CAM} در رویکرد دوم}
+\end{figure}
+\subsection{کد}
+\begin{LTR}
+	\inputminted{python}{code/rc_hw3_q2.py}
+\end{LTR}
+\newpage
+
+\section{پرسش سوم: اعتبارسنجی متقاطع، ارزیابی پایداری و یادگیری تجمعی}
+\subsection{رویکردهای اعتبارسنجی متقاطع (\lr{Cross-Validation})}
+
+در استقرار مدل‌های هوش مصنوعی در سامانه‌های جراحی رباتیک، اطمینان از عملکرد پایدار (\lr{Robustness}) در مواجهه با شرایط متغیر اتاق عمل (مانند تغییرات نور، خون‌ریزی و تداخل‌های ابزاری) فراتر از دقت آماری محض است. 
+
+\subsubsection{مقایسه تطبیقی \lr{K-Fold} و \lr{Stratified K-Fold}:}
+
+اعتبارسنجی متقاطع (\lr{Cross-Validation}) ابزاری برای تخمین توانایی تعمیم مدل است. با این حال، انتخاب نوع تقسیم‌بندی داده‌ها تأثیر مستقیمی بر واقع‌گرایانه بودن نتایج دارد:
+
+\begin{itemize}
+	\item \textbf{\lr{K-Fold Cross-Validation}:} در این روش، داده‌ها به $K$ بخش مساوی تقسیم می‌شوند و هر بار یک بخش به عنوان مجموعه تست و سایر بخش‌ها برای آموزش استفاده می‌شوند. این روش فرض می‌کند که داده‌ها به صورت تصادفی و یکنواخت توزیع شده‌اند.
+	\item \textbf{\lr{Stratified K-Fold}:} این رویکرد تضمین می‌کند که نسبت کلاس‌ها در هر "Fold" دقیقاً مشابه نسبت کل داده‌ها در مجموعه داده اصلی باشد. این موضوع در مسائل جراحی که با توزیع‌های نامتعادل (\lr{Imbalanced}) روبرو هستیم، حیاتی است.
+\end{itemize}
+
+\subsubsection{ضرورت استفاده از روش \lr{Stratified} در جراحی آب‌مروارید:}
+
+در دامنه جراحی چشم، فرکانس حضور ابزارها به شدت به فاز جراحی وابسته است. به عنوان مثال، ابزار \lr{Cannula} در چندین مرحله حضور دارد، اما \lr{Lens Injector} تنها در فاز نهایی و برای چند ثانیه ظاهر می‌شود. 
+
+\paragraph{تحلیل منطق انتخاب:}
+اگر از \lr{K-Fold} معمولی استفاده شود، این احتمال وجود دارد که در یک "Fold" خاص، هیچ نمونه‌ای از ابزارهای نادر (مانند \lr{Cap Forceps}) قرار نگیرد یا برعکس، تمام نمونه‌های آن در یک بخش متمرکز شوند. این امر منجر به دو مشکل عمده می‌گردد:
+\begin{enumerate}
+	\item \textbf{تخمین خوش‌بینانه یا بدبینانه:} مدل ممکن است در یک مرحله دقت ۱۰۰٪ و در مرحله دیگر دقت ۰٪ داشته باشد که منجر به افزایش واریانس و عدم قطعیت در نتایج نهایی می‌شود.
+	\item \textbf{شکست در یادگیری ویژگی‌های اقلیت:} در سیستم‌های جراحی رباتیک، ابزارهای اقلیت معمولاً ابزارهای بسیار حساسی هستند. روش \lr{Stratified} به مدل اجازه می‌دهد در تمام مراحل آموزش و ارزیابی، بازنمایی درستی از این کلاس‌های حساس داشته باشد و از «سوگیری به سمت کلاس اکثریت» (\lr{Majority Class Bias}) جلوگیری کند.
+\end{enumerate}
+
+\paragraph{ارتقای قطعیت شبکه (\lr{Network Certainty}):}
+استفاده از این رویکرد باعث می‌شود که پارامترهای مدل (مانند \lr{Weights}) بر اساس یک توزیع واقعی از ابزارها بهینه شوند. این پایداری آماری، پیش‌نیاز اصلی برای موتور استنتاج (\lr{Inference Engine}) یک ربات جراح است تا در لحظات بحرانی جراحی، به دلیل کمبود داده‌های آموزشی در یک توزیع خاص، دچار خطای تشخیص نشود. در واقع، \lr{Stratified K-Fold} ضامن این است که "مرزهای تصمیم‌گیری" (\lr{Decision Boundaries}) مدل برای ابزارهای ظریف، با همان دقت ابزارهای اصلی ترسیم شود.
+\subsection{پیاده سازی و ریفکتور کد}
+\subsubsection{پیاده‌سازی اعتبارسنجی متقاطع لایه‌بندی شده (\lr{Multilabel Stratified K-Fold}):}
+
+به منظور ارزیابی دقیق توانایی تعمیم‌دهی مدل و اطمینان از عدم بیش‌برازش (\lr{Overfitting}) بر روی یک توزیع خاص، کل مجموعه داده شامل ۶۱۲۷ تصویر (ترکیب \lr{Train} و \lr{Valid}) وارد چرخه اعتبارسنجی گردید.
+
+\paragraph{گام اول: تجمیع و لایه‌بندی هوشمند داده‌ها:}
+با توجه به ماهیت چندبرچسبی تصاویر جراحی، از الگوریتم \lr{MultilabelStratifiedKFold} استفاده شد. این روش برخلاف \lr{K-Fold} معمولی، تضمین می‌کند که نسبت حضور هر ۱۰ ابزار جراحی در هر یک از ۵ بخش (\lr{Folds}) کاملاً مشابه توزیع کل داده‌ها باشد. این امر مانع از آن می‌شود که یک ابزار نادر (مانند \lr{Cap Forceps}) تنها در بخش آموزش قرار گرفته و در بخش تست غایب باشد.
+
+نکتۀ بسیار مهم در این بخش این است که ما برای این سوال پیش پردازش های بیشتری را استفاده نمودیم. در بخش دوم پیش پردازش ها سبک تر بودند.
+
+\paragraph{گام دوم: چرخه آموزش و بازنشانی مدل:}
+در هر تکرار (\lr{Fold})، معماری \lr{EfficientNet-B3} به طور کامل بازنشانی (\lr{Reset}) شده و با استفاده از بهینه‌ساز \lr{AdamW} و تابع زیان \lr{Focal Loss} تحت آموزش قرار گرفت. فرآیند \lr{Online Preprocessing} شامل چرخش‌های تصادفی، تغییرات روشنایی و جابه‌جایی‌های هندسی به صورت پویا بر روی داده‌های آموزش هر فولد اعمال شد تا مدل نسبت به تغییرات فیزیکی در حین عمل جراحی مقاوم شود.
+
+\subsubsection{تحلیل کمی و کیفی نتایج (\lr{Results Analysis}):}
+
+خروجی‌های حاصل از ۵ مرحله اعتبارسنجی در جدول زیر خلاصه شده است:
+
+\begin{table}[h]
+	\centering
+	\caption{نتایج اعتبارسنجی متقاطع ۵-تایی برای مدل \lr{EfficientNet-B3}}
+	\begin{latin} % شروع محیط چپ به راست برای جدول
+		\begin{tabular}{|l|c|}
+			\hline
+			\textbf{Evaluation Stage} & \textbf{Final Accuracy} \\ \hline
+			Fold 1 & \lr{0.9830} \\ \hline
+			Fold 2 & \lr{0.9819} \\ \hline
+			Fold 3 & \lr{0.9815} \\ \hline
+			Fold 4 & \lr{0.9833} \\ \hline
+			Fold 5 & \lr{0.9807} \\ \hline
+			\textbf{Mean Accuracy} & \textbf{\lr{0.9821}} \\ \hline
+			\textbf{Standard Deviation (Std Dev)} & \textbf{\lr{0.00095}} \\ \hline
+		\end{tabular}
+	\end{latin}
+\end{table}
+
+
+\paragraph{تحلیل پایداری و قطعیت (\lr{Robustness Analysis}):}
+نتایج فوق نشان‌دهنده سطح بسیار بالایی از اعتماد پذیری در مدل توسعه داده شده است:
+\begin{itemize}
+	\item \textbf{انحراف معیار بسیار پایین ($0.00095$):} این عدد نشان می‌دهد که عملکرد مدل تقریباً مستقل از نحوه تقسیم‌بندی داده‌هاست. این پایداری برای یک سیستم جراحی رباتیک حیاتی است، چرا که نشان می‌دهد مدل در مواجهه با بیماران جدید و شرایط تصویربرداری متفاوت، رفتاری پیش‌بینی‌پذیر و ثابت خواهد داشت.
+	\item \textbf{همگرایی سریع و دقیق:} میانگین دقت \lr{98.21} درصد در تمامی فولدها ثابت می‌کند که استراتژی \lr{Focal Loss} و استفاده از وزن‌های پیش‌آموزش‌دیده \lr{ImageNet} به خوبی توانسته‌اند چالش‌های نامتوازنی کلاس‌ها در تصاویر جراحی آب‌مروارید را پوشش دهند.
+	\item \textbf{تأیید معماری:} واریانس نزدیک به صفر در نتایج، تأیید می‌کند که پیچیدگی مدل (\lr{Complexity}) با حجم داده‌های موجود (۶۱۲۷ نمونه) در تعادل کامل است و مدل دچار پدیده‌های مخربی همچون \lr{High Variance} نشده است.
+\end{itemize}
+
+در نهایت، موفقیت در آزمون \lr{K-Fold} با چنین دقت بالایی، چراغ سبزی برای عبور از فاز آزمایشگاهی و ورود به فاز تست‌های استنتاجی (\lr{Inference}) بر روی بردهای پردازشی لبه (\lr{Edge Devices}) صادر می‌کند.
+\subsubsection{کد}
+\begin{LTR}
+	\inputminted{python}{code/rc_hw3_q3.py}
+\end{LTR}
+
+
+\subsection{یادگیری تجمعی \lr{(Ensemble Learning)} در برابر سرعت استنتاج}
+
+پس از آموزش $K$ مدل در فرآیند اعتبارسنجی متقاطع، ترکیب این مدل‌ها برای دستیابی به بالاترین سطح از پایداری امری وسوسه‌انگیز است. با این حال، در محیط‌های حساس جراحی رباتیک که پاسخ‌دهی بلادرنگ حیاتی است، انتخاب استراتژی ترکیب مدل‌ها مستقیماً بر شاخص‌های کلیدی عملکرد (\lr{KPIs}) استنتاج تأثیر می‌گذارد.
+
+\paragraph{۱. رویکرد استنتاج تجمعی (\lr{Inference-time Ensemble}):}
+در این روش، تصویر ورودی به طور همزمان (یا متوالی) توسط هر $K$ مدل پردازش شده و نتایج آن‌ها (مثلاً از طریق \lr{Voting} یا \lr{Averaging}) ترکیب می‌شود. 
+\begin{itemize}
+	\item \textbf{چالش تأخیر (\lr{Latency}):} مطابق با استانداردهای کنترل رباتیک (نیاز به نرخ بروزرسانی ۵۰ هرتز یا تأخیر کمتر از ۲۰ میلی‌ثانیه)، این روش باعث افزایش خطی زمان استنتاج می‌شود. اگر پردازش یک مدل ۱۵ میلی‌ثانیه طول بکشد، یک انسمبل ۵ تایی زمانی معادل ۷۵ میلی‌ثانیه نیاز خواهد داشت که باعث خروج سیستم از فاز \lr{Real-time} می‌گردد.
+	\item \textbf{کاهش نرخ عبور (\lr{Throughput}):} با اشغال منابع پردازشی (\lr{GPU/VRAM}) توسط چندین مدل، تعداد فریم‌های قابل پردازش در ثانیه به شدت افت کرده و باعث ایجاد سکته (\lr{Lag}) در فید ویدئویی جراح می‌شود.
+\end{itemize}
+
+\paragraph{۲. رویکرد سوپ مدل (\lr{Model Soups}):}
+این تکنیک نوین، به جای ترکیب خروجی مدل‌ها در زمان استنتاج، به میانگین‌گیری از وزن‌های (\lr{Parameters}) چندین مدل که در فولدهای مختلف آموزش دیده‌اند، می‌پردازد. نتیجه این کار، یک مدل واحد است که دانش تمام مدل‌های قبلی را در خود جای داده است.
+
+\paragraph{حل تضاد دقت و سرعت با \lr{Model Soups}:}
+رویکرد \lr{Model Soups} تضاد میان دقت بالا و محدودیت‌های سخت‌افزاری (مانند حافظه محدود در \lr{Jetson Nano}) را به شکل زیر برطرف می‌سازد:
+\begin{itemize}
+	\item \textbf{تأخیر ثابت:} از آنجا که در نهایت تنها یک مدل (با وزن‌های بهینه‌شده) در زمان استنتاج بارگذاری می‌شود، \lr{Latency} سیستم دقیقاً مشابه یک مدل واحد باقی می‌ماند و معیارهای تصویربرداری رباتیک (زیر ۲۰ میلی‌ثانیه) حفظ می‌شود.
+	\item \textbf{بهینه‌سازی \lr{FLOPs} و حافظه:} برخلاف انسمبل سنتی که نیاز به حافظه $K$ برابر دارد، در این روش بار حافظه (\lr{Memory Footprint}) افزایش نمی‌یابد. این موضوع برای استقرار بر روی بردهای جراحی که محدودیت رم دارند حیاتی است.
+	\item \textbf{تقویت پایداری (\lr{Robustness}):} تحقیقات نشان می‌دهد که میانگین‌گیری از وزن‌ها در فضای پارامتری اغلب منجر به یافتن «کمینه‌های پهن‌تر» (\lr{Flatter Minima}) در تابع زیان می‌شود که به معنای تعمیم‌پذیری بهتر مدل در مواجهه با نویزهای تصویر جراحی است، بدون آنکه هزینه‌ی محاسباتی اضافی در زمان اجرا تحمیل کند.
+\end{itemize}
+
+در نهایت، برای سیستم‌های جراحی که در آن‌ها هر میلی‌ثانیه تأخیر می‌تواند منجر به خطای ابزاری شود، استفاده از روش \lr{Model Soups} بر انسمبل‌های سنتی ارجحیت مطلق دارد؛ چرا که دقت مدل تجمعی را با سرعت مدل تکی ترکیب می‌کند.
+
+
+
+
+
+
+\end{document}
+

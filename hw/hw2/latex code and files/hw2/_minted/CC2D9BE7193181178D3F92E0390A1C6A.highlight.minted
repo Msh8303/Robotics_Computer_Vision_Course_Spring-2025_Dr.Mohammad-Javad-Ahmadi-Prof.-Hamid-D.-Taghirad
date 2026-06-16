@@ -1,0 +1,51 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{sympy}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{sp}
+
+\PYG{c+c1}{\PYGZsh{} Initialize printing for pretty formatting in Jupyter Notebook}
+\PYG{n}{sp}\PYG{o}{.}\PYG{n}{init\PYGZus{}printing}\PYG{p}{(}\PYG{n}{use\PYGZus{}latex}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}mathjax\PYGZsq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} 1. Define symbolic variables}
+\PYG{n}{q1}\PYG{p}{,} \PYG{n}{q2}\PYG{p}{,} \PYG{n}{q3} \PYG{o}{=} \PYG{n}{sp}\PYG{o}{.}\PYG{n}{symbols}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}q1 q2 q3\PYGZsq{}}\PYG{p}{)}
+\PYG{n}{D0}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{,} \PYG{n}{L3} \PYG{o}{=} \PYG{n}{sp}\PYG{o}{.}\PYG{n}{symbols}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}D0 L2 L3\PYGZsq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Define DH transformation matrix function}
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{dh\PYGZus{}matrix}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{,} \PYG{n}{d}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{alpha}\PYG{p}{):}
+\PYG{k}{return} \PYG{n}{sp}\PYG{o}{.}\PYG{n}{Matrix}\PYG{p}{([}
+\PYG{p}{[}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{),} \PYG{o}{\PYGZhy{}}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),}  \PYG{n}{sp}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),} \PYG{n}{a}\PYG{o}{*}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)],}
+\PYG{p}{[}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{),}  \PYG{n}{sp}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),} \PYG{o}{\PYGZhy{}}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}\PYG{o}{*}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),} \PYG{n}{a}\PYG{o}{*}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)],}
+\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}              \PYG{n}{sp}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),}                \PYG{n}{sp}\PYG{o}{.}\PYG{n}{cos}\PYG{p}{(}\PYG{n}{alpha}\PYG{p}{),}               \PYG{n}{d}\PYG{p}{],}
+\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,}              \PYG{l+m+mi}{0}\PYG{p}{,}                            \PYG{l+m+mi}{0}\PYG{p}{,}                           \PYG{l+m+mi}{1}\PYG{p}{]}
+\PYG{p}{])}
+
+\PYG{c+c1}{\PYGZsh{} 2. Construct transformation matrices for each link based on the DH table}
+\PYG{n}{T1\PYGZus{}0} \PYG{o}{=} \PYG{n}{dh\PYGZus{}matrix}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{D0} \PYG{o}{+} \PYG{n}{q1}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{n}{T2\PYGZus{}1} \PYG{o}{=} \PYG{n}{dh\PYGZus{}matrix}\PYG{p}{(}\PYG{n}{q2}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}
+\PYG{n}{T3\PYGZus{}2} \PYG{o}{=} \PYG{n}{dh\PYGZus{}matrix}\PYG{p}{(}\PYG{n}{q3}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n}{L3}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} 3. Calculate final transformation matrix (0T3 = T1\PYGZus{}0 * T2\PYGZus{}1 * T3\PYGZus{}2)}
+\PYG{n}{T3\PYGZus{}0} \PYG{o}{=} \PYG{n}{T1\PYGZus{}0} \PYG{o}{*} \PYG{n}{T2\PYGZus{}1} \PYG{o}{*} \PYG{n}{T3\PYGZus{}2}
+\PYG{n}{T3\PYGZus{}0\PYGZus{}simplified} \PYG{o}{=} \PYG{n}{sp}\PYG{o}{.}\PYG{n}{simplify}\PYG{p}{(}\PYG{n}{T3\PYGZus{}0}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} 4. Extract position coordinates (x, y, z)}
+\PYG{n}{x} \PYG{o}{=} \PYG{n}{T3\PYGZus{}0\PYGZus{}simplified}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{]}
+\PYG{n}{y} \PYG{o}{=} \PYG{n}{T3\PYGZus{}0\PYGZus{}simplified}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{]}
+\PYG{n}{z} \PYG{o}{=} \PYG{n}{T3\PYGZus{}0\PYGZus{}simplified}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{]}
+
+\PYG{c+c1}{\PYGZsh{} 5. Display results clearly}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZhy{}\PYGZhy{} Final Transformation Matrix (0T3) \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{display}\PYG{p}{(}\PYG{n}{T3\PYGZus{}0\PYGZus{}simplified}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{\PYGZhy{}\PYGZhy{}\PYGZhy{} End\PYGZhy{}Effector Position Equations (Symbolic) \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{display}\PYG{p}{(}\PYG{n}{sp}\PYG{o}{.}\PYG{n}{Matrix}\PYG{p}{([}\PYG{n}{x}\PYG{p}{,} \PYG{n}{y}\PYG{p}{,} \PYG{n}{z}\PYG{p}{]))}
+
+\PYG{c+c1}{\PYGZsh{} 6. Numerical substitution for specific link lengths}
+\PYG{n}{constants} \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{n}{D0}\PYG{p}{:} \PYG{l+m+mf}{0.70}\PYG{p}{,} \PYG{n}{L2}\PYG{p}{:} \PYG{l+m+mf}{0.40}\PYG{p}{,} \PYG{n}{L3}\PYG{p}{:} \PYG{l+m+mf}{0.30}\PYG{p}{\PYGZcb{}}
+\PYG{n}{x\PYGZus{}num} \PYG{o}{=} \PYG{n}{x}\PYG{o}{.}\PYG{n}{subs}\PYG{p}{(}\PYG{n}{constants}\PYG{p}{)}
+\PYG{n}{y\PYGZus{}num} \PYG{o}{=} \PYG{n}{y}\PYG{o}{.}\PYG{n}{subs}\PYG{p}{(}\PYG{n}{constants}\PYG{p}{)}
+\PYG{n}{z\PYGZus{}num} \PYG{o}{=} \PYG{n}{z}\PYG{o}{.}\PYG{n}{subs}\PYG{p}{(}\PYG{n}{constants}\PYG{p}{)}
+
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{\PYGZhy{}\PYGZhy{}\PYGZhy{} End\PYGZhy{}Effector Position Equations (with given constants) \PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}x = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{x\PYGZus{}num}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}y = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{y\PYGZus{}num}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}z = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{z\PYGZus{}num}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

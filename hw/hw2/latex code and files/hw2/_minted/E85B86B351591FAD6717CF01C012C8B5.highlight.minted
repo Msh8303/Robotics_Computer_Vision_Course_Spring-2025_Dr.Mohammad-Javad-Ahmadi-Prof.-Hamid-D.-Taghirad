@@ -1,0 +1,43 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{match\PYGZus{}discs\PYGZus{}to\PYGZus{}ground\PYGZus{}truth}\PYG{p}{(}\PYG{n}{detected\PYGZus{}discs}\PYG{p}{,} \PYG{n}{ground\PYGZus{}truth}\PYG{p}{):}
+    \PYG{n}{detected\PYGZus{}world} \PYG{o}{=} \PYG{p}{[}
+        \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}color\PYGZdq{}}\PYG{p}{:} \PYG{n}{color}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{:} \PYG{n}{pixel\PYGZus{}to\PYGZus{}world}\PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{),} \PYG{l+s+s2}{\PYGZdq{}pixel\PYGZus{}uv\PYGZdq{}}\PYG{p}{:} \PYG{p}{(}\PYG{n}{u}\PYG{p}{,} \PYG{n}{v}\PYG{p}{)\PYGZcb{}}
+        \PYG{k}{for} \PYG{n}{color}\PYG{p}{,} \PYG{n}{u}\PYG{p}{,} \PYG{n}{v} \PYG{o+ow}{in} \PYG{n}{detected\PYGZus{}discs}
+    \PYG{p}{]}
+
+    \PYG{n}{gt\PYGZus{}remaining} \PYG{o}{=} \PYG{n}{ground\PYGZus{}truth}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{()}
+    \PYG{n}{matches} \PYG{o}{=} \PYG{p}{[]}
+
+    \PYG{k}{for} \PYG{n}{det} \PYG{o+ow}{in} \PYG{n}{detected\PYGZus{}world}\PYG{p}{:}
+        \PYG{n}{best\PYGZus{}match} \PYG{o}{=} \PYG{k+kc}{None}
+        \PYG{n}{best\PYGZus{}distance} \PYG{o}{=} \PYG{n+nb}{float}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}inf\PYGZsq{}}\PYG{p}{)}
+
+        \PYG{k}{for} \PYG{n}{gt} \PYG{o+ow}{in} \PYG{n}{gt\PYGZus{}remaining}\PYG{p}{:}
+            \PYG{k}{if} \PYG{n}{gt}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}color\PYGZdq{}}\PYG{p}{]} \PYG{o}{!=} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}color\PYGZdq{}}\PYG{p}{]:}
+                \PYG{k}{continue}
+
+            \PYG{n}{dx} \PYG{o}{=} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{gt}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{]}
+            \PYG{n}{dy} \PYG{o}{=} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{gt}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{]}
+            \PYG{n}{distance} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{dx}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{n}{dy}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)}
+
+            \PYG{k}{if} \PYG{n}{distance} \PYG{o}{\PYGZlt{}} \PYG{n}{best\PYGZus{}distance}\PYG{p}{:}
+                \PYG{n}{best\PYGZus{}distance} \PYG{o}{=} \PYG{n}{distance}
+                \PYG{n}{best\PYGZus{}match} \PYG{o}{=} \PYG{n}{gt}
+
+        \PYG{k}{if} \PYG{n}{best\PYGZus{}match}\PYG{p}{:}
+            \PYG{n}{error\PYGZus{}x} \PYG{o}{=} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{best\PYGZus{}match}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{0}\PYG{p}{]}
+            \PYG{n}{error\PYGZus{}y} \PYG{o}{=} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{best\PYGZus{}match}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{][}\PYG{l+m+mi}{1}\PYG{p}{]}
+
+            \PYG{n}{matches}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(\PYGZob{}}
+                \PYG{l+s+s2}{\PYGZdq{}color\PYGZdq{}}\PYG{p}{:} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}color\PYGZdq{}}\PYG{p}{],}
+                \PYG{l+s+s2}{\PYGZdq{}detected\PYGZus{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{:} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{],}
+                \PYG{l+s+s2}{\PYGZdq{}detected\PYGZus{}pixel\PYGZus{}uv\PYGZdq{}}\PYG{p}{:} \PYG{n}{det}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}pixel\PYGZus{}uv\PYGZdq{}}\PYG{p}{],}
+                \PYG{l+s+s2}{\PYGZdq{}ground\PYGZus{}truth\PYGZus{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{:} \PYG{n}{best\PYGZus{}match}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}world\PYGZus{}xy\PYGZdq{}}\PYG{p}{],}
+                \PYG{l+s+s2}{\PYGZdq{}error\PYGZus{}xy\PYGZdq{}}\PYG{p}{:} \PYG{p}{(}\PYG{n}{error\PYGZus{}x}\PYG{p}{,} \PYG{n}{error\PYGZus{}y}\PYG{p}{),}
+                \PYG{l+s+s2}{\PYGZdq{}error\PYGZus{}magnitude\PYGZdq{}}\PYG{p}{:} \PYG{n}{best\PYGZus{}distance}
+            \PYG{p}{\PYGZcb{})}
+
+            \PYG{n}{gt\PYGZus{}remaining}\PYG{o}{.}\PYG{n}{remove}\PYG{p}{(}\PYG{n}{best\PYGZus{}match}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{n}{matches}\PYG{p}{,} \PYG{n}{gt\PYGZus{}remaining}
+\end{MintedVerbatim}
