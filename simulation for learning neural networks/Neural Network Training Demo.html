@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)https://www.interactive-ml.com/backpropagation.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Network Training Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .network-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+        
+        #networkCanvas {
+            width: 100%;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .data-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .dataset-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .dataset-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .dataset-table th {
+            background: #1e3c72;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .dataset-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .dataset-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .dataset-table tr.current-sample {
+            background: #fff3cd;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .control-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .control-btn.primary {
+            background: #28a745;
+            color: white;
+        }
+        
+        .control-btn.primary:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .control-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .control-btn.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .control-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .speed-control {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .speed-control label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .speed-control input {
+            width: 100%;
+        }
+        
+        .metrics {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            color: #1e3c72;
+            font-weight: 600;
+        }
+        
+        .weights-section {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .weight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .weight-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .weight-title {
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .weight-value {
+            font-size: 1.2em;
+            color: #28a745;
+            font-weight: 700;
+        }
+        
+        .weight-change {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .prediction-section {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .prediction-display {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+        
+        .prediction-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            margin: 0 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .prediction-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .prediction-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #ff9800;
+        }
+        
+        .explanation {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .explanation h3 {
+            color: #9c27b0;
+            margin-bottom: 10px;
+        }
+        
+        .explanation p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Neural Network Training Demo</h1>
+        <p class="subtitle">Watch the complete backpropagation algorithm in action - see how neural networks learn from data by adjusting weights</p>
+        
+        <div class="main-grid">
+            <div class="network-section">
+                <h2 class="section-title">Network Visualization</h2>
+                <canvas id="networkCanvas" width="365" height="500"></canvas>
+            </div>
+            
+            <div class="data-section">
+                <h2 class="section-title">Training Dataset</h2>
+                <div class="dataset-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Input 1</th>
+                                <th>Input 2</th>
+                                <th>Target</th>
+                            </tr>
+                        </thead>
+                        <tbody id="datasetBody">
+                        <tr>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr><tr>
+                    <td>0</td>
+                    <td>1</td>
+                    <td>1</td>
+                </tr><tr>
+                    <td>1</td>
+                    <td>0</td>
+                    <td>1</td>
+                </tr><tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>0</td>
+                </tr></tbody>
+                    </table>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn primary" id="trainBtn">Start Training</button>
+                    <button class="control-btn secondary" id="stepBtn">Step Once</button>
+                    <button class="control-btn secondary" id="resetBtn">Reset Network</button>
+                    
+                    <div class="speed-control">
+                        <label>Training Speed: <span id="speedValue">500</span>ms</label>
+                        <input type="range" id="speedSlider" min="100" max="2000" value="500" step="100">
+                    </div>
+                </div>
+                
+                <div class="metrics">
+                    <div class="metric-row">
+                        <span class="metric-label">Epoch</span>
+                        <span class="metric-value" id="epochValue">0</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Sample</span>
+                        <span class="metric-value" id="sampleValue">-</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Total Loss</span>
+                        <span class="metric-value" id="lossValue">0.000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="weights-section">
+            <h2 class="section-title">Current Weights (Input → Hidden → Output)</h2>
+            <div class="weight-grid" id="weightsGrid"><div class="weight-box">
+                        <div class="weight-title">I1 → H1</div>
+                        <div class="weight-value">-0.1810</div>
+                    </div><div class="weight-box">
+                        <div class="weight-title">I2 → H1</div>
+                        <div class="weight-value">0.1468</div>
+                    </div><div class="weight-box">
+                        <div class="weight-title">I1 → H2</div>
+                        <div class="weight-value">0.2815</div>
+                    </div><div class="weight-box">
+                        <div class="weight-title">I2 → H2</div>
+                        <div class="weight-value">0.0114</div>
+                    </div><div class="weight-box">
+                    <div class="weight-title">H1 → O</div>
+                    <div class="weight-value">-0.0233</div>
+                </div><div class="weight-box">
+                    <div class="weight-title">H2 → O</div>
+                    <div class="weight-value">0.3979</div>
+                </div></div>
+        </div>
+        
+        <div class="prediction-section">
+            <h2 class="section-title">Current Prediction vs Target</h2>
+            <div class="prediction-display">
+                <div class="prediction-box">
+                    <div class="prediction-label">Predicted Output</div>
+                    <div class="prediction-value" id="predictedValue">-</div>
+                </div>
+                <div class="prediction-box">
+                    <div class="prediction-label">Target Output</div>
+                    <div class="prediction-value" id="targetValue">-</div>
+                </div>
+                <div class="prediction-box">
+                    <div class="prediction-label">Error</div>
+                    <div class="prediction-value" id="errorValue">-</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>🧠 Complete Backpropagation Algorithm Explained</h3>
+            <p>This page demonstrates the <strong>complete backpropagation algorithm</strong> - the fundamental method neural networks use to learn from data. Here's the full process:</p>
+            
+            <p><strong>1. The Dataset:</strong> We're training the network to learn XOR logic - it should output 1 when inputs are different, and 0 when they're the same. This is a classic problem that requires a hidden layer to solve.</p>
+            
+            <p><strong>2. Forward Propagation:</strong> Input values flow through the network. At each connection, the input is multiplied by the weight. Each neuron sums all its inputs, adds a bias term, and applies the sigmoid activation function: σ(x) = 1/(1+e^-x)</p>
+            
+            <p><strong>3. Error Calculation (Loss Function):</strong> The network's prediction is compared to the target value to calculate the error: Error = Target - Predicted Output. This tells us how wrong the network was.</p>
+            
+            <p><strong>4. Backpropagation (The Key Innovation):</strong> The error is propagated backward through the network to calculate gradients. For each weight, we compute how much it contributed to the error using the chain rule from calculus:
+            <br>• Output layer: δ_output = error × σ'(output)
+            <br>• Hidden layer: δ_hidden = (δ_output × weight) × σ'(hidden_value)
+            <br>Where σ'(x) = x(1-x) is the derivative of the sigmoid function.</p>
+            
+            <p><strong>5. Gradient Descent (Weight Update):</strong> Each weight is adjusted in the direction that reduces the error:
+            <br>• new_weight = old_weight + learning_rate × δ × input_to_that_weight
+            <br>Watch the weights change color (green for positive, red for negative) and thickness as they optimize!</p>
+            
+            <p><strong>6. Iteration &amp; Convergence:</strong> Steps 2-5 repeat for each training sample. After many epochs (complete passes through the dataset), the weights stabilize at values that correctly solve the XOR problem. The loss decreases and predictions become accurate.</p>
+            
+            <p><strong>This is the complete backpropagation algorithm</strong> used in all neural networks, from simple networks like this to massive deep learning models. The same principles scale up with more layers, more neurons, and millions of weights!</p>
+        </div>
+    </div>
+
+    <script>
+        // Dataset: XOR problem
+        const dataset = [
+            { input: [0, 0], target: 0 },
+            { input: [0, 1], target: 1 },
+            { input: [1, 0], target: 1 },
+            { input: [1, 1], target: 0 }
+        ];
+        
+        // Network architecture: 2 inputs, 2 hidden neurons, 1 output
+        let network = {
+            weightsInputHidden: [
+                [Math.random() - 0.5, Math.random() - 0.5], // weights for hidden neuron 1
+                [Math.random() - 0.5, Math.random() - 0.5]  // weights for hidden neuron 2
+            ],
+            weightsHiddenOutput: [Math.random() - 0.5, Math.random() - 0.5], // weights to output
+            biasHidden: [Math.random() - 0.5, Math.random() - 0.5],
+            biasOutput: Math.random() - 0.5,
+            learningRate: 0.5
+        };
+        
+        let trainingState = {
+            isTraining: false,
+            epoch: 0,
+            currentSample: 0,
+            totalLoss: 0,
+            speed: 500
+        };
+        
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function sigmoid(x) {
+            return 1 / (1 + Math.exp(-x));
+        }
+        
+        function sigmoidDerivative(x) {
+            return x * (1 - x);
+        }
+        
+        function initCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        function drawNetwork(currentInput = null, hiddenOutputs = null, finalOutput = null) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const layerSpacing = canvas.width / 4;
+            const positions = {
+                input: [
+                    { x: layerSpacing, y: canvas.height / 3 },
+                    { x: layerSpacing, y: 2 * canvas.height / 3 }
+                ],
+                hidden: [
+                    { x: 2 * layerSpacing, y: canvas.height / 3 },
+                    { x: 2 * layerSpacing, y: 2 * canvas.height / 3 }
+                ],
+                output: [
+                    { x: 3 * layerSpacing, y: canvas.height / 2 }
+                ]
+            };
+            
+            // Draw connections from input to hidden
+            network.weightsInputHidden.forEach((weights, hiddenIdx) => {
+                weights.forEach((weight, inputIdx) => {
+                    const start = positions.input[inputIdx];
+                    const end = positions.hidden[hiddenIdx];
+                    
+                    const normalizedWeight = Math.abs(weight) / 2;
+                    const opacity = Math.min(0.8, normalizedWeight + 0.2);
+                    const thickness = normalizedWeight * 4 + 1;
+                    const color = weight > 0 ? `rgba(46, 204, 113, ${opacity})` : `rgba(231, 76, 60, ${opacity})`;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(start.x, start.y);
+                    ctx.lineTo(end.x, end.y);
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = thickness;
+                    ctx.stroke();
+                    
+                    // Draw weight value with smart positioning to avoid overlap
+                    const midX = (start.x + end.x) / 2;
+                    const midY = (start.y + end.y) / 2;
+                    
+                    // Offset based on which connection this is
+                    let offsetX = 0;
+                    let offsetY = 0;
+                    
+                    // Create unique positions for each of the 4 connections
+                    if (inputIdx === 0 && hiddenIdx === 0) {
+                        // I1 to H1 (top-left connection)
+                        offsetX = -20;
+                        offsetY = -15;
+                    } else if (inputIdx === 1 && hiddenIdx === 0) {
+                        // I2 to H1 (bottom-left connection)
+                        offsetX = -20;
+                        offsetY = 15;
+                    } else if (inputIdx === 0 && hiddenIdx === 1) {
+                        // I1 to H2 (top-right connection)
+                        offsetX = 20;
+                        offsetY = -15;
+                    } else if (inputIdx === 1 && hiddenIdx === 1) {
+                        // I2 to H2 (bottom-right connection)
+                        offsetX = 20;
+                        offsetY = 15;
+                    }
+                    
+                    // Draw background for better readability
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    ctx.fillRect(midX + offsetX - 18, midY + offsetY - 10, 36, 16);
+                    
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 11px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(weight.toFixed(2), midX + offsetX, midY + offsetY + 3);
+                });
+            });
+            
+            // Draw connections from hidden to output
+            network.weightsHiddenOutput.forEach((weight, hiddenIdx) => {
+                const start = positions.hidden[hiddenIdx];
+                const end = positions.output[0];
+                
+                const normalizedWeight = Math.abs(weight) / 2;
+                const opacity = Math.min(0.8, normalizedWeight + 0.2);
+                const thickness = normalizedWeight * 4 + 1;
+                const color = weight > 0 ? `rgba(46, 204, 113, ${opacity})` : `rgba(231, 76, 60, ${opacity})`;
+                
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.lineTo(end.x, end.y);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = thickness;
+                ctx.stroke();
+                
+                // Draw weight value with offset to avoid overlap
+                const midX = (start.x + end.x) / 2;
+                const midY = (start.y + end.y) / 2;
+                
+                // Offset based on which hidden neuron
+                const offsetY = hiddenIdx === 0 ? -15 : 15;
+                
+                // Draw background for better readability
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.fillRect(midX - 18, midY + offsetY - 10, 36, 16);
+                
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(weight.toFixed(2), midX, midY + offsetY + 3);
+            });
+            
+            // Draw neurons
+            const drawNeuron = (pos, label, value = null, isOutput = false) => {
+                // Glow
+                const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 25);
+                gradient.addColorStop(0, 'rgba(30, 60, 114, 0.3)');
+                gradient.addColorStop(1, 'rgba(30, 60, 114, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Neuron circle
+                ctx.fillStyle = isOutput ? '#ff6b6b' : value !== null ? '#ffd93d' : '#6bcf7f';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 18, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Border
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Label
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 13px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, pos.x, pos.y - 30);
+                
+                // Value
+                if (value !== null) {
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(value.toFixed(2), pos.x, pos.y + 5);
+                }
+            };
+            
+            // Draw input neurons
+            positions.input.forEach((pos, idx) => {
+                const value = currentInput ? currentInput[idx] : null;
+                drawNeuron(pos, `I${idx + 1}`, value);
+            });
+            
+            // Draw hidden neurons
+            positions.hidden.forEach((pos, idx) => {
+                const value = hiddenOutputs ? hiddenOutputs[idx] : null;
+                drawNeuron(pos, `H${idx + 1}`, value);
+            });
+            
+            // Draw output neuron
+            drawNeuron(positions.output[0], 'O', finalOutput, true);
+            
+            // Draw layer labels
+            ctx.fillStyle = '#1e3c72';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Input Layer', layerSpacing, 40);
+            ctx.fillText('Hidden Layer', 2 * layerSpacing, 40);
+            ctx.fillText('Output Layer', 3 * layerSpacing, 40);
+        }
+        
+        function forward(input) {
+            // Hidden layer
+            const hidden = network.weightsInputHidden.map((weights, idx) => {
+                const sum = weights.reduce((acc, w, i) => acc + w * input[i], 0) + network.biasHidden[idx];
+                return sigmoid(sum);
+            });
+            
+            // Output layer
+            const outputSum = network.weightsHiddenOutput.reduce((acc, w, i) => acc + w * hidden[i], 0) + network.biasOutput;
+            const output = sigmoid(outputSum);
+            
+            return { hidden, output };
+        }
+        
+        function trainStep() {
+            const sample = dataset[trainingState.currentSample];
+            const input = sample.input;
+            const target = sample.target;
+            
+            // Forward pass
+            const { hidden, output } = forward(input);
+            
+            // Calculate error
+            const error = target - output;
+            const outputDelta = error * sigmoidDerivative(output);
+            
+            // Calculate hidden layer deltas
+            const hiddenDeltas = hidden.map((h, idx) => {
+                const errorContribution = outputDelta * network.weightsHiddenOutput[idx];
+                return errorContribution * sigmoidDerivative(h);
+            });
+            
+            // Update weights (hidden to output)
+            network.weightsHiddenOutput = network.weightsHiddenOutput.map((w, idx) => 
+                w + network.learningRate * outputDelta * hidden[idx]
+            );
+            network.biasOutput += network.learningRate * outputDelta;
+            
+            // Update weights (input to hidden)
+            network.weightsInputHidden = network.weightsInputHidden.map((weights, hiddenIdx) =>
+                weights.map((w, inputIdx) =>
+                    w + network.learningRate * hiddenDeltas[hiddenIdx] * input[inputIdx]
+                )
+            );
+            network.biasHidden = network.biasHidden.map((b, idx) =>
+                b + network.learningRate * hiddenDeltas[idx]
+            );
+            
+            // Update UI
+            trainingState.totalLoss = Math.abs(error);
+            updateUI(input, hidden, output, target, error);
+            drawNetwork(input, hidden, output);
+            
+            // Move to next sample
+            trainingState.currentSample++;
+            if (trainingState.currentSample >= dataset.length) {
+                trainingState.currentSample = 0;
+                trainingState.epoch++;
+            }
+        }
+        
+        function updateUI(input, hidden, output, target, error) {
+            document.getElementById('epochValue').textContent = trainingState.epoch;
+            document.getElementById('sampleValue').textContent = `${trainingState.currentSample + 1} / ${dataset.length}`;
+            document.getElementById('lossValue').textContent = trainingState.totalLoss.toFixed(4);
+            
+            document.getElementById('predictedValue').textContent = output.toFixed(3);
+            document.getElementById('targetValue').textContent = target.toFixed(3);
+            document.getElementById('errorValue').textContent = error.toFixed(3);
+            
+            // Update dataset table highlighting
+            const rows = document.querySelectorAll('#datasetBody tr');
+            rows.forEach((row, idx) => {
+                row.classList.toggle('current-sample', idx === trainingState.currentSample);
+            });
+            
+            // Update weights display
+            updateWeightsDisplay();
+        }
+        
+        function updateWeightsDisplay() {
+            const weightsGrid = document.getElementById('weightsGrid');
+            weightsGrid.innerHTML = '';
+            
+            // Input to Hidden weights
+            network.weightsInputHidden.forEach((weights, hiddenIdx) => {
+                weights.forEach((weight, inputIdx) => {
+                    const box = document.createElement('div');
+                    box.className = 'weight-box';
+                    box.innerHTML = `
+                        <div class="weight-title">I${inputIdx + 1} → H${hiddenIdx + 1}</div>
+                        <div class="weight-value">${weight.toFixed(4)}</div>
+                    `;
+                    weightsGrid.appendChild(box);
+                });
+            });
+            
+            // Hidden to Output weights
+            network.weightsHiddenOutput.forEach((weight, idx) => {
+                const box = document.createElement('div');
+                box.className = 'weight-box';
+                box.innerHTML = `
+                    <div class="weight-title">H${idx + 1} → O</div>
+                    <div class="weight-value">${weight.toFixed(4)}</div>
+                `;
+                weightsGrid.appendChild(box);
+            });
+        }
+        
+        function initDatasetTable() {
+            const tbody = document.getElementById('datasetBody');
+            dataset.forEach(sample => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${sample.input[0]}</td>
+                    <td>${sample.input[1]}</td>
+                    <td>${sample.target}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        let trainingInterval = null;
+        
+        document.getElementById('trainBtn').addEventListener('click', () => {
+            if (trainingState.isTraining) {
+                trainingState.isTraining = false;
+                clearInterval(trainingInterval);
+                document.getElementById('trainBtn').textContent = 'Resume Training';
+                document.getElementById('trainBtn').classList.remove('primary');
+                document.getElementById('trainBtn').classList.add('secondary');
+            } else {
+                trainingState.isTraining = true;
+                document.getElementById('trainBtn').textContent = 'Pause Training';
+                document.getElementById('trainBtn').classList.remove('secondary');
+                document.getElementById('trainBtn').classList.add('primary');
+                trainingInterval = setInterval(trainStep, trainingState.speed);
+            }
+        });
+        
+        document.getElementById('stepBtn').addEventListener('click', () => {
+            if (!trainingState.isTraining) {
+                trainStep();
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (trainingState.isTraining) {
+                clearInterval(trainingInterval);
+                trainingState.isTraining = false;
+                document.getElementById('trainBtn').textContent = 'Start Training';
+                document.getElementById('trainBtn').classList.remove('secondary');
+                document.getElementById('trainBtn').classList.add('primary');
+            }
+            
+            // Reset network
+            network = {
+                weightsInputHidden: [
+                    [Math.random() - 0.5, Math.random() - 0.5],
+                    [Math.random() - 0.5, Math.random() - 0.5]
+                ],
+                weightsHiddenOutput: [Math.random() - 0.5, Math.random() - 0.5],
+                biasHidden: [Math.random() - 0.5, Math.random() - 0.5],
+                biasOutput: Math.random() - 0.5,
+                learningRate: 0.5
+            };
+            
+            trainingState = {
+                isTraining: false,
+                epoch: 0,
+                currentSample: 0,
+                totalLoss: 0,
+                speed: trainingState.speed
+            };
+            
+            document.getElementById('epochValue').textContent = '0';
+            document.getElementById('sampleValue').textContent = '-';
+            document.getElementById('lossValue').textContent = '0.000';
+            document.getElementById('predictedValue').textContent = '-';
+            document.getElementById('targetValue').textContent = '-';
+            document.getElementById('errorValue').textContent = '-';
+            
+            drawNetwork();
+            updateWeightsDisplay();
+        });
+        
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            trainingState.speed = parseInt(e.target.value);
+            document.getElementById('speedValue').textContent = trainingState.speed;
+            
+            if (trainingState.isTraining) {
+                clearInterval(trainingInterval);
+                trainingInterval = setInterval(trainStep, trainingState.speed);
+            }
+        });
+        
+        window.addEventListener('resize', () => {
+            initCanvas();
+            drawNetwork();
+        });
+        
+        // Initialize
+        initCanvas();
+        initDatasetTable();
+        drawNetwork();
+        updateWeightsDisplay();
+    </script>
+
+<veepn-lock-screen><template shadowrootmode="open"><style>html{box-sizing:border-box;text-size-adjust:100%;word-break:normal;tab-size:4}*,:before,:after{background-repeat:no-repeat;box-sizing:border-box}:before,:after{text-decoration:inherit;vertical-align:inherit}*{padding:0;margin:0}hr{overflow:visible;height:0;color:inherit;border:0;border-top:1px solid}details,main{display:block}summary{display:list-item}small{font-size:80%}[hidden]{display:none!important}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}a{background-color:transparent}a:active,a:hover{outline-width:0}code,kbd,pre,samp{font-family:monospace}pre{font-size:1em}b,strong{font-weight:bolder}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-color:inherit;text-indent:0}iframe{border-style:none}input{border-radius:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{appearance:none}textarea{overflow:auto;resize:vertical}button,input,optgroup,select,textarea{font:inherit;color:inherit}optgroup{font-weight:700}button{overflow:visible}button,select{text-transform:none}button,[type=button],[type=reset],[type=submit],[role=button]{cursor:pointer}button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{border-style:none;padding:0}button,html [type=button],[type=reset],[type=submit]{appearance:auto}button,input,select,textarea{background-color:transparent;border-style:none}button:-moz-focusring,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{outline:1px dotted ButtonText}select{appearance:none}a:focus,button:focus,input:focus,select:focus,textarea:focus{outline-width:0}select::-ms-expand{display:none}select::-ms-value{color:currentcolor}legend{border:0;color:inherit;display:table;white-space:normal;max-width:100%}::-webkit-file-upload-button{appearance:auto;color:inherit;font:inherit}[disabled]{cursor:default}img{border-style:none}progress{vertical-align:baseline}[aria-busy=true]{cursor:progress}[aria-controls]{cursor:pointer}[aria-disabled=true]{cursor:default}ul,ol{list-style-type:none}figure{margin:0}@keyframes slide-in{0%{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.gradient-blue{background:radial-gradient(106.41% 128.47% at 50.15% 128.47%,#23abff,#3066ff)}.gradient-green{background:radial-gradient(92.26% 118.88% at 50.15% .13%,#00c3c3,#00aab3)}.gradient-purple{background:radial-gradient(165.12% 115.56% at 50.15% .13%,#a15aff,#00a0eb)}.bg-blue{background-color:#f2f5ff}.bg-purple{background-color:#f7f0ff}.bg-green{background-color:#ebffed}.lock-screen{font-family:FigtreeVF,sans-serif;letter-spacing:normal;position:fixed;z-index:2147483638;right:24px;bottom:24px;width:327px;border-radius:24px;overflow:hidden;box-shadow:0 24px 32px #00000014;animation:slide-in .3s ease-in-out forwards}.lock-screen__content{position:relative;padding:24px 24px 64px}.lock-screen__close{position:absolute;top:16px;right:16px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;opacity:.5}.lock-screen__label{height:26px;width:fit-content;border-radius:50px;background-color:#fff3;padding-inline:16px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:12px;line-height:18px;margin:-8px auto 16px}.lock-screen__title{color:#fff;text-align:center;font-size:20px;line-height:28px;font-weight:600;margin-bottom:8px}.lock-screen__description{color:#f5f6f7;text-align:center;font-size:14px;line-height:20px}.lock-screen__description b{font-weight:600}.lock-screen__card{position:relative;z-index:1;margin-top:-44px;background-color:#fff;border-radius:24px;padding:32px 20px 20px}.lock-screen__inner{margin-bottom:24px}.lock-screen__submit{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:16px;height:40px;width:100%;border-radius:12px;padding-inline:16px;background-color:#f70;color:#fff;margin-bottom:16px}.lock-screen__skip{display:flex;align-items:center;justify-content:center;font-size:14px;line-height:20px;color:#82829c;margin-inline:auto}.price-card{border:1px solid #f2f2fc;background:linear-gradient(254.14deg,#fafbff .04%,#f5f8ff 100.04%);border-radius:24px;padding:24px 28px}.price-card__label{color:#4a5764;text-align:center;font-size:14px;line-height:20px;text-transform:uppercase;margin-bottom:16px}.price-card__price{display:flex;justify-content:center;align-items:flex-start;column-gap:2px;margin-bottom:12px}.price-card__currency{color:#515478;font-size:18px;line-height:28px}.price-card__number{color:#14142a;text-align:center;font-size:64px;line-height:54px}.price-card__wrap{display:flex;flex-direction:column}.price-card__decimal{color:#515478;font-size:18px;line-height:28px;font-weight:600}.price-card__period{color:#515478;font-size:14px;line-height:20px;margin-top:-6px}.price-card__discount{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:12px}.price-card__discount-divider{position:absolute;z-index:0;top:50%;left:0;width:100%;height:1px;background-color:#dbe2f9;transform:translateY(-50%)}.price-card__discount-icon{position:absolute;z-index:1;top:50%;left:50%;transform:translate(-50%,-50%)}.price-card__discount-text{position:relative;z-index:2;color:#fff;font-size:12px;font-weight:600;line-height:18px}.price-card__features{display:flex;align-items:center;justify-content:center;column-gap:16px}.price-card__feature{color:#222e3a;font-size:14px;line-height:20px;display:flex;align-items:center;gap:6px}.price-card__feature:before{content:"";display:block;width:4px;height:4px;background-color:#20df9e;border-radius:50%;flex-shrink:0}.features-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.features-list__item{display:flex;flex-direction:column;align-items:center;gap:6px}.features-list__icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center}.features-list__text{color:#293a53;text-align:center;font-size:16px;line-height:24px;letter-spacing:-.1px}</style></template><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-lock-screen><veepn-intro-offer><template shadowrootmode="open"><style>html{box-sizing:border-box;text-size-adjust:100%;word-break:normal;tab-size:4}*,:before,:after{background-repeat:no-repeat;box-sizing:border-box}:before,:after{text-decoration:inherit;vertical-align:inherit}*{padding:0;margin:0}hr{overflow:visible;height:0;color:inherit;border:0;border-top:1px solid}details,main{display:block}summary{display:list-item}small{font-size:80%}[hidden]{display:none!important}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}a{background-color:transparent}a:active,a:hover{outline-width:0}code,kbd,pre,samp{font-family:monospace}pre{font-size:1em}b,strong{font-weight:bolder}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-color:inherit;text-indent:0}iframe{border-style:none}input{border-radius:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{appearance:none}textarea{overflow:auto;resize:vertical}button,input,optgroup,select,textarea{font:inherit;color:inherit}optgroup{font-weight:700}button{overflow:visible}button,select{text-transform:none}button,[type=button],[type=reset],[type=submit],[role=button]{cursor:pointer}button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{border-style:none;padding:0}button,html [type=button],[type=reset],[type=submit]{appearance:button}button,input,select,textarea{background-color:transparent;border-style:none}button:-moz-focusring,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{outline:1px dotted ButtonText}select{appearance:none}a:focus,button:focus,input:focus,select:focus,textarea:focus{outline-width:0}select::-ms-expand{display:none}select::-ms-value{color:currentcolor}legend{border:0;color:inherit;display:table;white-space:normal;max-width:100%}::-webkit-file-upload-button{appearance:button;color:inherit;font:inherit}[disabled]{cursor:default}img{border-style:none}progress{vertical-align:baseline}[aria-busy=true]{cursor:progress}[aria-controls]{cursor:pointer}[aria-disabled=true]{cursor:default}ul,ol{list-style-type:none}figure{margin:0}@keyframes slide-in{0%{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.offer-popup{font-family:FigtreeVF,sans-serif;position:fixed;right:16px;bottom:16px;z-index:2147483638;width:327px;border-radius:12px;overflow:hidden;background-color:#fff;box-shadow:0 0 16px #293a5333;animation:slide-in .3s ease-in-out forwards}.offer-popup__close{position:absolute;top:8px;right:8px;z-index:1;width:24px;height:24px;cursor:pointer;opacity:.5}.offer-popup__header{background:radial-gradient(50.52% 128.47% at 50.15% 128.47%,#23abff,#3066ff);padding:24px 24px 12px}.offer-popup__title{font-weight:700;font-size:20px;line-height:28px;text-align:center;color:#fff;margin:0}.offer-popup__main{padding:24px 20px 32px}.offer-popup__subtitle{color:#293a53;font-size:22px;line-height:32px;text-align:center;margin:0 0 24px}.offer-popup__subtitle span{color:#f70}.offer-popup__list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.offer-popup__item{display:flex;flex-direction:column;align-items:center;row-gap:6px;text-align:center;color:#293a53;font-size:16px;line-height:24px}.offer-popup__icon{margin:0;display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px;background-color:#ebefff}.offer-popup__footer{padding:0 20px 20px;display:flex;flex-direction:column;row-gap:16px}.offer-popup__submit{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;height:40px;border-radius:12px;padding-inline:16px;background-color:#f70;color:#fff;cursor:pointer}.offer-popup__cancel{display:flex;align-items:center;justify-content:center;font-weight:400;font-size:14px;color:#82829c;cursor:pointer}</style></template><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-intro-offer></body></html>

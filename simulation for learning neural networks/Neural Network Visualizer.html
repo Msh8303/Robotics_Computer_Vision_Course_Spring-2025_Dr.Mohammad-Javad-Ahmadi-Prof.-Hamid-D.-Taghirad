@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://www.interactive-ml.com/neural-network.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Network Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .control-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .control-group input[type="range"]::-webkit-slider-thumb:hover {
+            background: #764ba2;
+            transform: scale(1.2);
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .activation-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .activation-buttons button {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 80px;
+        }
+        
+        .activation-buttons button.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .activation-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        #canvas {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            display: block;
+        }
+        
+        .training-section {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        
+        .training-section h3 {
+            color: #ff9800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .training-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .train-button {
+            padding: 12px 30px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .train-button:hover {
+            background: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+        
+        .train-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .metric-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff9800;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9800, #f57c00);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .learning-concepts {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        
+        .learning-concepts h3 {
+            color: #9c27b0;
+            margin-bottom: 15px;
+        }
+        
+        .concept {
+            margin-bottom: 15px;
+        }
+        
+        .concept-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .concept-description {
+            color: #666;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+        
+        .epoch-display {
+            font-size: 0.9em;
+            color: #666;
+            margin-left: 10px;
+        }
+        
+        .charts-section {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .charts-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .chart-canvas {
+            width: 100%;
+            height: 250px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Neural Network Visualizer</h1>
+        <p class="subtitle">Explore how neural networks work and learn by adjusting the parameters below</p>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Input Neurons: <span class="value-display" id="inputValue">3</span></label>
+                <input type="range" id="inputNeurons" min="1" max="8" value="3">
+            </div>
+            
+            <div class="control-group">
+                <label>Hidden Layers: <span class="value-display" id="layersValue">2</span></label>
+                <input type="range" id="hiddenLayers" min="1" max="5" value="2">
+            </div>
+            
+            <div class="control-group">
+                <label>Neurons per Layer: <span class="value-display" id="neuronsValue">4</span></label>
+                <input type="range" id="neuronsPerLayer" min="2" max="8" value="4">
+            </div>
+            
+            <div class="control-group">
+                <label>Output Neurons: <span class="value-display" id="outputValue">2</span></label>
+                <input type="range" id="outputNeurons" min="1" max="6" value="2">
+            </div>
+            
+            <div class="control-group">
+                <label>Activation Function:</label>
+                <div class="activation-buttons">
+                    <button class="active" data-activation="relu">ReLU</button>
+                    <button data-activation="sigmoid">Sigmoid</button>
+                    <button data-activation="tanh">Tanh</button>
+                </div>
+            </div>
+        </div>
+        
+        <canvas id="canvas" width="845" height="500"></canvas>
+        
+        <div class="training-section">
+            <h3>🎓 Training Simulation</h3>
+            <p style="color: #666; margin-bottom: 15px;">Watch how the network learns by adjusting its weights through backpropagation</p>
+            
+            <div class="training-controls">
+                <button class="train-button" id="trainButton">Start Training</button>
+                <div class="control-group" style="flex: 1; min-width: 200px;">
+                    <label>Learning Rate: <span class="value-display" id="lrValue">0.01</span></label>
+                    <input type="range" id="learningRate" min="0.001" max="0.1" step="0.001" value="0.01">
+                </div>
+                <span class="epoch-display" id="epochDisplay">Epoch: 0 / 100</span>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="metrics">
+                <div class="metric-box">
+                    <div class="metric-label">Loss (Error)</div>
+                    <div class="metric-value" id="lossValue">0.000</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Accuracy</div>
+                    <div class="metric-value" id="accuracyValue">0%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">Weight Updates</div>
+                    <div class="metric-value" id="updatesValue">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="charts-section">
+            <h3>📊 Training Progress Visualization</h3>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Loss Over Time</div>
+                    <canvas class="chart-canvas" id="lossChart" width="348" height="250"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Accuracy Over Time</div>
+                    <canvas class="chart-canvas" id="accuracyChart" width="348" height="250"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Activation Function Shape</div>
+                    <canvas class="chart-canvas" id="activationChart" width="348" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="learning-concepts">
+            <h3>🔬 How Neural Networks Learn</h3>
+            
+            <div class="concept">
+                <div class="concept-title">1. Forward Propagation</div>
+                <div class="concept-description">
+                    Data flows from input neurons through hidden layers to output neurons. Each connection multiplies the input by its weight, and neurons sum these values before applying an activation function. The activation function determines how the neuron "fires" - introducing non-linearity that allows the network to learn complex patterns.
+                </div>
+            </div>
+            
+            <div class="concept">
+                <div class="concept-title">2. Loss Calculation</div>
+                <div class="concept-description">
+                    The network's predictions are compared to the correct answers using a loss function. Higher loss means worse predictions. The goal of training is to minimize this loss.
+                </div>
+            </div>
+            
+            <div class="concept">
+                <div class="concept-title">3. Backpropagation</div>
+                <div class="concept-description">
+                    The error is propagated backward through the network. Using calculus (gradient descent), the network calculates how much each weight contributed to the error.
+                </div>
+            </div>
+            
+            <div class="concept">
+                <div class="concept-title">4. Weight Updates</div>
+                <div class="concept-description">
+                    Weights are adjusted in the direction that reduces error. The learning rate controls how big these adjustments are. Smaller learning rates are more precise but slower; larger rates are faster but risk overshooting.
+                </div>
+            </div>
+            
+            <div class="concept">
+                <div class="concept-title">5. Iteration (Epochs)</div>
+                <div class="concept-description">
+                    This process repeats many times. Each complete pass through the training data is called an epoch. Over time, the network learns patterns and improves its predictions.
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>📚 Current Network Architecture</h3>
+            <p id="infoText">This neural network has 3 input neurons, 2 hidden layers with 4 neurons each, and 2 output neurons (13 neurons total, 36 connections). Using RELU activation function with a learning rate of 0.01. During training, each of the 36 weights will be adjusted to minimize prediction error. The RELU activation function shapes how neurons respond to inputs - see the graph to understand its behavior.</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let config = {
+            inputNeurons: 3,
+            hiddenLayers: 2,
+            neuronsPerLayer: 4,
+            outputNeurons: 2,
+            activation: 'relu',
+            learningRate: 0.01
+        };
+        
+        let trainingState = {
+            isTraining: false,
+            epoch: 0,
+            maxEpochs: 100,
+            loss: 1.0,
+            accuracy: 0,
+            updates: 0,
+            lossHistory: [],
+            accuracyHistory: []
+        };
+        
+        let animationFrame = null;
+        let lossChart, accuracyChart, activationChart;
+        
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            drawNetwork();
+        }
+        
+        function initCharts() {
+            // Initialize Loss Chart
+            const lossCtx = document.getElementById('lossChart').getContext('2d');
+            lossChart = {
+                canvas: document.getElementById('lossChart'),
+                ctx: lossCtx,
+                data: []
+            };
+            
+            // Initialize Accuracy Chart
+            const accuracyCtx = document.getElementById('accuracyChart').getContext('2d');
+            accuracyChart = {
+                canvas: document.getElementById('accuracyChart'),
+                ctx: accuracyCtx,
+                data: []
+            };
+            
+            // Initialize Activation Chart
+            const activationCtx = document.getElementById('activationChart').getContext('2d');
+            activationChart = {
+                canvas: document.getElementById('activationChart'),
+                ctx: activationCtx,
+                data: []
+            };
+            
+            drawCharts();
+        }
+        
+        function drawCharts() {
+            drawLossChart();
+            drawAccuracyChart();
+            drawActivationChart();
+        }
+        
+        function relu(x) {
+            return Math.max(0, x);
+        }
+        
+        function sigmoid(x) {
+            return 1 / (1 + Math.exp(-x));
+        }
+        
+        function tanh(x) {
+            return Math.tanh(x);
+        }
+        
+        function drawActivationChart() {
+            const canvas = activationChart.canvas;
+            const ctx = activationChart.ctx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            
+            // Horizontal grid lines
+            for (let i = 0; i <= 4; i++) {
+                const y = (height - 60) * (i / 4) + 30;
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(width - 30, y);
+                ctx.stroke();
+            }
+            
+            // Vertical grid line at x=0
+            const centerX = width / 2;
+            ctx.strokeStyle = '#ccc';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX, 30);
+            ctx.lineTo(centerX, height - 30);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, height - 30);
+            ctx.lineTo(width - 30, height - 30);
+            ctx.stroke();
+            
+            // Y-axis
+            ctx.beginPath();
+            ctx.moveTo(centerX, 30);
+            ctx.lineTo(centerX, height - 30);
+            ctx.stroke();
+            
+            // Draw axis labels
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Input (x)', width / 2, height - 10);
+            
+            ctx.save();
+            ctx.translate(20, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Output', 0, 0);
+            ctx.restore();
+            
+            // Draw y-axis tick labels
+            ctx.textAlign = 'right';
+            const yLabels = config.activation === 'tanh' ? [-1, 0, 1] : [0, 0.5, 1];
+            const yPositions = config.activation === 'tanh' ? [0, 2, 4] : [4, 2, 0];
+            
+            yPositions.forEach((pos, idx) => {
+                const y = (height - 60) * (pos / 4) + 30;
+                ctx.fillText(yLabels[idx].toFixed(1), 45, y + 4);
+            });
+            
+            // Draw x-axis tick labels
+            ctx.textAlign = 'center';
+            ctx.fillText('-5', 50 + 10, height - 15);
+            ctx.fillText('0', centerX, height - 15);
+            ctx.fillText('5', width - 40, height - 15);
+            
+            // Draw activation function curve
+            ctx.strokeStyle = '#9c27b0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const steps = 200;
+            for (let i = 0; i <= steps; i++) {
+                const x = (i / steps) * 10 - 5; // x from -5 to 5
+                let y;
+                
+                switch (config.activation) {
+                    case 'relu':
+                        y = relu(x);
+                        break;
+                    case 'sigmoid':
+                        y = sigmoid(x);
+                        break;
+                    case 'tanh':
+                        y = tanh(x);
+                        break;
+                }
+                
+                // Map to canvas coordinates
+                const canvasX = 50 + ((x + 5) / 10) * (width - 80);
+                let canvasY;
+                
+                if (config.activation === 'tanh') {
+                    // Map -1 to 1 to canvas height
+                    canvasY = height - 30 - ((y + 1) / 2) * (height - 60);
+                } else {
+                    // Map 0 to max(1 or max_y) to canvas height
+                    const maxY = config.activation === 'relu' ? Math.max(1, relu(5)) : 1;
+                    canvasY = height - 30 - (y / maxY) * (height - 60);
+                }
+                
+                if (i === 0) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Add function name and description
+            ctx.fillStyle = '#9c27b0';
+            ctx.font = 'bold 13px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(config.activation.toUpperCase(), 55, 45);
+            
+            // Add brief description
+            ctx.fillStyle = '#666';
+            ctx.font = '10px Arial';
+            let description = '';
+            switch (config.activation) {
+                case 'relu':
+                    description = 'Output = max(0, x) - Simple & fast';
+                    break;
+                case 'sigmoid':
+                    description = 'Output = 1/(1+e^-x) - Smooth 0-1';
+                    break;
+                case 'tanh':
+                    description = 'Output = tanh(x) - Centered at 0';
+                    break;
+            }
+            ctx.fillText(description, 55, 58);
+        }
+        
+        function drawLossChart() {
+            const canvas = lossChart.canvas;
+            const ctx = lossChart.ctx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            if (trainingState.lossHistory.length === 0) {
+                ctx.fillStyle = '#999';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Start training to see loss curve', width / 2, height / 2);
+                return;
+            }
+            
+            // Draw grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = (height - 40) * (i / 5) + 20;
+                ctx.beginPath();
+                ctx.moveTo(40, y);
+                ctx.lineTo(width - 20, y);
+                ctx.stroke();
+            }
+            
+            // Draw axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 20);
+            ctx.lineTo(width - 20, height - 20);
+            ctx.stroke();
+            
+            // Draw y-axis labels
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            const maxLoss = Math.max(...trainingState.lossHistory, 1.0);
+            for (let i = 0; i <= 5; i++) {
+                const value = maxLoss * (1 - i / 5);
+                const y = (height - 40) * (i / 5) + 20;
+                ctx.fillText(value.toFixed(2), 35, y + 4);
+            }
+            
+            // Draw x-axis label
+            ctx.textAlign = 'center';
+            ctx.fillText('Epoch', width / 2, height - 5);
+            
+            // Draw y-axis label
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Loss', 0, 0);
+            ctx.restore();
+            
+            // Draw loss curve
+            if (trainingState.lossHistory.length > 1) {
+                ctx.strokeStyle = '#ff5722';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                trainingState.lossHistory.forEach((loss, index) => {
+                    const x = 40 + ((width - 60) * index) / (trainingState.maxEpochs - 1);
+                    const y = height - 20 - ((height - 40) * loss) / maxLoss;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+                
+                // Draw points
+                ctx.fillStyle = '#ff5722';
+                trainingState.lossHistory.forEach((loss, index) => {
+                    if (index % 5 === 0 || index === trainingState.lossHistory.length - 1) {
+                        const x = 40 + ((width - 60) * index) / (trainingState.maxEpochs - 1);
+                        const y = height - 20 - ((height - 40) * loss) / maxLoss;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+            }
+        }
+        
+        function drawAccuracyChart() {
+            const canvas = accuracyChart.canvas;
+            const ctx = accuracyChart.ctx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            if (trainingState.accuracyHistory.length === 0) {
+                ctx.fillStyle = '#999';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Start training to see accuracy curve', width / 2, height / 2);
+                return;
+            }
+            
+            // Draw grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = (height - 40) * (i / 5) + 20;
+                ctx.beginPath();
+                ctx.moveTo(40, y);
+                ctx.lineTo(width - 20, y);
+                ctx.stroke();
+            }
+            
+            // Draw axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(40, 20);
+            ctx.lineTo(40, height - 20);
+            ctx.lineTo(width - 20, height - 20);
+            ctx.stroke();
+            
+            // Draw y-axis labels
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const value = 100 * (1 - i / 5);
+                const y = (height - 40) * (i / 5) + 20;
+                ctx.fillText(value.toFixed(0) + '%', 35, y + 4);
+            }
+            
+            // Draw x-axis label
+            ctx.textAlign = 'center';
+            ctx.fillText('Epoch', width / 2, height - 5);
+            
+            // Draw y-axis label
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Accuracy', 0, 0);
+            ctx.restore();
+            
+            // Draw accuracy curve
+            if (trainingState.accuracyHistory.length > 1) {
+                ctx.strokeStyle = '#4CAF50';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                trainingState.accuracyHistory.forEach((accuracy, index) => {
+                    const x = 40 + ((width - 60) * index) / (trainingState.maxEpochs - 1);
+                    const y = height - 20 - ((height - 40) * accuracy) / 100;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+                
+                // Draw points
+                ctx.fillStyle = '#4CAF50';
+                trainingState.accuracyHistory.forEach((accuracy, index) => {
+                    if (index % 5 === 0 || index === trainingState.accuracyHistory.length - 1) {
+                        const x = 40 + ((width - 60) * index) / (trainingState.maxEpochs - 1);
+                        const y = height - 20 - ((height - 40) * accuracy) / 100;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+            }
+        }
+        
+        function drawNetwork() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const layers = [config.inputNeurons];
+            for (let i = 0; i < config.hiddenLayers; i++) {
+                layers.push(config.neuronsPerLayer);
+            }
+            layers.push(config.outputNeurons);
+            
+            const layerSpacing = canvas.width / (layers.length + 1);
+            const positions = [];
+            
+            layers.forEach((neuronCount, layerIndex) => {
+                const layerPositions = [];
+                const neuronSpacing = canvas.height / (neuronCount + 1);
+                
+                for (let i = 0; i < neuronCount; i++) {
+                    layerPositions.push({
+                        x: layerSpacing * (layerIndex + 1),
+                        y: neuronSpacing * (i + 1)
+                    });
+                }
+                positions.push(layerPositions);
+            });
+            
+            // Draw connections with training animation
+            for (let i = 0; i < positions.length - 1; i++) {
+                const currentLayer = positions[i];
+                const nextLayer = positions[i + 1];
+                
+                currentLayer.forEach(start => {
+                    nextLayer.forEach(end => {
+                        let weight = Math.random();
+                        
+                        // Simulate weight adjustment during training
+                        if (trainingState.isTraining) {
+                            const progress = trainingState.epoch / trainingState.maxEpochs;
+                            weight = 0.3 + (progress * 0.7); // Weights strengthen over time
+                        }
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(start.x, start.y);
+                        ctx.lineTo(end.x, end.y);
+                        
+                        // Color connections based on weight strength
+                        const strength = Math.floor(weight * 255);
+                        ctx.strokeStyle = trainingState.isTraining ? 
+                            `rgba(255, 152, 0, ${weight * 0.6 + 0.2})` :
+                            `rgba(102, 126, 234, ${weight * 0.5 + 0.1})`;
+                        ctx.lineWidth = weight * 2 + 0.5;
+                        ctx.stroke();
+                    });
+                });
+            }
+            
+            // Draw neurons with activation during training
+            positions.forEach((layer, layerIndex) => {
+                layer.forEach((pos, neuronIndex) => {
+                    // Outer glow - stronger during training
+                    const glowRadius = trainingState.isTraining ? 25 : 20;
+                    const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowRadius);
+                    
+                    if (trainingState.isTraining) {
+                        gradient.addColorStop(0, 'rgba(255, 152, 0, 0.4)');
+                        gradient.addColorStop(1, 'rgba(255, 152, 0, 0)');
+                    } else {
+                        gradient.addColorStop(0, 'rgba(102, 126, 234, 0.3)');
+                        gradient.addColorStop(1, 'rgba(102, 126, 234, 0)');
+                    }
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, glowRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Neuron circle
+                    let neuronColor;
+                    if (layerIndex === 0) {
+                        neuronColor = '#4CAF50';
+                    } else if (layerIndex === positions.length - 1) {
+                        neuronColor = '#FF6B6B';
+                    } else {
+                        neuronColor = trainingState.isTraining ? '#ff9800' : '#667eea';
+                    }
+                    
+                    ctx.fillStyle = neuronColor;
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Inner highlight
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(pos.x - 3, pos.y - 3, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            });
+            
+            // Draw layer labels
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            
+            ctx.fillText('Input', layerSpacing, 30);
+            for (let i = 1; i <= config.hiddenLayers; i++) {
+                ctx.fillText(`Hidden ${i}`, layerSpacing * (i + 1), 30);
+            }
+            ctx.fillText('Output', layerSpacing * (layers.length), 30);
+        }
+        
+        function updateInfo() {
+            const totalNeurons = config.inputNeurons + 
+                               (config.hiddenLayers * config.neuronsPerLayer) + 
+                               config.outputNeurons;
+            
+            const totalConnections = config.inputNeurons * config.neuronsPerLayer +
+                                    (config.hiddenLayers - 1) * config.neuronsPerLayer * config.neuronsPerLayer +
+                                    config.neuronsPerLayer * config.outputNeurons;
+            
+            document.getElementById('infoText').textContent = 
+                `This neural network has ${config.inputNeurons} input neuron${config.inputNeurons > 1 ? 's' : ''}, ` +
+                `${config.hiddenLayers} hidden layer${config.hiddenLayers > 1 ? 's' : ''} with ${config.neuronsPerLayer} neuron${config.neuronsPerLayer > 1 ? 's' : ''} each, ` +
+                `and ${config.outputNeurons} output neuron${config.outputNeurons > 1 ? 's' : ''} ` +
+                `(${totalNeurons} neurons total, ${totalConnections} connections). ` +
+                `Using ${config.activation.toUpperCase()} activation function with a learning rate of ${config.learningRate}. ` +
+                `During training, each of the ${totalConnections} weights will be adjusted to minimize prediction error. ` +
+                `The ${config.activation.toUpperCase()} activation function shapes how neurons respond to inputs - see the graph to understand its behavior.`;
+        }
+        
+        function trainNetwork() {
+            if (trainingState.isTraining) return;
+            
+            trainingState.isTraining = true;
+            trainingState.epoch = 0;
+            trainingState.loss = 1.0;
+            trainingState.accuracy = 0;
+            trainingState.updates = 0;
+            trainingState.lossHistory = [];
+            trainingState.accuracyHistory = [];
+            
+            document.getElementById('trainButton').disabled = true;
+            document.getElementById('trainButton').textContent = 'Training...';
+            
+            function trainingStep() {
+                if (trainingState.epoch >= trainingState.maxEpochs) {
+                    trainingState.isTraining = false;
+                    document.getElementById('trainButton').disabled = false;
+                    document.getElementById('trainButton').textContent = 'Start Training';
+                    return;
+                }
+                
+                trainingState.epoch++;
+                
+                // Simulate loss decrease (exponential decay with some noise)
+                const decayRate = 0.96 - (config.learningRate * 2);
+                const activationMultiplier = config.activation === 'relu' ? 1.0 : 
+                                            config.activation === 'sigmoid' ? 0.95 : 0.92;
+                trainingState.loss = Math.max(0.001, trainingState.loss * decayRate * activationMultiplier + (Math.random() * 0.02 - 0.01));
+                
+                // Simulate accuracy increase (logarithmic growth with noise)
+                const growthRate = config.learningRate * 100;
+                const activationBonus = config.activation === 'relu' ? 1.1 : 
+                                       config.activation === 'sigmoid' ? 1.0 : 0.95;
+                trainingState.accuracy = Math.min(99, trainingState.accuracy + growthRate * activationBonus * (1 - trainingState.accuracy / 100) + (Math.random() * 0.5 - 0.25));
+                
+                // Store history
+                trainingState.lossHistory.push(trainingState.loss);
+                trainingState.accuracyHistory.push(trainingState.accuracy);
+                
+                // Count weight updates
+                const totalConnections = config.inputNeurons * config.neuronsPerLayer +
+                                        (config.hiddenLayers - 1) * config.neuronsPerLayer * config.neuronsPerLayer +
+                                        config.neuronsPerLayer * config.outputNeurons;
+                trainingState.updates += totalConnections;
+                
+                // Update UI
+                document.getElementById('lossValue').textContent = trainingState.loss.toFixed(3);
+                document.getElementById('accuracyValue').textContent = trainingState.accuracy.toFixed(1) + '%';
+                document.getElementById('updatesValue').textContent = trainingState.updates.toLocaleString();
+                document.getElementById('epochDisplay').textContent = 
+                    `Epoch: ${trainingState.epoch} / ${trainingState.maxEpochs}`;
+                document.getElementById('progressFill').style.width = 
+                    (trainingState.epoch / trainingState.maxEpochs * 100) + '%';
+                
+                drawNetwork();
+                drawCharts();
+                
+                animationFrame = setTimeout(trainingStep, 50);
+            }
+            
+            trainingStep();
+        }
+        
+        // Event listeners
+        document.getElementById('inputNeurons').addEventListener('input', (e) => {
+            config.inputNeurons = parseInt(e.target.value);
+            document.getElementById('inputValue').textContent = config.inputNeurons;
+            drawNetwork();
+            updateInfo();
+        });
+        
+        document.getElementById('hiddenLayers').addEventListener('input', (e) => {
+            config.hiddenLayers = parseInt(e.target.value);
+            document.getElementById('layersValue').textContent = config.hiddenLayers;
+            drawNetwork();
+            updateInfo();
+        });
+        
+        document.getElementById('neuronsPerLayer').addEventListener('input', (e) => {
+            config.neuronsPerLayer = parseInt(e.target.value);
+            document.getElementById('neuronsValue').textContent = config.neuronsPerLayer;
+            drawNetwork();
+            updateInfo();
+        });
+        
+        document.getElementById('outputNeurons').addEventListener('input', (e) => {
+            config.outputNeurons = parseInt(e.target.value);
+            document.getElementById('outputValue').textContent = config.outputNeurons;
+            drawNetwork();
+            updateInfo();
+        });
+        
+        document.getElementById('learningRate').addEventListener('input', (e) => {
+            config.learningRate = parseFloat(e.target.value);
+            document.getElementById('lrValue').textContent = config.learningRate.toFixed(3);
+            updateInfo();
+        });
+        
+        document.querySelectorAll('.activation-buttons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.activation-buttons button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                config.activation = btn.dataset.activation;
+                updateInfo();
+                drawActivationChart();
+            });
+        });
+        
+        document.getElementById('trainButton').addEventListener('click', trainNetwork);
+        
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', () => {
+            const charts = document.querySelectorAll('.chart-canvas');
+            charts.forEach(chart => {
+                chart.width = chart.offsetWidth;
+                chart.height = chart.offsetHeight;
+            });
+            drawCharts();
+        });
+        
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', () => {
+            const charts = document.querySelectorAll('.chart-canvas');
+            charts.forEach(chart => {
+                chart.width = chart.offsetWidth;
+                chart.height = chart.offsetHeight;
+            });
+        });
+        
+        resizeCanvas();
+        updateInfo();
+        initCharts();
+    </script>
+
+<veepn-lock-screen><template shadowrootmode="open"><style>html{box-sizing:border-box;text-size-adjust:100%;word-break:normal;tab-size:4}*,:before,:after{background-repeat:no-repeat;box-sizing:border-box}:before,:after{text-decoration:inherit;vertical-align:inherit}*{padding:0;margin:0}hr{overflow:visible;height:0;color:inherit;border:0;border-top:1px solid}details,main{display:block}summary{display:list-item}small{font-size:80%}[hidden]{display:none!important}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}a{background-color:transparent}a:active,a:hover{outline-width:0}code,kbd,pre,samp{font-family:monospace}pre{font-size:1em}b,strong{font-weight:bolder}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-color:inherit;text-indent:0}iframe{border-style:none}input{border-radius:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{appearance:none}textarea{overflow:auto;resize:vertical}button,input,optgroup,select,textarea{font:inherit;color:inherit}optgroup{font-weight:700}button{overflow:visible}button,select{text-transform:none}button,[type=button],[type=reset],[type=submit],[role=button]{cursor:pointer}button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{border-style:none;padding:0}button,html [type=button],[type=reset],[type=submit]{appearance:auto}button,input,select,textarea{background-color:transparent;border-style:none}button:-moz-focusring,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{outline:1px dotted ButtonText}select{appearance:none}a:focus,button:focus,input:focus,select:focus,textarea:focus{outline-width:0}select::-ms-expand{display:none}select::-ms-value{color:currentcolor}legend{border:0;color:inherit;display:table;white-space:normal;max-width:100%}::-webkit-file-upload-button{appearance:auto;color:inherit;font:inherit}[disabled]{cursor:default}img{border-style:none}progress{vertical-align:baseline}[aria-busy=true]{cursor:progress}[aria-controls]{cursor:pointer}[aria-disabled=true]{cursor:default}ul,ol{list-style-type:none}figure{margin:0}@keyframes slide-in{0%{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.gradient-blue{background:radial-gradient(106.41% 128.47% at 50.15% 128.47%,#23abff,#3066ff)}.gradient-green{background:radial-gradient(92.26% 118.88% at 50.15% .13%,#00c3c3,#00aab3)}.gradient-purple{background:radial-gradient(165.12% 115.56% at 50.15% .13%,#a15aff,#00a0eb)}.bg-blue{background-color:#f2f5ff}.bg-purple{background-color:#f7f0ff}.bg-green{background-color:#ebffed}.lock-screen{font-family:FigtreeVF,sans-serif;letter-spacing:normal;position:fixed;z-index:2147483638;right:24px;bottom:24px;width:327px;border-radius:24px;overflow:hidden;box-shadow:0 24px 32px #00000014;animation:slide-in .3s ease-in-out forwards}.lock-screen__content{position:relative;padding:24px 24px 64px}.lock-screen__close{position:absolute;top:16px;right:16px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;opacity:.5}.lock-screen__label{height:26px;width:fit-content;border-radius:50px;background-color:#fff3;padding-inline:16px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:12px;line-height:18px;margin:-8px auto 16px}.lock-screen__title{color:#fff;text-align:center;font-size:20px;line-height:28px;font-weight:600;margin-bottom:8px}.lock-screen__description{color:#f5f6f7;text-align:center;font-size:14px;line-height:20px}.lock-screen__description b{font-weight:600}.lock-screen__card{position:relative;z-index:1;margin-top:-44px;background-color:#fff;border-radius:24px;padding:32px 20px 20px}.lock-screen__inner{margin-bottom:24px}.lock-screen__submit{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:16px;height:40px;width:100%;border-radius:12px;padding-inline:16px;background-color:#f70;color:#fff;margin-bottom:16px}.lock-screen__skip{display:flex;align-items:center;justify-content:center;font-size:14px;line-height:20px;color:#82829c;margin-inline:auto}.price-card{border:1px solid #f2f2fc;background:linear-gradient(254.14deg,#fafbff .04%,#f5f8ff 100.04%);border-radius:24px;padding:24px 28px}.price-card__label{color:#4a5764;text-align:center;font-size:14px;line-height:20px;text-transform:uppercase;margin-bottom:16px}.price-card__price{display:flex;justify-content:center;align-items:flex-start;column-gap:2px;margin-bottom:12px}.price-card__currency{color:#515478;font-size:18px;line-height:28px}.price-card__number{color:#14142a;text-align:center;font-size:64px;line-height:54px}.price-card__wrap{display:flex;flex-direction:column}.price-card__decimal{color:#515478;font-size:18px;line-height:28px;font-weight:600}.price-card__period{color:#515478;font-size:14px;line-height:20px;margin-top:-6px}.price-card__discount{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:12px}.price-card__discount-divider{position:absolute;z-index:0;top:50%;left:0;width:100%;height:1px;background-color:#dbe2f9;transform:translateY(-50%)}.price-card__discount-icon{position:absolute;z-index:1;top:50%;left:50%;transform:translate(-50%,-50%)}.price-card__discount-text{position:relative;z-index:2;color:#fff;font-size:12px;font-weight:600;line-height:18px}.price-card__features{display:flex;align-items:center;justify-content:center;column-gap:16px}.price-card__feature{color:#222e3a;font-size:14px;line-height:20px;display:flex;align-items:center;gap:6px}.price-card__feature:before{content:"";display:block;width:4px;height:4px;background-color:#20df9e;border-radius:50%;flex-shrink:0}.features-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.features-list__item{display:flex;flex-direction:column;align-items:center;gap:6px}.features-list__icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center}.features-list__text{color:#293a53;text-align:center;font-size:16px;line-height:24px;letter-spacing:-.1px}</style></template><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-lock-screen><veepn-intro-offer><template shadowrootmode="open"><style>html{box-sizing:border-box;text-size-adjust:100%;word-break:normal;tab-size:4}*,:before,:after{background-repeat:no-repeat;box-sizing:border-box}:before,:after{text-decoration:inherit;vertical-align:inherit}*{padding:0;margin:0}hr{overflow:visible;height:0;color:inherit;border:0;border-top:1px solid}details,main{display:block}summary{display:list-item}small{font-size:80%}[hidden]{display:none!important}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}a{background-color:transparent}a:active,a:hover{outline-width:0}code,kbd,pre,samp{font-family:monospace}pre{font-size:1em}b,strong{font-weight:bolder}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-color:inherit;text-indent:0}iframe{border-style:none}input{border-radius:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{appearance:none}textarea{overflow:auto;resize:vertical}button,input,optgroup,select,textarea{font:inherit;color:inherit}optgroup{font-weight:700}button{overflow:visible}button,select{text-transform:none}button,[type=button],[type=reset],[type=submit],[role=button]{cursor:pointer}button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{border-style:none;padding:0}button,html [type=button],[type=reset],[type=submit]{appearance:button}button,input,select,textarea{background-color:transparent;border-style:none}button:-moz-focusring,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{outline:1px dotted ButtonText}select{appearance:none}a:focus,button:focus,input:focus,select:focus,textarea:focus{outline-width:0}select::-ms-expand{display:none}select::-ms-value{color:currentcolor}legend{border:0;color:inherit;display:table;white-space:normal;max-width:100%}::-webkit-file-upload-button{appearance:button;color:inherit;font:inherit}[disabled]{cursor:default}img{border-style:none}progress{vertical-align:baseline}[aria-busy=true]{cursor:progress}[aria-controls]{cursor:pointer}[aria-disabled=true]{cursor:default}ul,ol{list-style-type:none}figure{margin:0}@keyframes slide-in{0%{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.offer-popup{font-family:FigtreeVF,sans-serif;position:fixed;right:16px;bottom:16px;z-index:2147483638;width:327px;border-radius:12px;overflow:hidden;background-color:#fff;box-shadow:0 0 16px #293a5333;animation:slide-in .3s ease-in-out forwards}.offer-popup__close{position:absolute;top:8px;right:8px;z-index:1;width:24px;height:24px;cursor:pointer;opacity:.5}.offer-popup__header{background:radial-gradient(50.52% 128.47% at 50.15% 128.47%,#23abff,#3066ff);padding:24px 24px 12px}.offer-popup__title{font-weight:700;font-size:20px;line-height:28px;text-align:center;color:#fff;margin:0}.offer-popup__main{padding:24px 20px 32px}.offer-popup__subtitle{color:#293a53;font-size:22px;line-height:32px;text-align:center;margin:0 0 24px}.offer-popup__subtitle span{color:#f70}.offer-popup__list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.offer-popup__item{display:flex;flex-direction:column;align-items:center;row-gap:6px;text-align:center;color:#293a53;font-size:16px;line-height:24px}.offer-popup__icon{margin:0;display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px;background-color:#ebefff}.offer-popup__footer{padding:0 20px 20px;display:flex;flex-direction:column;row-gap:16px}.offer-popup__submit{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;height:40px;border-radius:12px;padding-inline:16px;background-color:#f70;color:#fff;cursor:pointer}.offer-popup__cancel{display:flex;align-items:center;justify-content:center;font-weight:400;font-size:14px;color:#82829c;cursor:pointer}</style></template><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-intro-offer></body></html>
