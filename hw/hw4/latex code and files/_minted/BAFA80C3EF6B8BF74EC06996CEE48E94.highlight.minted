@@ -1,0 +1,30 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{ultralytics} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{YOLO}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} ==========================================}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} BLOCK 2: YOLO MODEL TRAINING}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} ==========================================}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{} Starting YOLOv8 Fine\PYGZhy{}tuning...\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Initialize the model with the chosen architecture}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imodel} \PYG{o}{=} \PYG{n}{YOLO}\PYG{p}{(}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}model\PYGZus{}architecture\PYGZdq{}}\PYG{p}{])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Train the model using the parameters from our CONFIG dictionary}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} The results variable will hold the final metrics after training}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itraining\PYGZus{}results} \PYG{o}{=} \PYG{n}{model}\PYG{o}{.}\PYG{n}{train}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idata}\PYG{o}{=}\PYG{n}{dataset\PYGZus{}yaml\PYGZus{}path}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iepochs}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}epochs\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibatch}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}batch\PYGZus{}size\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimgsz}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}img\PYGZus{}size\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ilr0}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}learning\PYGZus{}rate\PYGZus{}initial\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ilrf}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}learning\PYGZus{}rate\PYGZus{}final\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ioptimizer}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}optimizer\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iweight\PYGZus{}decay}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}weight\PYGZus{}decay\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imomentum}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}training\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}momentum\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iproject}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}project\PYGZus{}name\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iname}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}experiment\PYGZus{}name\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iexist\PYGZus{}ok}\PYG{o}{=}\PYG{k+kc}{True} \PYG{c+c1}{\PYGZsh{} Overwrite if experiment name exists}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{✅ BLOCK 2 Complete: Model training finished successfully.\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

@@ -1,0 +1,100 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{err}{!}\PYG{n}{pip} \PYG{n}{install} \PYG{n}{motmetrics}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{os}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{glob}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{numpy} \PYG{k}{as} \PYG{n}{np}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{o+ow}{not} \PYG{n+nb}{hasattr}\PYG{p}{(}\PYG{n}{np}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}asfarray\PYGZsq{}}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Inp}\PYG{o}{.}\PYG{n}{asfarray} \PYG{o}{=} \PYG{k}{lambda} \PYG{n}{a}\PYG{p}{:} \PYG{n}{np}\PYG{o}{.}\PYG{n}{asarray}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{dtype}\PYG{o}{=}\PYG{n+nb}{float}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{motmetrics} \PYG{k}{as} \PYG{n}{mm}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idef} \PYG{n}{yolo\PYGZus{}to\PYGZus{}top\PYGZus{}left}\PYG{p}{(}\PYG{n}{x\PYGZus{}center}\PYG{p}{,} \PYG{n}{y\PYGZus{}center}\PYG{p}{,} \PYG{n}{width}\PYG{p}{,} \PYG{n}{height}\PYG{p}{,} \PYG{n}{img\PYGZus{}w}\PYG{o}{=}\PYG{l+m+mi}{720}\PYG{p}{,} \PYG{n}{img\PYGZus{}h}\PYG{o}{=}\PYG{l+m+mi}{480}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}IConverts YOLO format (normalized center x, center y, w, h)}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}Ito MOT standard format (absolute top\PYGZhy{}left x, top\PYGZhy{}left y, absolute w, absolute h).}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Convert normalized values to absolute pixel values}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iabs\PYGZus{}w} \PYG{o}{=} \PYG{n}{width} \PYG{o}{*} \PYG{n}{img\PYGZus{}w}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iabs\PYGZus{}h} \PYG{o}{=} \PYG{n}{height} \PYG{o}{*} \PYG{n}{img\PYGZus{}h}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iabs\PYGZus{}x\PYGZus{}center} \PYG{o}{=} \PYG{n}{x\PYGZus{}center} \PYG{o}{*} \PYG{n}{img\PYGZus{}w}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iabs\PYGZus{}y\PYGZus{}center} \PYG{o}{=} \PYG{n}{y\PYGZus{}center} \PYG{o}{*} \PYG{n}{img\PYGZus{}h}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Calculate top\PYGZhy{}left coordinates}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itop\PYGZus{}left\PYGZus{}x} \PYG{o}{=} \PYG{n}{abs\PYGZus{}x\PYGZus{}center} \PYG{o}{\PYGZhy{}} \PYG{p}{(}\PYG{n}{abs\PYGZus{}w} \PYG{o}{/} \PYG{l+m+mf}{2.0}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itop\PYGZus{}left\PYGZus{}y} \PYG{o}{=} \PYG{n}{abs\PYGZus{}y\PYGZus{}center} \PYG{o}{\PYGZhy{}} \PYG{p}{(}\PYG{n}{abs\PYGZus{}h} \PYG{o}{/} \PYG{l+m+mf}{2.0}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ireturn} \PYG{p}{[}\PYG{n}{top\PYGZus{}left\PYGZus{}x}\PYG{p}{,} \PYG{n}{top\PYGZus{}left\PYGZus{}y}\PYG{p}{,} \PYG{n}{abs\PYGZus{}w}\PYG{p}{,} \PYG{n}{abs\PYGZus{}h}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idef} \PYG{n}{parse\PYGZus{}yolo\PYGZus{}txt}\PYG{p}{(}\PYG{n}{file\PYGZus{}path}\PYG{p}{,} \PYG{n}{has\PYGZus{}track\PYGZus{}id}\PYG{o}{=}\PYG{k+kc}{False}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}IParses a YOLO .txt file.}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}IReturns lists of IDs and Bounding Boxes.}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iids} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iboxes} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{o+ow}{not} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{exists}\PYG{p}{(}\PYG{n}{file\PYGZus{}path}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ireturn} \PYG{n}{ids}\PYG{p}{,} \PYG{n}{boxes}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iwith} \PYG{n+nb}{open}\PYG{p}{(}\PYG{n}{file\PYGZus{}path}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}r\PYGZsq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{f}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ilines} \PYG{o}{=} \PYG{n}{f}\PYG{o}{.}\PYG{n}{readlines}\PYG{p}{()}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{line} \PYG{o+ow}{in} \PYG{n}{lines}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iparts} \PYG{o}{=} \PYG{n}{line}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()}\PYG{o}{.}\PYG{n}{split}\PYG{p}{()}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{parts}\PYG{p}{)} \PYG{o}{\PYGZlt{}} \PYG{l+m+mi}{5}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Icontinue}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iclass\PYGZus{}id} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{parts}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ix\PYGZus{}c}\PYG{p}{,} \PYG{n}{y\PYGZus{}c}\PYG{p}{,} \PYG{n}{w}\PYG{p}{,} \PYG{n}{h} \PYG{o}{=} \PYG{n+nb}{map}\PYG{p}{(}\PYG{n+nb}{float}\PYG{p}{,} \PYG{n}{parts}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{:}\PYG{l+m+mi}{5}\PYG{p}{])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} If the file is from ByteTrack output, the 6th value is usually the Track ID}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{has\PYGZus{}track\PYGZus{}id} \PYG{o+ow}{and} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{parts}\PYG{p}{)} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{6}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itrack\PYGZus{}id} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{parts}\PYG{p}{[}\PYG{l+m+mi}{5}\PYG{p}{])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ielse}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} For Ground Truth, we assume class\PYGZus{}id acts as the unique track\PYGZus{}id}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itrack\PYGZus{}id} \PYG{o}{=} \PYG{n}{class\PYGZus{}id}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibox} \PYG{o}{=} \PYG{n}{yolo\PYGZus{}to\PYGZus{}top\PYGZus{}left}\PYG{p}{(}\PYG{n}{x\PYGZus{}c}\PYG{p}{,} \PYG{n}{y\PYGZus{}c}\PYG{p}{,} \PYG{n}{w}\PYG{p}{,} \PYG{n}{h}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iids}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{track\PYGZus{}id}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iboxes}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{box}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ireturn} \PYG{n}{ids}\PYG{p}{,} \PYG{n}{boxes}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Igt\PYGZus{}dir} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/Dataset/test/TR\PYGZus{}0007\PYGZus{}S1\PYGZus{}P03/TR\PYGZus{}0007\PYGZus{}S1\PYGZus{}P03\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ipred\PYGZus{}dir} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/runs/detect/track/labels\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iaccumulator} \PYG{o}{=} \PYG{n}{mm}\PYG{o}{.}\PYG{n}{MOTAccumulator}\PYG{p}{()}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Find all Ground Truth .txt files (which correspond to frames)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Igt\PYGZus{}files} \PYG{o}{=} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{glob}\PYG{o}{.}\PYG{n}{glob}\PYG{p}{(}\PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{gt\PYGZus{}dir}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}*.txt\PYGZdq{}}\PYG{p}{)))}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{} Comparing Ground Truth with Tracker Predictions...\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{frame\PYGZus{}idx}\PYG{p}{,} \PYG{n}{gt\PYGZus{}file} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{gt\PYGZus{}files}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Extract filename (e.g., TR\PYGZus{}0007\PYGZus{}S1\PYGZus{}P03\PYGZus{}000001.txt)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibase\PYGZus{}name} \PYG{o}{=} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{basename}\PYG{p}{(}\PYG{n}{gt\PYGZus{}file}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ipred\PYGZus{}file} \PYG{o}{=} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{pred\PYGZus{}dir}\PYG{p}{,} \PYG{n}{base\PYGZus{}name}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 1. Load Ground Truth data (no tracker ID, using class ID as track ID)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Igt\PYGZus{}ids}\PYG{p}{,} \PYG{n}{gt\PYGZus{}boxes} \PYG{o}{=} \PYG{n}{parse\PYGZus{}yolo\PYGZus{}txt}\PYG{p}{(}\PYG{n}{gt\PYGZus{}file}\PYG{p}{,} \PYG{n}{has\PYGZus{}track\PYGZus{}id}\PYG{o}{=}\PYG{k+kc}{False}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 2. Load Prediction data (includes tracker ID generated by ByteTrack)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ipred\PYGZus{}ids}\PYG{p}{,} \PYG{n}{pred\PYGZus{}boxes} \PYG{o}{=} \PYG{n}{parse\PYGZus{}yolo\PYGZus{}txt}\PYG{p}{(}\PYG{n}{pred\PYGZus{}file}\PYG{p}{,} \PYG{n}{has\PYGZus{}track\PYGZus{}id}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 3. Calculate distance matrix based on Intersection over Union (IoU)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 1.0 \PYGZhy{} IoU because motmetrics expects distances (0 means perfect match, 1 means no match)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idistance\PYGZus{}matrix} \PYG{o}{=} \PYG{n}{mm}\PYG{o}{.}\PYG{n}{distances}\PYG{o}{.}\PYG{n}{iou\PYGZus{}matrix}\PYG{p}{(}\PYG{n}{gt\PYGZus{}boxes}\PYG{p}{,} \PYG{n}{pred\PYGZus{}boxes}\PYG{p}{,} \PYG{n}{max\PYGZus{}iou}\PYG{o}{=}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 4. Update the accumulator for the current frame}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iaccumulator}\PYG{o}{.}\PYG{n}{update}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Igt\PYGZus{}ids}\PYG{p}{,}           \PYG{c+c1}{\PYGZsh{} Ground Truth IDs for this frame}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ipred\PYGZus{}ids}\PYG{p}{,}         \PYG{c+c1}{\PYGZsh{} Predicted Tracker IDs for this frame}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idistance\PYGZus{}matrix}\PYG{p}{,}  \PYG{c+c1}{\PYGZsh{} Distance matrix between GT and Preds}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iframeid}\PYG{o}{=}\PYG{n}{frame\PYGZus{}idx} \PYG{c+c1}{\PYGZsh{} Current frame number}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{} Successfully accumulated data for }\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{gt\PYGZus{}files}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ frames.\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

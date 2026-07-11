@@ -1,0 +1,73 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{os}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{glob}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{cv2}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{ultralytics} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{YOLO}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Update this if your project/experiment name is different}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibest\PYGZus{}weights\PYGZus{}path} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/runs/detect/Surgical\PYGZus{}Instrument\PYGZus{}Tracking/YOLOv8\PYGZus{}ByteTrack\PYGZus{}Run1/weights/best.pt\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itest\PYGZus{}folder\PYGZus{}path} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/Dataset/test/TR\PYGZus{}0007\PYGZus{}S1\PYGZus{}P03/TR\PYGZus{}0007\PYGZus{}S1\PYGZus{}P03\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ioutput\PYGZus{}video\PYGZus{}name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/Final\PYGZus{}Tracking\PYGZus{}Result.mp4\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifps} \PYG{o}{=} \PYG{l+m+mi}{30} \PYG{c+c1}{\PYGZsh{} Frames per second for the output video}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Load the model}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imodel} \PYG{o}{=} \PYG{n}{YOLO}\PYG{p}{(}\PYG{n}{best\PYGZus{}weights\PYGZus{}path}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Starting YOLO Detection + ByteTrack Association...\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Run the tracker on the folder of images}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} stream=False is used here so we can easily grab the save\PYGZus{}dir after it finishes}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iresults} \PYG{o}{=} \PYG{n}{model}\PYG{o}{.}\PYG{n}{track}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isource}\PYG{o}{=}\PYG{n}{test\PYGZus{}folder\PYGZus{}path}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itracker}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}bytetrack.yaml\PYGZdq{}}\PYG{p}{,} \PYG{c+c1}{\PYGZsh{} The tracking algorithm}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iconf}\PYG{o}{=}\PYG{l+m+mf}{0.25}\PYG{p}{,}                \PYG{c+c1}{\PYGZsh{} Confidence threshold for YOLO}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iiou}\PYG{o}{=}\PYG{l+m+mf}{0.5}\PYG{p}{,}                  \PYG{c+c1}{\PYGZsh{} Intersection Over Union threshold}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isave}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{,}                \PYG{c+c1}{\PYGZsh{} Save the images with drawn bounding boxes and IDs}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isave\PYGZus{}txt}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{,}            \PYG{c+c1}{\PYGZsh{} Save the coordinates}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iproject}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Surgical\PYGZus{}Tracking\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iname}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Test\PYGZus{}Video\PYGZus{}Output\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iexist\PYGZus{}ok}\PYG{o}{=}\PYG{k+kc}{True}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Extract the directory where Ultralytics saved the processed frames}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} (It uses the first result\PYGZsq{}s save\PYGZus{}dir since all frames go to the same folder)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprocessed\PYGZus{}frames\PYGZus{}dir} \PYG{o}{=} \PYG{n}{results}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{o}{.}\PYG{n}{save\PYGZus{}dir}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{✅ Tracking complete! Processed frames saved in: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{processed\PYGZus{}frames\PYGZus{}dir}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{} Stitching frames together to create }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{output\PYGZus{}video\PYGZus{}name}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{...\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 1. Get all processed .jpg files from the output directory}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Sorting is critical here so the video plays in the correct chronological order.}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Since your files are zero\PYGZhy{}padded (e.g., ...\PYGZus{}000001.jpg), normal sorting works perfectly.}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimage\PYGZus{}files} \PYG{o}{=} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{glob}\PYG{o}{.}\PYG{n}{glob}\PYG{p}{(}\PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{processed\PYGZus{}frames\PYGZus{}dir}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}*.jpg\PYGZdq{}}\PYG{p}{)))}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{o+ow}{not} \PYG{n}{image\PYGZus{}files}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}❌ Error: No processed images found to create a video.\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ielse}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 2. Read the first image to get the video dimensions (width, height)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifirst\PYGZus{}frame} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imread}\PYG{p}{(}\PYG{n}{image\PYGZus{}files}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iheight}\PYG{p}{,} \PYG{n}{width}\PYG{p}{,} \PYG{n}{layers} \PYG{o}{=} \PYG{n}{first\PYGZus{}frame}\PYG{o}{.}\PYG{n}{shape}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isize} \PYG{o}{=} \PYG{p}{(}\PYG{n}{width}\PYG{p}{,} \PYG{n}{height}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 3. Initialize the OpenCV Video Writer}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} \PYGZsq{}mp4v\PYGZsq{} is a standard codec for MP4 files}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifourcc} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{VideoWriter\PYGZus{}fourcc}\PYG{p}{(}\PYG{o}{*}\PYG{l+s+s1}{\PYGZsq{}mp4v\PYGZsq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iout\PYGZus{}video} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{VideoWriter}\PYG{p}{(}\PYG{n}{output\PYGZus{}video\PYGZus{}name}\PYG{p}{,} \PYG{n}{fourcc}\PYG{p}{,} \PYG{n}{fps}\PYG{p}{,} \PYG{n}{size}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 4. Loop through all images and write them to the video file}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{count}\PYG{p}{,} \PYG{n}{image\PYGZus{}path} \PYG{o+ow}{in} \PYG{n+nb}{enumerate}\PYG{p}{(}\PYG{n}{image\PYGZus{}files}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimg} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imread}\PYG{p}{(}\PYG{n}{image\PYGZus{}path}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iout\PYGZus{}video}\PYG{o}{.}\PYG{n}{write}\PYG{p}{(}\PYG{n}{img}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Print progress every 500 frames}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{p}{(}\PYG{n}{count} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{l+m+mi}{500} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}   \PYGZhy{}\PYGZgt{} Wrote }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{count}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{/}\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{image\PYGZus{}files}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ frames...\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} 5. Release the video writer to finalize the file}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iout\PYGZus{}video}\PYG{o}{.}\PYG{n}{release}\PYG{p}{()}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}=\PYGZdq{}}\PYG{o}{*}\PYG{l+m+mi}{50}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{} SUCCESS! Final tracked video saved at: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{output\PYGZus{}video\PYGZus{}name}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

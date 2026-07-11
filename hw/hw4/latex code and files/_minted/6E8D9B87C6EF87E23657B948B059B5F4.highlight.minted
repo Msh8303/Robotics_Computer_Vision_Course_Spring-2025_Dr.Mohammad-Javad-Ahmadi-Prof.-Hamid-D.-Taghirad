@@ -1,0 +1,116 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{err}{!}\PYG{n}{pip} \PYG{n}{install} \PYG{o}{\PYGZhy{}}\PYG{n}{q} \PYG{n}{datasets} \PYG{n}{huggingface\PYGZus{}hub}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{huggingface\PYGZus{}hub} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{login}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{huggingface\PYGZus{}hub} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{snapshot\PYGZus{}download}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ilogin}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}hf\PYGZus{}GmJsFVVeeQmZjeJwSRkgnPImccLnKhDXRY\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{huggingface\PYGZus{}hub} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{list\PYGZus{}repo\PYGZus{}files}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{random}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifiles} \PYG{o}{=} \PYG{n}{list\PYGZus{}repo\PYGZus{}files}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irepo\PYGZus{}id}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}mjahmadi/Cataract\PYGZhy{}LMM\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irepo\PYGZus{}type}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}dataset\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itoken}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}hf\PYGZus{}GmJsFVVeeQmZjeJwSRkgnPImccLnKhDXRY\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Izip\PYGZus{}files} \PYG{o}{=} \PYG{p}{[}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{If} \PYG{k}{for} \PYG{n}{f} \PYG{o+ow}{in} \PYG{n}{files}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{f}\PYG{o}{.}\PYG{n}{startswith}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}3\PYGZus{}Object\PYGZus{}Tracking/annotations/\PYGZdq{}}\PYG{p}{)} \PYG{o+ow}{and} \PYG{n}{f}\PYG{o}{.}\PYG{n}{endswith}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}.zip\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Total zip files: }\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{zip\PYGZus{}files}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irandom}\PYG{o}{.}\PYG{n}{seed}\PYG{p}{(}\PYG{l+m+mi}{42}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iselected\PYGZus{}files} \PYG{o}{=} \PYG{n}{random}\PYG{o}{.}\PYG{n}{sample}\PYG{p}{(}\PYG{n}{zip\PYGZus{}files}\PYG{p}{,} \PYG{l+m+mi}{8}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{n}{selected\PYGZus{}files}\PYG{p}{[:}\PYG{l+m+mi}{5}\PYG{p}{])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{huggingface\PYGZus{}hub} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{snapshot\PYGZus{}download}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isnapshot\PYGZus{}download}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irepo\PYGZus{}id}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}mjahmadi/Cataract\PYGZhy{}LMM\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irepo\PYGZus{}type}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}dataset\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ilocal\PYGZus{}dir}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}/content/Cataract\PYGZhy{}LMM\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iallow\PYGZus{}patterns}\PYG{o}{=}\PYG{n}{selected\PYGZus{}files}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{os}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{zipfile}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Izip\PYGZus{}dir} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/Cataract\PYGZhy{}LMM/3\PYGZus{}Object\PYGZus{}Tracking/annotations\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{file} \PYG{o+ow}{in} \PYG{n}{os}\PYG{o}{.}\PYG{n}{listdir}\PYG{p}{(}\PYG{n}{zip\PYGZus{}dir}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{file}\PYG{o}{.}\PYG{n}{endswith}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}.zip\PYGZdq{}}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Izip\PYGZus{}path} \PYG{o}{=} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{zip\PYGZus{}dir}\PYG{p}{,} \PYG{n}{file}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifolder\PYGZus{}name} \PYG{o}{=} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{splitext}\PYG{p}{(}\PYG{n}{file}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iextract\PYGZus{}path} \PYG{o}{=} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{zip\PYGZus{}dir}\PYG{p}{,} \PYG{n}{folder\PYGZus{}name}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ios}\PYG{o}{.}\PYG{n}{makedirs}\PYG{p}{(}\PYG{n}{extract\PYGZus{}path}\PYG{p}{,} \PYG{n}{exist\PYGZus{}ok}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Extracting }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{file}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ ...\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iwith} \PYG{n}{zipfile}\PYG{o}{.}\PYG{n}{ZipFile}\PYG{p}{(}\PYG{n}{zip\PYGZus{}path}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}r\PYGZsq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{zip\PYGZus{}ref}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Izip\PYGZus{}ref}\PYG{o}{.}\PYG{n}{extractall}\PYG{p}{(}\PYG{n}{extract\PYGZus{}path}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Done!\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{file} \PYG{o+ow}{in} \PYG{n}{os}\PYG{o}{.}\PYG{n}{listdir}\PYG{p}{(}\PYG{n}{zip\PYGZus{}dir}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{file}\PYG{o}{.}\PYG{n}{endswith}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}.zip\PYGZdq{}}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ios}\PYG{o}{.}\PYG{n}{remove}\PYG{p}{(}\PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{zip\PYGZus{}dir}\PYG{p}{,} \PYG{n}{file}\PYG{p}{))}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}ZIP files removed\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{glob}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ijson\PYGZus{}files} \PYG{o}{=} \PYG{n}{glob}\PYG{o}{.}\PYG{n}{glob}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s2}{\PYGZdq{}/content/Cataract\PYGZhy{}LMM/3\PYGZus{}Object\PYGZus{}Tracking/annotations/**/*.json\PYGZdq{}}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irecursive}\PYG{o}{=}\PYG{k+kc}{True}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Number of JSON files:\PYGZdq{}}\PYG{p}{,} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{json\PYGZus{}files}\PYG{p}{))}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{n}{json\PYGZus{}files}\PYG{p}{[:}\PYG{l+m+mi}{5}\PYG{p}{])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{shutil}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{random}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{pathlib} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{Path}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{IROOT} \PYG{o}{=} \PYG{n}{Path}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}/content/Cataract\PYGZhy{}LMM/3\PYGZus{}Object\PYGZus{}Tracking/annotations\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{IOUTPUT\PYGZus{}ROOT} \PYG{o}{=} \PYG{n}{Path}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}/content/Dataset\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{OUTPUT\PYGZus{}ROOT}\PYG{o}{.}\PYG{n}{exists}\PYG{p}{():}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ishutil}\PYG{o}{.}\PYG{n}{rmtree}\PYG{p}{(}\PYG{n}{OUTPUT\PYGZus{}ROOT}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{IOUTPUT\PYGZus{}ROOT}\PYG{o}{.}\PYG{n}{mkdir}\PYG{p}{(}\PYG{n}{parents}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{,} \PYG{n}{exist\PYGZus{}ok}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ivideo\PYGZus{}dirs} \PYG{o}{=} \PYG{n+nb}{sorted}\PYG{p}{([}\PYG{n}{d} \PYG{k}{for} \PYG{n}{d} \PYG{o+ow}{in} \PYG{n}{ROOT}\PYG{o}{.}\PYG{n}{iterdir}\PYG{p}{()} \PYG{k}{if} \PYG{n}{d}\PYG{o}{.}\PYG{n}{is\PYGZus{}dir}\PYG{p}{()])}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Total videos found: }\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{video\PYGZus{}dirs}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irandom}\PYG{o}{.}\PYG{n}{seed}\PYG{p}{(}\PYG{l+m+mi}{42}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irandom}\PYG{o}{.}\PYG{n}{shuffle}\PYG{p}{(}\PYG{n}{video\PYGZus{}dirs}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{In} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{video\PYGZus{}dirs}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{In\PYGZus{}train} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mf}{0.70} \PYG{o}{*} \PYG{n}{n}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{In\PYGZus{}val} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{l+m+mf}{0.15} \PYG{o}{*} \PYG{n}{n}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itrain\PYGZus{}dirs} \PYG{o}{=} \PYG{n}{video\PYGZus{}dirs}\PYG{p}{[:}\PYG{n}{n\PYGZus{}train}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ival\PYGZus{}dirs} \PYG{o}{=} \PYG{n}{video\PYGZus{}dirs}\PYG{p}{[}\PYG{n}{n\PYGZus{}train}\PYG{p}{:}\PYG{n}{n\PYGZus{}train}\PYG{o}{+}\PYG{n}{n\PYGZus{}val}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itest\PYGZus{}dirs} \PYG{o}{=} \PYG{n}{video\PYGZus{}dirs}\PYG{p}{[}\PYG{n}{n\PYGZus{}train}\PYG{o}{+}\PYG{n}{n\PYGZus{}val}\PYG{p}{:]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idef} \PYG{n}{copy\PYGZus{}split}\PYG{p}{(}\PYG{n}{video\PYGZus{}list}\PYG{p}{,} \PYG{n}{split\PYGZus{}name}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isplit\PYGZus{}root} \PYG{o}{=} \PYG{n}{OUTPUT\PYGZus{}ROOT} \PYG{o}{/} \PYG{n}{split\PYGZus{}name}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isplit\PYGZus{}root}\PYG{o}{.}\PYG{n}{mkdir}\PYG{p}{(}\PYG{n}{parents}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{,} \PYG{n}{exist\PYGZus{}ok}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{video\PYGZus{}dir} \PYG{o+ow}{in} \PYG{n}{video\PYGZus{}list}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idst\PYGZus{}video} \PYG{o}{=} \PYG{n}{split\PYGZus{}root} \PYG{o}{/} \PYG{n}{video\PYGZus{}dir}\PYG{o}{.}\PYG{n}{name}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ishutil}\PYG{o}{.}\PYG{n}{copytree}\PYG{p}{(}\PYG{n}{video\PYGZus{}dir}\PYG{p}{,} \PYG{n}{dst\PYGZus{}video}\PYG{p}{,} \PYG{n}{dirs\PYGZus{}exist\PYGZus{}ok}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\end{MintedVerbatim}

@@ -1,0 +1,107 @@
+\contentsline {section}{\numberline {1}پرسش ۱ - آماده‌سازی داده‌ها، افزار استراتژیک و پیش‌پردازش}{7}{section.1}%
+\contentsline {paragraph}{معرفی دیتاست \lr {Cataract-LMM}:}{7}{section*.7}%
+\contentsline {subsection}{\numberline {1.1}افراز داده‌ها}{7}{subsection.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}دانلود دیتاست و انتخاب ویدیوها}{7}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}تقسیم‌بندی سطح ویدیو (\lr {Video-level Split})}{10}{subsubsection.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.3}تحلیل در سطح فریم (\lr {Frame-Level}) و نشت داده (\lr {Data Leakage}) در مسائل ردیابی}{11}{subsubsection.1.1.3}%
+\contentsline {subsection}{\numberline {1.2}انتقال دستگاه مختصات}{12}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}تحلیل ریاضی فرمول انتقال مختصات}{12}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}پیاده‌سازی و کد}{12}{subsubsection.1.2.2}%
+\contentsline {subsubsection}{\numberline {1.2.3}نتایج حاصل شده}{17}{subsubsection.1.2.3}%
+\contentsline {section}{\numberline {2}پرسش ۲ - پیاده‌سازی معماری ردیابی چند‑شیء (\lr {MOT})}{19}{section.2}%
+\contentsline {subsection}{\numberline {2.1}انتخاب پارادایم و روش ردیابی}{19}{subsection.2.1}%
+\contentsline {paragraph}{دلیل انتخاب آشکارساز \lr {YOLOv8n}:}{19}{section*.11}%
+\contentsline {paragraph}{دلیل انتخاب الگوریتم ردیاب \lr {ByteTrack}:}{19}{section*.12}%
+\contentsline {subsubsection}{\numberline {2.1.1}شرح کامل پایپ‌لاین فرآیند ردیابی}{20}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}پارامترهای آموزش}{20}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}کدهای پیاده‌سازی}{22}{subsubsection.2.1.3}%
+\contentsline {paragraph}{1. تبدیل فرمت داده‌ها از \lr {COCO} به \lr {YOLO}}{22}{section*.14}%
+\contentsline {paragraph}{2. تعریف پارامترها و ایحاد فایل‌های ساختاری }{24}{section*.15}%
+\contentsline {paragraph}{3. بارگذاری و آموزش مدل}{26}{section*.16}%
+\contentsline {paragraph}{4. اجرای الگوریتم \lr {ByteTrack}}{27}{section*.17}%
+\contentsline {paragraph}{5. تولید گزارش عملکرد}{28}{section*.18}%
+\contentsline {subsubsection}{\numberline {2.1.4}روند آموزش و ارزیابی عملکرد نهایی}{29}{subsubsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.2}تولید خروجی بصری}{32}{subsection.2.2}%
+\contentsline {section}{\numberline {3}پرسش ۳ - ارزیابی جامع، تحلیل معیارهای استاندارد و کارایی زمانی}{35}{section.3}%
+\contentsline {subsection}{\numberline {3.1}متریک‌های کلاسیک ردیابی}{35}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}کدهای استفاده‌شده}{35}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}بررسی نتایج}{39}{subsubsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.2}تحلیل نموداری}{40}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}نمودار \lr {Precision-Recall}}{40}{subsubsection.3.2.1}%
+\contentsline {paragraph}{کد استفاده شده}{40}{section*.26}%
+\contentsline {paragraph}{بررسی نتایج}{40}{section*.27}%
+\contentsline {subsubsection}{\numberline {3.2.2}ماتریس درهم‌ریختگی}{43}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}نمودار میلۀ‌ای تعویض شناسه‌ها به تفکیک کلاس}{44}{subsubsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.3}تحلیل زمان اجرا و نرخ فریم}{45}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}محاسبه میانگین زمان استنتاج (\lr {Inference Time per Frame}) برای هر فریم و نرخ فریم بر ثانیه (\lr {FPS})}{45}{subsubsection.3.3.1}%
+\contentsline {paragraph}{کد استفاده شده}{45}{section*.34}%
+\contentsline {paragraph}{بررسی نتایج}{46}{section*.35}%
+\contentsline {subsubsection}{\numberline {3.3.2}بررسی تغییر رزولوشن ورودی بر \lr {FPS} و \lr {MOTA}}{46}{subsubsection.3.3.2}%
+\contentsline {paragraph}{کد استفاده شده}{46}{section*.37}%
+\contentsline {paragraph}{بررسی نتایج}{48}{section*.38}%
+\contentsline {section}{\numberline {4}پرسش 4: چالش جراحی رباتیک-طراحی سیستم هشدار هوشمند و ارزیابی سینماتیکی مبتنی بر کنترل \lr {(Smart Alarm and Kinematics)}}{49}{section.4}%
+\contentsline {subsection}{\numberline {4.1}دریافت داده از \lr {Hugging Face} با استفاده از توکن دسترسی}{49}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}ایجاد توکن با سطح دسترسی \lr {read}}{50}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}نگهداری امن توکن در \lr {Google Colab}}{50}{subsubsection.4.1.2}%
+\contentsline {paragraph}{نمونه کد خواندن توکن از بخش Secrets در \lr {Colab}:}{50}{section*.41}%
+\contentsline {subsubsection}{\numberline {4.1.3}دلیل استفاده از Secrets به جای قرار دادن مستقیم توکن در کد}{50}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}وضعیت کار تا این مرحله}{50}{subsubsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.2}انتخاب نمونه‌های ویدئویی برای پردازش در \lr {Google Colab}}{51}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}استفاده از فایل فهرست منتشرشده در \lr {Hugging Face}}{51}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}محدود کردن انتخاب به فایل‌های \lr {part001}}{51}{subsubsection.4.2.2}%
+\contentsline {paragraph}{فیلتر کردن ویدئوهای مربوط به \lr {part001}}{51}{section*.42}%
+\contentsline {subsubsection}{\numberline {4.2.3}نمونه‌گیری تصادفی با بذر ثابت}{51}{subsubsection.4.2.3}%
+\contentsline {paragraph}{کد انتخاب 15 نمونه تصادفی}{52}{lstnumber.-4.9}%
+\contentsline {subsubsection}{\numberline {4.2.4}دلیل این انتخاب در روند تمرین}{52}{subsubsection.4.2.4}%
+\contentsline {paragraph}{جمع‌بندی این مرحله}{52}{section*.44}%
+\contentsline {subsection}{\numberline {4.3}دانلود فایل‌های \lr {Annotation} مربوط به ویدئوهای منتخب}{52}{subsection.4.3}%
+\contentsline {paragraph}{ساخت نام فایل‌های Annotation}{53}{lstnumber.-5.6}%
+\contentsline {subsubsection}{\numberline {4.3.1}دانلود فایل‌ها از \lr {Hugging Face}}{53}{subsubsection.4.3.1}%
+\contentsline {paragraph}{خلاصه این مرحله}{53}{section*.46}%
+\contentsline {subsection}{\numberline {4.4}بررسی ساختار فایل‌های فشرده \lr {Annotation}}{54}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}بررسی ساختار کلی فایل \lr {ZIP}}{54}{subsubsection.4.4.1}%
+\contentsline {paragraph}{هدف این بررسی}{54}{section*.47}%
+\contentsline {subsubsection}{\numberline {4.4.2}بررسی محتوای فایل‌های \lr {CSV} و \lr {JSON}}{54}{subsubsection.4.4.2}%
+\contentsline {paragraph}{جمع‌بندی این بخش}{54}{section*.48}%
+\contentsline {subsection}{\numberline {4.5}تحلیل و بررسی تعداد فریم‌های دارای Annotation در ویدئوهای منتخب}{54}{subsection.4.5}%
+\contentsline {subsubsection}{\numberline {4.5.1}روش بررسی تعداد فریم‌های دارای ماسک}{54}{subsubsection.4.5.1}%
+\contentsline {paragraph}{نمونه کد مورد استفاده برای پردازش فایل‌های ZIP}{55}{lstnumber.-7.28}%
+\contentsline {subsubsection}{\numberline {4.5.2}نتایج شمارش فریم‌ها}{55}{subsubsection.4.5.2}%
+\contentsline {paragraph}{جدول شمارش فریم‌ها بر حسب نوع \lr {annotation}:}{55}{table.caption.51}%
+\contentsline {subsubsection}{\numberline {4.5.3}تحلیل نتایج}{55}{subsubsection.4.5.3}%
+\contentsline {paragraph}{کفایت داده‌ها برای ادامه پردازش}{56}{section*.52}%
+\contentsline {paragraph}{نتیجه‌گیری تحلیلی}{56}{section*.53}%
+\contentsline {subsubsection}{\numberline {4.5.4}جمع‌بندی کل \lr {annotation}ها}{56}{subsubsection.4.5.4}%
+\contentsline {paragraph}{تحلیل مجموع کل}{56}{section*.54}%
+\contentsline {paragraph}{نتیجه نهایی}{57}{section*.55}%
+\contentsline {subsection}{\numberline {4.6}بررسی صحت خواندن مختصات \lr {Bounding Box} و \lr {End Effector}}{57}{subsection.4.6}%
+\contentsline {subsubsection}{\numberline {4.6.1}هدف از این بررسی}{57}{subsubsection.4.6.1}%
+\contentsline {paragraph}{نتیجه مورد انتظار}{57}{section*.57}%
+\contentsline {subsubsection}{\numberline {4.6.2}کد مورد استفاده برای نمایش فریم‌ها}{58}{subsubsection.4.6.2}%
+\contentsline {subsubsection}{\numberline {4.6.3}تحلیل خروجی}{60}{subsubsection.4.6.3}%
+\contentsline {paragraph}{بررسی \lr {End Effector}}{60}{section*.58}%
+\contentsline {paragraph}{نتیجه‌گیری}{60}{section*.59}%
+\contentsline {subsection}{\numberline {4.7}تعریف نواحی خطر فضایی}{61}{subsection.4.7}%
+\contentsline {subsubsection}{\numberline {4.7.1}تعریف ناحیه خطر فضایی و حریم ایمن جراحی}{61}{subsubsection.4.7.1}%
+\contentsline {paragraph}{ایده اصلی الگوریتم}{61}{section*.61}%
+\contentsline {paragraph}{استخراج موقعیت نوک ابزار}{61}{section*.62}%
+\contentsline {paragraph}{استخراج مرجع هندسی قرنیه}{62}{section*.63}%
+\contentsline {paragraph}{تعریف آستانه ایمن و دلیل انتخاب آن}{62}{section*.64}%
+\contentsline {paragraph}{محاسبه فاصله اقلیدسی و تشخیص خطر}{63}{section*.65}%
+\contentsline {paragraph}{نحوه نمایش هشدار در خروجی ویدئو}{64}{section*.66}%
+\contentsline {paragraph}{نقش \lr {Pupil} در تحلیل فضایی}{64}{section*.67}%
+\contentsline {paragraph}{چرایی مناسب بودن آستانه در خروجی ویدئو}{64}{section*.68}%
+\contentsline {paragraph}{جمع‌بندی}{65}{section*.69}%
+\contentsline {subsection}{\numberline {4.8}تحلیل لرزش و هشدارهای سینماتیکی پایه}{65}{subsection.4.8}%
+\contentsline {paragraph}{ایده اصلی تحلیل سینماتیکی}{65}{section*.70}%
+\contentsline {paragraph}{استخراج مسیر زمانی نوک ابزار}{65}{section*.71}%
+\contentsline {paragraph}{تکمیل داده‌های گمشده و هموارسازی مسیر}{66}{section*.72}%
+\contentsline {paragraph}{محاسبه سرعت، شتاب و \lr {Jerk}}{66}{section*.73}%
+\contentsline {paragraph}{چرا \lr {Jerk} برای تشخیص لرزش مهم است؟}{67}{section*.74}%
+\contentsline {paragraph}{تعریف آستانه هشدار برای \lr {Jerk}}{67}{section*.75}%
+\contentsline {subsection}{\numberline {4.9}طراحی متریک ارزیابی مبتنی بر دینامیک و کنترل ربات}{67}{subsection.4.9}%
+\contentsline {subsubsection}{\numberline {4.9.1}شاخص تنش سینماتیکی ربات (\lr {RKSI}) برای ارزیابی کیفیت حرکت بازوی \lr {Slave Robot}}{67}{subsubsection.4.9.1}%
+\contentsline {subsection}{\numberline {4.10}رندرینگ ویدیوی هشداردهنده و داشبورد مانیتورینگ}{69}{subsection.4.10}%
+\contentsline {paragraph}{مکانیزم نمایش مسیر و بازخورد بصری}{69}{section*.77}%
+\contentsline {paragraph}{پیاده‌سازی هشدارهای ایمنی}{70}{section*.78}%
+\contentsline {paragraph}{تحلیل داشبورد زمانی و نوسانات سرعت}{70}{section*.80}%

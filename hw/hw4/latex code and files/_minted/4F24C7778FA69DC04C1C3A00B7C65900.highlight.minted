@@ -1,0 +1,35 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifrom} \PYG{n}{ultralytics} \PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{YOLO}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} ==========================================}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} BLOCK 3: TRACKING WITH BYTETRACK}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} ==========================================}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Starting Tracking Phase via ByteTrack...\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Construct the path to the best weights generated in Block 2}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ibest\PYGZus{}weights\PYGZus{}path} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/runs/detect/Surgical\PYGZus{}Instrument\PYGZus{}Tracking/YOLOv8\PYGZus{}ByteTrack\PYGZus{}Run1/weights/best.pt\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Load the fine\PYGZhy{}tuned model}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itracking\PYGZus{}model} \PYG{o}{=} \PYG{n}{YOLO}\PYG{p}{(}\PYG{n}{best\PYGZus{}weights\PYGZus{}path}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Path to the test video frames you want to track}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Update this path to target a specific video folder in your test set}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itest\PYGZus{}source\PYGZus{}path} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/Dataset/test/TR\PYGZus{}0007\PYGZus{}S1\PYGZus{}P03/TR\PYGZus{}0007\PYGZus{}S1\PYGZus{}P03\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Run the tracking algorithm}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itracking\PYGZus{}results} \PYG{o}{=} \PYG{n}{tracking\PYGZus{}model}\PYG{o}{.}\PYG{n}{track}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isource}\PYG{o}{=}\PYG{n}{test\PYGZus{}source\PYGZus{}path}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itracker}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}tracking\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}tracker\PYGZus{}type\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iconf}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}tracking\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}conf\PYGZus{}threshold\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iiou}\PYG{o}{=}\PYG{n}{CONFIG}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}tracking\PYGZdq{}}\PYG{p}{][}\PYG{l+s+s2}{\PYGZdq{}iou\PYGZus{}threshold\PYGZdq{}}\PYG{p}{],}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isave}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{,}      \PYG{c+c1}{\PYGZsh{} Saves visual results (images with tracking boxes \PYGZam{} IDs)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isave\PYGZus{}txt}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{,}  \PYG{c+c1}{\PYGZsh{} Saves tracking coordinates to text files}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Istream}\PYG{o}{=}\PYG{k+kc}{True}     \PYG{c+c1}{\PYGZsh{} Recommended for memory management when processing many frames}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Iterate through the generator to execute the tracking}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{result} \PYG{o+ow}{in} \PYG{n}{tracking\PYGZus{}results}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ipass} \PYG{c+c1}{\PYGZsh{} The model automatically saves the outputs to the \PYGZsq{}runs\PYGZsq{} directory}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s+s2}{ BLOCK 3 Complete: Tracking finished and results saved.\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

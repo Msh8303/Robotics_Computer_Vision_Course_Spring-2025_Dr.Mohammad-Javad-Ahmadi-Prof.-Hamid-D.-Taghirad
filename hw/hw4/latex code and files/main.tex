@@ -1,0 +1,2615 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage[sorting=none]{biblatex}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+%\usepackage{subfigure}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{lmodern} % فونت بهتر برای لاتین
+\usepackage{xcolor}
+\usepackage{minted}
+\usepackage{fvextra}
+
+\setminted{
+	linenos,
+	breaklines=true,
+	breakanywhere=true,
+	encoding=utf8,
+	autogobble=true,
+	fontsize=\small,
+	frame=single,
+	tabsize=4,
+	obeytabs=true,
+	mathescape=false,
+	texcomments=false
+}
+\usepackage{amssymb}
+\usepackage{longtable} % برای جداول طولانی
+\usepackage{enumitem} % برای کنترل لیست‌ها
+\usepackage{booktabs} % برای جداول حرفه‌ای
+\hypersetup{
+	colorlinks=true,
+	linkcolor=teal,
+	filecolor=magenta,      
+	urlcolor=teal,
+	citecolor=teal
+}
+\usepackage{xepersian}
+
+
+
+
+\setlength\headheight{28pt} 
+\addbibresource{bibliography.bib}
+\settextfont[Path={./font/}, Scale=1.3]{IRLotus}
+\setlatintextfont[Scale=1]{Times New Roman}
+\renewcommand{\baselinestretch}{1.5}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{تمرین سری چهارم رباتیک و بینایی ماشین}
+\chead{\includegraphics[width=1cm]{img/Logo.png}}
+\rhead{\thepage}
+
+\rfoot{محمدامین محمدیون شبستری}
+\cfoot{هستی محمدی}
+\lfoot{محمدسبحان سخایی}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\AtBeginDocument{
+	\def\chapterautorefname{فصل}%
+	\def\sectionautorefname{پاسخ سوال}%
+	\def\subsectionautorefname{بخش}%
+	\def\subsubsectionautorefname{بخش}%
+	\def\equationautorefname{رابطهٔ}%
+    \def\lstlistingautorefname{برنامۀ}%
+}
+\renewcommand{\lstlistingname}{Code}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+
+
+
+\lstset{style=mystyle}
+
+\begin{document}
+	
+	\input{titlepage}
+	
+	\clearpage
+	
+	\thispagestyle{empty}
+	
+	\begin{center}
+		{\Huge \textbf{آدرس نتایج و ویدیوهای آپلود شده در درایو}}\\[1cm]
+	\end{center}
+	
+	\renewcommand{\arraystretch}{2}
+	
+	\begin{table}[h]
+		\centering
+		\begin{tabular}{|p{5cm}|p{10cm}|}
+			\hline
+			\textbf{عنوان} & \textbf{لینک} \\
+			\hline
+			
+			,یدیو نهایی بخش سه &
+			\href{https://drive.google.com/file/d/1E7iqQIcYT6rXC16EVkipGac5xEaW6eFj/view?usp=sharing}
+			{\textcolor{blue}{Google Drive}}
+			\\
+			\hline
+			
+			ویدیو نهایی بخش چهار &
+			\href{https://drive.google.com/file/d/1iZoXWrEDb_ydSe7a-_ptMC1f2AUuu9DS/view?usp=sharing}
+			{\textcolor{red}{Google Drive}}
+			\\
+			\hline
+			
+			نتایج یولو &
+			\href{https://drive.google.com/file/d/1reqKynoItW0y2E8yuoKeKA44XZyJRbb3/view?usp=sharing}
+			{\textcolor{green}{Google Drive}}
+			\\
+			\hline
+			
+			
+		\end{tabular}
+	\end{table}
+	
+	\clearpage
+	
+	\tableofcontents
+	\clearpage
+	
+	\listoffigures
+	\clearpage
+	
+	\listoftables
+	\clearpage
+	
+	\lstlistoflistings
+	\clearpage
+
+\section{پرسش ۱ - آماده‌سازی داده‌ها، افزار استراتژیک و پیش‌پردازش}
+
+در این بخش، مراحل آماده‌سازی داده‌ها شامل دانلود زیرمجموعۀ انتخابی از دیتاست \lr{Cataract-LMM}، تقسیم‌بندی استراتژیک و پیش‌پردازش مختصات قطبی ابزار جراحی نسبت به مرکز هندسی مردمک توضیح داده می‌شود.
+
+\paragraph{معرفی دیتاست \lr{Cataract-LMM}:} \mbox{}\\
+دیتاست \lr{Cataract-LMM} شامل ۱۷۰ کلیپ ویدیویی از فاز حساس \lr{Capsulorhexis} جراحی آب مروارید است. این دیتاست شامل حاشیه‌نویسی‌های متراکم از جمله باکس‌های احاطه‌گر (\lr{Bounding Boxes})، شناسه‌های ثابت ردیابی (\lr{Tracking IDs})، ماسک‌های قطعه‌بندی و نقاط کلیدی مانند نوک ابزار و مرکز مردمک است.
+
+%----------------------------------------------------------------------
+% بخش ۱ - افزار داده‌ها و تقسیم‌بندی Video-level
+%----------------------------------------------------------------------
+\subsection{افراز داده‌ها}
+در این قسمت، داده‌ها در سطح ویدیو (\lr{Video-Level}) به سه بخش آموزش، اعتبارسنجی و آزمون (\lr{Train/Val/Test}) تقسیم‌بندی شده‌اند.
+
+\subsubsection{دانلود دیتاست و انتخاب ویدیوها}
+در مرحلۀ اول، با استفاده از کتابخانۀ \mintinline{python}{huggingface_hub} و تابع \mintinline{python}{list_repo_files}، فایل‌های زیپ موجود شناسایی شدند. از مجموع ۱۷۰ فایل زیپ، تعداد ۸ فایل به صورت تصادفی با دستور \mintinline{python}{random.seed(42)} انتخاب شدند. 
+
+کد استفاده شده برای این کار، در پایین قابل مشاهده است.
+\addcontentsline{lol}{lstlisting}{دانلود دیتاست و انتخاب ویدیوها}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			!pip install -q datasets huggingface_hub
+			
+			from huggingface_hub import login
+			from huggingface_hub import snapshot_download
+			login("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")
+			
+			from huggingface_hub import list_repo_files
+			import random
+			
+			files = list_repo_files(
+			repo_id="mjahmadi/Cataract-LMM",
+			repo_type="dataset",
+			token="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"
+			)
+			
+			zip_files = [
+			f for f in files
+			if f.startswith("3_Object_Tracking/annotations/") and f.endswith(".zip")
+			]
+			
+			print(f"Total zip files: {len(zip_files)}")
+			
+			random.seed(42)
+			selected_files = random.sample(zip_files, 8)
+			
+			print(selected_files[:5])
+			
+			from huggingface_hub import snapshot_download
+			
+			snapshot_download(
+			repo_id="mjahmadi/Cataract-LMM",
+			repo_type="dataset",
+			local_dir="/content/Cataract-LMM",
+			allow_patterns=selected_files
+			)
+			
+			import os
+			import zipfile
+			
+			zip_dir = "/content/Cataract-LMM/3_Object_Tracking/annotations"
+			
+			for file in os.listdir(zip_dir):
+			if file.endswith(".zip"):
+			
+			zip_path = os.path.join(zip_dir, file)
+			
+			folder_name = os.path.splitext(file)[0]
+			
+			extract_path = os.path.join(zip_dir, folder_name)
+			
+			os.makedirs(extract_path, exist_ok=True)
+			
+			print(f"Extracting {file} ...")
+			
+			with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+			zip_ref.extractall(extract_path)
+			
+			print("Done!")
+			
+			for file in os.listdir(zip_dir):
+			if file.endswith(".zip"):
+			os.remove(os.path.join(zip_dir, file))
+			
+			print("ZIP files removed")
+			
+			import glob
+			
+			json_files = glob.glob(
+			"/content/Cataract-LMM/3_Object_Tracking/annotations/**/*.json",
+			recursive=True
+			)
+			
+			print("Number of JSON files:", len(json_files))
+			
+			print(json_files[:5])
+			
+			import shutil
+			import random
+			from pathlib import Path
+			
+			ROOT = Path("/content/Cataract-LMM/3_Object_Tracking/annotations")
+			OUTPUT_ROOT = Path("/content/Dataset")
+			
+			if OUTPUT_ROOT.exists():
+			shutil.rmtree(OUTPUT_ROOT)
+			
+			OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+			
+			video_dirs = sorted([d for d in ROOT.iterdir() if d.is_dir()])
+			
+			print(f"Total videos found: {len(video_dirs)}")
+			
+			random.seed(42)
+			random.shuffle(video_dirs)
+			
+			n = len(video_dirs)
+			n_train = int(0.70 * n)
+			n_val = int(0.15 * n)
+			
+			train_dirs = video_dirs[:n_train]
+			val_dirs = video_dirs[n_train:n_train+n_val]
+			test_dirs = video_dirs[n_train+n_val:]
+			
+			
+			def copy_split(video_list, split_name):
+			split_root = OUTPUT_ROOT / split_name
+			split_root.mkdir(parents=True, exist_ok=True)
+			
+			for video_dir in video_list:
+			dst_video = split_root / video_dir.name
+			
+			shutil.copytree(video_dir, dst_video, dirs_exist_ok=True)
+			
+			
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+در نهایت، شناسه ویدیوهای انتخاب‌شده عبارتند از:
+
+\begin{enumerate}[label=\arabic*.]
+	\item \lr{TR\_0058\_S1\_P03}
+	\item \lr{TR\_0027\_S1\_P03}
+	\item \lr{TR\_0164\_S1\_P03}
+	\item \lr{TR\_0029\_S1\_P03}
+	\item \lr{TR\_0036\_S1\_P03}
+	\item \lr{TR\_0063\_S1\_P03}
+	\item \lr{TR\_0007\_S1\_P03}
+	\item \lr{TR\_0071\_S1\_P03}
+\end{enumerate}
+
+\subsubsection{تقسیم‌بندی سطح ویدیو (\lr{Video-level Split})}
+
+برای جلوگیری از نشت داده (\lr{Data Leakage})، تقسیم‌بندی در سطح ویدیو انجام شده است. ویدیوهای انتخاب شده در بخش قبلی با استفاده از کد زیر به سه بخش آموزشف اعتبارسنجی و آزمون تقسیم شده‌اند.
+
+\addcontentsline{lol}{lstlisting}{تقسیم‌بندی سطح ویدیو}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			copy_split(train_dirs, "train")
+			copy_split(val_dirs, "validation")
+			copy_split(test_dirs, "test")
+			
+			print("=" * 50)
+			print(f"Train Videos      : {len(train_dirs)}")
+			print(f"Validation Videos : {len(val_dirs)}")
+			print(f"Test Videos       : {len(test_dirs)}")
+			
+			print("\nDataset saved to:")
+			print(OUTPUT_ROOT)
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+اطلاعات مربوط به هر بخش از داده، در جدول \ref{tab:split} آمده است.
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{cccc}
+		\toprule
+		\textbf{بخش} & \textbf{درصد} & \textbf{تعداد ویدیو} & \textbf{تعداد فریم برچسب‌دار} \\ 
+		\midrule
+		آموزش (\lr{Train}) & $70\%$ & $5$ & $15564$ \\
+		اعتبارسنجی (\lr{Val}) & $15\%$ & $1$ & $1957$ \\
+		آزمون (\lr{Test}) & $15\%$ & $2$ & $4120$ \\
+		\bottomrule
+	\end{tabular}
+	\caption{تقسیم‌بندی ویدیویی دیتاست با نسبت ۷۰/۱۵/۱۵}
+	\label{tab:split}
+\end{table}
+
+\subsubsection{تحلیل در سطح فریم (\lr{Frame-Level}) و نشت داده (\lr{Data Leakage}) در مسائل ردیابی}
+طراحی یک سیستم بینایی ماشین نیازمند افراز دقیق داده‌ها برای جلوگیری از نشت داده (\lr{Data Leakage}) است. 
+
+نشت داده زمانی رخ می‌دهد که اطلاعاتی از مجموعه داده آزمایش یا ارزیابی، به‌صورت مستقیم یا غیرمستقیم، در فرآیند آموزش مدل مشارکت داده شود. در نتیجه این سوگیری، معیارهای ارزیابی عملکرد مدل به‌طور کاذب بهینه‌تر از حد واقعی نشان داده می‌شوند، زیرا مدل به جای یادگیری الگوهای تعمیم‌پذیر، ویژگی‌های خاص و تکراری داده‌های آزمایش را حفظ کرده است. این پدیده باعث می‌شود که عملکرد سیستم در محیط‌های عملیاتی و مواجهه با داده‌های کاملاً جدید به شدت افت کند، چرا که ارزیابی‌های اولیه بر اساس داده‌های نادرست صورت گرفته است.
+
+در مسائل ردیابی اشیا (\lr{Object Tracking})، هدف اصلی سیستم دنبال کردن هویت‌های مشخص در طول زمان و در مواجهه با چالش‌هایی نظیر انسداد، تغییرات شدید نور و تغییر شکل ساختاری است. در این دسته از مسائل، استفاده از تحلیل در سطح فریم (\lr{Frame-level Analysis}) برای تفکیک داده‌ها یا آموزش مدل‌ها کاملاً نامناسب است. چرا که نرخ فریم ویدیوهای استاندارد معمولاً بسیار بالا است و فریم‌های متوالی و مجاور دارای وابستگی شدید زمانی و همبستگی ساختاری بسیار بالایی هستند. به عبارت دیگر، تغییرات ظاهری، موقعیتی و پس‌زمینه بین دو فریم متوالی بسیار ناچیز است و نمونه‌های استخراج‌شده از فریم‌های همجوار عملا تکرار یکدیگر با تغییرات جزئی به شمار می‌روند. تفکیک این داده‌ها بدون در نظر گرفتن پیوستگی ویدیو، استقلال نمونه‌ها را از بین می‌برد.
+
+این رویکرد تحلیل در سطح فریم، مستقیماً زمینه‌ وقوع نشت داده‌ در مسائل ردیابی را فراهم می‌کند. زمانی که تحلیل در سطح فریم مبنای تقسیم‌بندی داده‌ها قرار می‌گیرد، فریم‌های فرد یک ویدیو ممکن است در مجموعه آموزش و فریم‌های زوج همان ویدیو در مجموعه آزمایش قرار گیرند. در این حالت، مدل در طول فرآیند آموزش با ویژگی‌های ظاهری دقیق، پوشش، هویت و حتی پس‌زمینه خاص یک شی در فریم‌های فرد آشنا می‌شود. در فاز ارزیابی، وقتی مدل با فریم‌های زوج مواجه می‌گردد، به دلیل شباهت نزدیک به صد درصدی این فریم‌ها با داده‌های آموزش، شیء مورد نظر را به راحتی بازشناسی و رهگیری می‌کند. بنابراین، مدل به جای یادگیری ویژگی‌های حرکتی مستقل و الگوهای تعمیم‌پذیر رهگیری، صرفاً هویت‌ها و فریم‌های مشابهی را که قبلاً دیده است، یادآوری می‌کند. در نتیجه، معیارهای سنجش رهگیری مانند دقت پیوستگی هویت و نرخ حفظ شناسه‌ها به‌طور نامتعارفی بالا گزارش می‌شوند، در حالی که مدل در مواجهه با یک ویدیوی کاملاً جدید با پس‌زمینه و اشیاء متفاوت، توانایی کمتری در برقراری ارتباطات زمانی و حفظ هویت اشیاء خواهد داشت. 
+
+برای جلوگیری از این نوع نشت داده در رهگیری، تفکیک داده‌ها باید همواره در سطح ویدیو یا سکانس‌های کاملا مجزا صورت پذیرد تا استقلال واقعی داده‌های آزمایش حفظ شود.
+
+%----------------------------------------------------------------------
+% بخش ۲ - انتقال مختصات به فضای قطبی
+%----------------------------------------------------------------------
+\subsection{انتقال دستگاه مختصات}
+
+در جراحی آب مروارید، حرکت ابزار نسبت به آناتومی بیمار اهمیت بالینی دارد. برای تحلیل این حرکت، مختصات نوک ابزار از فضای دکارتی تصویر به یک دستگاه مختصات قطبی (\lr{Polar Coordinates}) با مبدأ مرکز هندسی مردمک (\lr{Pupil Centroid}) تبدیل شده است.
+
+\subsubsection{تحلیل ریاضی فرمول انتقال مختصات}
+
+برای هر فریم، اگر مختصات مرکز مردمک برابر \lr{$(x_{p}, y_{p})$} و مختصات نوک ابزار برابر \lr{$(x_{t}, y_{t})$} باشد، $\Delta x$ و $\Delta y$ به صورت زیر تعریف شوند:
+
+\[
+\Delta x = x_{t} - x_{p}, \quad \Delta y = y_{p} - y_{t}
+\]
+
+شعاع $r$ و زاویه $\theta$ برای مختصات قطبی از روابط زیر به دست می‌آیند:
+\[
+r = \sqrt{(\Delta x)^{2} + (\Delta y)^{2}}
+\]
+
+\[
+\theta = \mathrm{arctan2}(\Delta y, \Delta x)
+\]
+
+که در آن شعاع $r$ فاصلۀ پیکسلی نوک ابزار از مرکز مردمک را نشان می‌دهد و $\theta$ زاویۀ جهت حرکت ابزار نسبت به مردمک را مشخص می‌کند.
+
+توجه شود که در محاسبۀ $\Delta y$، محور عمودی تصویر (که رو به پایین است) معکوس شده تا $\theta$ با معنای ریاضی استاندارد در دستگاه مختصات قطبی مطابقت داشته باشد. 
+
+\subsubsection{پیاده‌سازی و کد}
+
+در مرحله اول، با استفاده از کتابخانه \mintinline{python}{json}، اطلاعات فایل \lr{JSON} مربوطه استخراج و بررسی شده‌اند. در بخش اول تمامی کلیدها و مسیرهای دسترسی به داده‌ها پیمایش شده و آدرس متنی کامل هر ویژگی را استخراج می‌شود و در بخش دوم، ابزارهای موجود در ویدیوی انتخابی (\lr{TR\_0029\_S1\_P03}) استخراج شده و نام آن‌ها نمایش داده می‌شود. 
+
+کد مرحله اول به صورت زیر است:
+
+\addcontentsline{lol}{lstlisting}{بررسی ساختار و دسته‌بندی‌های فایل \lr{JSON}}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import json
+			
+			def extract_keys(obj, prefix=""):
+			keys = []
+			
+			if isinstance(obj, dict):
+			for key, value in obj.items():
+			full_key = f"{prefix}.{key}" if prefix else key
+			keys.append(full_key)
+			
+			# بررسی زیرکلیدها
+			keys.extend(extract_keys(value, full_key))
+			
+			elif isinstance(obj, list):
+			for item in obj:
+			keys.extend(extract_keys(item, prefix))
+			
+			return keys
+			
+			
+			with open("/content/Dataset/train/TR_0029_S1_P03/TR_0029_S1_P03/annotation_full.json", "r", encoding="utf-8") as f:
+			data = json.load(f)
+			
+			
+			all_keys = extract_keys(data)
+			
+			for k in all_keys:
+			print(k)
+			
+			import json
+			
+			json_path = "/content/Dataset/train/TR_0029_S1_P03/TR_0029_S1_P03/annotation_full.json"
+			
+			with open(json_path, 'r') as f:
+			data = json.load(f)
+			
+			print("Categories actually present in this specific video:")
+			print("-" * 50)
+			
+			category_names = {cat["id"]: cat["name"] for cat in data.get("categories", [])}
+			
+			found_categories = set()
+			for ann in data.get("annotations", []):
+			cat_id = ann.get("category_id")
+			found_categories.add(cat_id)
+			
+			for cat_id in sorted(found_categories):
+			name = category_names.get(cat_id, "Unknown")
+			print(f"Category ID: {cat_id:2d} | Name: {name}")
+			
+			print("-" * 50)
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+خروجی بخش دوم، به صورت زیر است و ابزارهای موجود در ویدیو را به همراه شناسه دسته‌بندی (\lr{Category ID}) نمایش می‌دهد:
+\begin{latin}
+	\begin{LTR}
+		\begin{verbatim}
+			Categories actually present in this specific video:
+			--------------------------------------------------
+			Category ID:  2 | Name: Cap-Cystotome
+			Category ID:  4 | Name: Cornea
+			Category ID: 10 | Name: Pupil
+			--------------------------------------------------
+		\end{verbatim}
+	\end{LTR}
+\end{latin}
+
+در مرحله دوم، ابتدا با استفاده از تابع  \mintinline{python}{convert_to_polar} ابتدا مبدا مختصات دکارتی به مرکز مردمک انتقال یافته و محور عمودی معکوس شده است. سپس با توجه به اصول ریاضی، خروجی به دستگاه مختصات قطبی منتقل می‌شود. بخش بعدی کد به تحلیل هندسی موقعیت ابزار نسبت به مرکز مردمک چشم در فریم‌های یک ویدیو می‌پردازد و نقاط کلیدی را پس از استخراج، در بسته‌هایی حاوی مختصات دوبعدی و وضعیت رویت‌پذیری مرکز مردمک و نوک ابزار دسته‌بندی می‌کند. روند پردازش به صورت فریم به فریم است و تنها فریم‌هایی که در آن‌ها هم مرکز مردمک و هم نوک ابزار به طور هم‌زمان قابل ردیابی هستند، انتخاب می‌شوند. 
+
+کد این بخش در قسمت زیر قابل مشاهده است.
+
+\addcontentsline{lol}{lstlisting}{انتقال دستگاه و تحلیل هندسی موقعیت ابزار نسبت به مرکز مردمک چشم}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import json
+			import numpy as np
+			import matplotlib.pyplot as plt
+			
+			def convert_to_polar(tool_x, tool_y, pupil_x, pupil_y):
+			"""
+			Transforms Cartesian coordinates to Polar coordinates relative to the pupil.
+			Returns radius (r) and angle (theta) in radians.
+			"""
+			dx = tool_x - pupil_x
+			dy = pupil_y - tool_y # Invert Y-axis for standard math angles
+			
+			r = np.sqrt(dx**2 + dy**2)
+			theta = np.arctan2(dy, dx)
+			
+			return r, theta
+			
+			
+			json_path = "/content/Dataset/train/TR_0029_S1_P03/TR_0029_S1_P03/annotation_full.json"
+			
+			with open(json_path, 'r') as f:
+			data = json.load(f)
+			
+			PUPIL_CATEGORY_ID = 10
+			TOOL_CATEGORY_ID = 2
+			
+			pupil_track = []
+			tool_track = []
+			
+			# Extract and reshape the continuous arrays into frame-by-frame chunks
+			for ann in data.get("annotations", []):
+			cat_id = ann.get("category_id")
+			
+			if "keypoints" in ann and len(ann["keypoints"]) > 0:
+			kp = ann["keypoints"]
+			
+			# Chunk the massive flat array into blocks of 6 items per frame
+			# Schema per chunk: [center_x, center_y, center_v, tip_x, tip_y, tip_v]
+			track_frames = [kp[i:i+6] for i in range(0, len(kp), 6)]
+			
+			if cat_id == PUPIL_CATEGORY_ID:
+			pupil_track = track_frames
+			elif cat_id == TOOL_CATEGORY_ID:
+			tool_track = track_frames
+			
+			# Calculate distance frame by frame
+			r_values = []
+			theta_values = []
+			valid_frames = []
+			
+			# Find the total number of frames tracked in the video
+			num_frames = min(len(pupil_track), len(tool_track)) if pupil_track and tool_track else 0
+			
+			for frame_idx in range(num_frames):
+			p_frame = pupil_track[frame_idx]
+			t_frame = tool_track[frame_idx]
+			
+			# Ensure the chunk has all 6 values
+			if len(p_frame) >= 6 and len(t_frame) >= 6:
+			# Pupil Center
+			p_cx, p_cy, p_cv = p_frame[0], p_frame[1], p_frame[2]
+			# Tool Tip
+			t_tx, t_ty, t_tv = t_frame[3], t_frame[4], t_frame[5]
+			
+			# Check if both Pupil Center (p_cv) and Tool Tip (t_tv) are visible in this specific frame
+			if p_cv > 0 and t_tv > 0:
+			r, theta = convert_to_polar(t_tx, t_ty, p_cx, p_cy)
+			r_values.append(r)
+			theta_values.append(theta)
+			valid_frames.append(frame_idx)
+			
+			print(f"Total frames tracked in video: {num_frames}")
+			print(f"Successfully calculated distance for {len(valid_frames)} frames where both were visible.")
+			
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+در نهایت با استفاده از کد زیر نمودارهای لازم برای تحلیل داده‌های مرحله قبل رسم شده‌اند:
+\addcontentsline{lol}{lstlisting}{نمودارهای لازم برای تحلیل موقعیت هندسی ابزار و مرکز مردمک}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			
+			if r_values:
+			plt.style.use('seaborn-v0_8-whitegrid')
+			
+			# Plot A: Radial Distribution (Histogram)
+			plt.figure(figsize=(10, 6))
+			plt.hist(r_values, bins=30, color='#3498db', edgecolor='black', alpha=0.75)
+			mean_r = np.mean(r_values)
+			plt.axvline(mean_r, color='#e74c3c', linestyle='dashed', linewidth=2,
+			label=f'Mean Radius (r): {mean_r:.2f} px')
+			
+			plt.title("Radial Distribution of Tool Tip Relative to Pupil Centroid", fontsize=14, fontweight='bold')
+			plt.xlabel("Radial Distance r (Pixels)", fontsize=12)
+			plt.ylabel("Frequency (Number of Frames)", fontsize=12)
+			plt.legend()
+			plt.tight_layout()
+			plt.show()
+			
+			# Plot B: Tool Tip Distance Over Time
+			plt.figure(figsize=(12, 4))
+			plt.plot(valid_frames, r_values, color='#8e44ad', linestyle='-', linewidth=1.5, alpha=0.8)
+			plt.title("Tool Tip Distance (r) from Pupil Over Time", fontsize=14, fontweight='bold')
+			plt.xlabel("Frame Sequence", fontsize=12)
+			plt.ylabel("Radial Distance r (Pixels)", fontsize=12)
+			plt.tight_layout()
+			plt.show()
+			else:
+			print("Warning: No matching frames found. The tool might not be used in this specific video.")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+\subsubsection{نتایج حاصل شده}
+
+برای ویدیوی انتخاب شده با شناسه \lr{TR\_0029\_S1\_P03} با استفاده از نقاط کلیدی ذخیره‌شده، نتایج زیر حاصل شده است:
+\begin{itemize}
+	\item تعداد کل فریم‌های ردیابی‌شده: \lr{1509}
+	\item تعداد فریم‌های معتبر (هر دو نقطۀ کلیدی مردمک و نوک ابزار قابل مشاهده): \lr{1479}
+	\item دسته‌های فعال در این ویدیو: \lr{Cap-Cystotome} (id=2)، \lr{Cornea} (id=4)، \lr{Pupil} (id=10)
+\end{itemize}
+
+دو نمودار برای تحلیل داده‌های آماری رسم شده‌اند.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{img/q1_radial.png}
+	\caption{توزیع فراوانی و میانگین آماری فاصله شعاعی نوک ابزار نسبت به مرکز مردمک}
+	\label{fig:q1_radial}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{img/q1_time.png}
+	\caption{تغییرات فاصله شعاعی نوک ابزار از مرکز مردمک در طول توالی فریم‌های جراحی}
+	\label{fig:q1_histogram}
+\end{figure}
+
+نمودار شکل \ref{fig:q1_radial}، فاصلهٔ شعاعی نوک ابزار جراحی از مرکز مردمک در طول زمان را نمایش می‌دهد که در آن محور افقی تعداد فریم‌ها و محور عمودی فاصلهٔ شعاعی بر حسب پیکسل است. با توجه به این نمودار مشخص می‌شود که در ابتدا، نوک ابزار بسیار نزدیک به مردمک قرار دارد (فاصله نزدیک به صفر است)، سپس به تدریج به سمت فاصلهٔ ۸۰ تا ۱۰۰ پیکسل حرکت می‌کند. در بازهٔ تقریبی فریم‌های ۷۵۰ تا ۱۱۰۰، کاهش چشمگیری در فاصله مشاهده می‌شود که نشان‌دهندهٔ نزدیک شدن مجدد ابزار به مردمک است. در انتها، فاصله دوباره به بیش از ۱۰۰ پیکسل افزایش می‌یابد. این الگو بیانگر مراحل مختلف عمل جراحی آب مروارید شامل نزدیک شدن اولیه، فاصلهٔ کاری پایدار، و فازهای پایانی هستند.
+
+نمودار شکل \ref{fig:q1_histogram}، توزیع فراوانی فواصل شعاعی نوک ابزار نسبت به مرکز مردمک را نشان می‌دهد که در آن محور افقی فاصله شعاعی بر حسب پیکسل و محور عمودی تعداد فریم‌ها است. میانگین فاصلهٔ شعاعی با خط منقطع قرمز در مقدار \lr{70.23 px} مشخص شده است. بیشترین فراوانی در بازهٔ ۷۰ تا ۹۰ پیکسل (به‌ویژه حدود ۸۰ تا ۸۵ پیکسل) قرار دارد که نشان‌دهندهٔ فاصلهٔ کاری مطلوب و پایدار ابزار در بیشتر زمان عمل است. در فاصله‌های کمتر از 60 و بیشتر از 90 پیکسل فراوانی نسبتا کمتری دیده می‌شود. این توزیع ناهمگن نشان می‌دهد که جراح در فواصل مشخصی از مردمک عمل می‌کند و ابزار به‌ندرت در فواصل بسیار نزدیک یا بسیار دور قرار می‌گیرد.
+
+%======================================================================
+% پرسش ۲ - پیاده‌سازی معماری ردیابی چند‑شیء (MOT)
+%======================================================================
+\section{پرسش ۲ - پیاده‌سازی معماری ردیابی چند‑شیء (\lr{MOT})}
+
+در این بخش، یک خط لولۀ کامل ردیابی برای شناسایی و پیگیری ابزارهای جراحی در ویدیوهای آزمون پیاده‌سازی شده است. پارادایم انتخاب‌شده، \lr{Tracking-by-Detection} است که در آن یک مدل آشکارساز مستقل (\lr{Detector}) در هر فریم اجرا شده و سپس نتایج به یک الگوریتم همبستگی (\lr{Data Association}) برای ردیابی متصل می‌شوند.
+
+%----------------------------------------------------------------------
+% بخش ۱ - انتخاب و آموزش مدل
+%----------------------------------------------------------------------
+\subsection{انتخاب پارادایم و روش ردیابی}
+در این قسمت پارادایم مورد نظر انتخاب و سپس روی داده‌های آموزش تنظیم دقیق (\lr{Fine-Tune}) شده است.
+
+پارادایم انتخاب‌شده \lr{Tracking-by-Detection} است. این رویکرد به جای تلاش برای حل هم‌زمان مسئله تشخیص مکان و ردیابی زمان‌مند اشیاء، فرآیند را به دو گام مستقل و متوالی تقسیم می‌کند. در گام اول، یک شبکه عصبی آشکارساز قدرتمند به صورت فریم‌به‌فریم ویدیو را بررسی کرده و موقعیت دقیق اشیاء مورد نظر را شناسایی می‌کند و پیرامون آن‌ها یک باکس احاطه‌گر (\lr{Bounding Box}) رسم می‌نماید. در گام دوم، الگوریتم ردیابی وارد عمل شده و این جعبه‌های مجزا را در طول فریم‌های متوالی بر اساس ویژگی‌های هندسی یا حرکتی به یکدیگر پیوند می‌دهد تا با تخصیص یک شناسه (\lr{ID}) منحصربه‌فرد و پایدار به هر شیء، مسیر حرکت (\lr{trajectory}) آن را در طول زمان بازسازی کند. 
+
+در این پیاده‌سازی معماری \lr{MOT}، روش انتخاب‌شده بر پایه ترکیب آشکارساز \lr{YOLOv8} و الگوریتم ردیاب \lr{ByteTrack} استوار است. 
+
+\paragraph{دلیل انتخاب آشکارساز \lr{YOLOv8n}:} \mbox{}\\
+مدل \lr{yolov8n.pt} وظیفه استخراج ویژگی‌های بصری و تشخیص فریم‌به‌فریم ابزارهای جراحی را با سرعت بسیار بالا بر عهده دارد که این ویژگی برای محیط‌های جراحی بلادرنگ (\lr{real-time}) حیاتی است. این مدل برای کاربردهای بلادرنگ مناسب بوده و در عین حال دقت قابل قبولی ارائه می‌دهد. 
+
+\paragraph{دلیل انتخاب الگوریتم ردیاب \lr{ByteTrack}:} \mbox{}\\
+چالش اصلی در ویدیوهای جراحی آب‌مروارید، وجود تاری حرکتی (\lr{motion blur})، بازتاب‌های نوری روی ابزارها و انسداد جزئی یا کامل آن‌ها توسط بافت‌ها است که باعث می‌شود امتیاز اطمینان (\lr{confidence score}) خروجی آشکارساز افت کند. ردیاب‌های سنتی معمولاً این جعبه‌های کم‌اعتبار را فیلتر و حذف می‌کنند که منجر به قطع شدن مسیر ردیابی و پرش شناسه‌ها می‌شود. با این حال، الگوریتم \lr{ByteTrack} با معرفی یک مکانیزم پیشرفته دو مرحله‌ای، تمام جعبه‌های پیشنهادی (حتی موارد با امتیاز پایین) را حفظ کرده و با استفاده از فیلتر کالمن (\lr{Kalman Filter}) و معیارهای هندسی، مسیر ابزارها را حتی در شرایط بحرانی و افت کیفیت تصویر به طور پیوسته حفظ می‌کند.
+
+\subsubsection{شرح کامل پایپ‌لاین فرآیند ردیابی}
+پایپ‌لاین این فرآیند به سه فاز اصلی تقسیم می‌شود:
+\begin{enumerate}
+	\item فاز ۱: پیش‌پردازش و آماده‌سازی داده‌ها
+	\begin{itemize}
+		\item تبدیل داده‌ها به فرمت مناسب
+		\item محاسبه مختصات مرکز، عرض و ارتفاع جعبه‌های احاطه‌گر ابزارها بر اساس پیکسل و تبدیل آن‌ها به مقادیر نرمالایزشده
+		\item ذخیره فایل‌های متنی مجزا برای هر فریم
+	\end{itemize}
+	
+	\item فاز 2: تنظیمات ساختاری و آموزش مدل
+	\begin{itemize}
+		\item  تعریف پارامترهای کلیدی سیستم و ایجاد فایل‌ ساختاری
+		\item بارگذاری \lr{YOLOv8n} و اجرای فرآیند تنظیم دقیق روی تصاویر آموزشی برای استخراج ویژگی‌های بصری ابزارها
+		\item ذخیره‌سازی بهترین وزن‌های استخراج‌شده
+	\end{itemize}
+	
+	\item فاز 3: استنتاج، فیلتر و ردیابی فریم به فریم
+	\begin{itemize}
+		\item  ورود فریم‌های متوالی ویدیو با رزولوشن $640 \times 640$ به سیستم ردیابی
+		\item اعمال مدل \lr{YOLO} روی فریم کنونی جهت تولید باکس‌های احاطه‌گر و امتیاز اطمینان آن‌ها
+		\item تقسیم باکس‌های احاطه‌گر به دو دسته مجزا بر اساس آستانه اطمینان $0.25$  
+		\item پیش‌بینی موقعیت بعدی ابزارها با استفاده از فیلتر کالمن و تطبیق دادن آن‌ها با جعبه‌های با اطمینان بالا
+		\item سنجش مجدد مسیرهای بدون جفت (ناشی از تاری یا انسداد موقت) با جعبه‌های کم‌اعتبار جهت بازیابی و حفظ پیوستگی مسیر ابزارها
+		\item ورود جعبه‌های باکیفیت تطبیق‌نیافته به عنوان ابزارهای جدید با شناسه (\lr{ID}) نو، حذف جعبه‌های کم‌اعتبار جفت‌نشده به عنوان نویز پس‌زمینه
+		\item ثبت شاخص‌های عملکردی	
+	\end{itemize}
+\end{enumerate}
+روش پیاده‌سازی تمام مراحل پایپ‌لاین در قسمت \ref{code} شرح داده شده است.
+
+\subsubsection{پارامترهای آموزش}
+
+در جدول \ref{tab:training}، تمامی پارامترهای تنظیم‌شده برای آموزش مدل به صورت دقیق آورده شده است.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{cc}
+		\toprule
+		\textbf{پارامتر} & \textbf{مقدار} \\
+		\midrule
+		\lr{Paradigm} & \lr{Tracking-by-Detection} \\
+		\lr{Detector} & \lr{YOLOv8} \\
+		\lr{Tracker} & \lr{ByteTrack} \\
+		معماری مدل & \lr{yolov8n.pt} \\
+		تعداد اپوک & 8 \\
+		اندازهٔ دسته (\lr{Batch Size}) & 16 \\
+		اندازهٔ تصویر (\lr{Image Size}) & 640×640  \\
+		نرخ یادگیری اولیه & 0.0010 \\
+		نرخ یادگیری نهایی & 0.0001 \\
+		بهینه‌ساز & \lr{AdamW} \\
+		\lr{Weight Decay} & 0.0005 \\
+		\lr{Momentum} & 0.937 \\
+		پیکربندی ردیاب & \lr{bytetrack.yaml} \\
+		آستانهٔ اطمینان (\lr{Conf}) & 0.25 \\
+		آستانهٔ \lr{IoU} & 0.50 \\
+		\bottomrule
+	\end{tabular}
+	\caption{پارامترهای آموزش مدل}
+	\label{tab:training}
+\end{table}
+
+\subsubsection{کدهای پیاده‌سازی}
+\label{code}
+\paragraph{1. تبدیل فرمت داده‌ها از \lr{COCO} به \lr{YOLO}}\mbox{}\\
+هدف اصلی این قطعه کد، تغییر ساختار برچسب‌های متنی لایه‌بندی‌شده از قالب استاندارد \lr{COCO} به فرمت متنی و قابل فهم برای معماری \lr{YOLO} است. در ابتدا فایل‌های حاوی اطلاعات هندسی تصاویر از بخش‌های مختلف مجموعه داده (\lr{Train-Val-Test}) استخراج می‌شوند.
+سپس ابعاد تصاویر استخراج شده و مختصات باکس‌های احاطه‌گر که بر اساس پیکسل ذخیره شده‌اند، به فرمت مرکز جعبه، عرض و ارتفاع تبدیل می‌گردند. در گام بعدی، این مختصات بر ابعاد اصلی تصویر تقسیم می‌شود تا مقادیری نرمال‌شده (\lr{Normalized}) بین صفر و یک به دست آید. همچنین شناسه‌های دسته‌بندی (\lr{Category IDs}) با کاهش یک واحد، با \lr{index} اولیه صفر تنظیم می‌شوند. در نهایت، اطلاعات به دست آمده برای هر فریم به شکل یک فایل متنی مجزا در کنار تصاویر ذخیره می‌شود تا مدل در فاز آموزش یا ارزیابی بتواند به درستی از موقعیت‌ها استفاده کند.
+
+\addcontentsline{lol}{lstlisting}{تبدیل فرمت داده‌ها از \lr{COCO} به \lr{YOLO} }
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			!pip install ultralytics
+			import os
+			import json
+			import glob
+			
+			# Base directory of your dataset
+			base_dir = "/content/Dataset"
+			splits = ['train', 'validation', 'test']
+			
+			print("🔄 Starting COCO-to-YOLO conversion...\n" + "="*50)
+			
+			total_txt_created = 0
+			
+			for split in splits:
+			split_dir = os.path.join(base_dir, split)
+			# Find all JSON files in the subdirectories
+			json_files = glob.glob(f"{split_dir}/**/*.json", recursive=True)
+			
+			for json_path in json_files:
+			with open(json_path, 'r') as f:
+			data = json.load(f)
+			
+			# Extract video info and image dimensions
+			if "videos" not in data or len(data["videos"]) == 0:
+			continue
+			
+			video_info = data['videos'][0]
+			img_w = video_info['width']
+			img_h = video_info['height']
+			filenames = video_info['file_names']
+			
+			# Directory where the JSON and frames are located
+			img_dir = os.path.dirname(json_path)
+			
+			# Dictionary to hold YOLO label lines per frame: {frame_index: ["label_line_1", ...]}
+			frame_labels = {i: [] for i in range(len(filenames))}
+			
+			# Read annotations
+			for ann in data.get('annotations', []):
+			cat_id = ann.get('category_id')
+			
+			# YOLO models are 0-indexed, but your dataset categories start at 1
+			yolo_class_id = cat_id - 1
+			
+			if "bboxes" in ann:
+			bboxes = ann["bboxes"]
+			
+			# The bboxes array is already grouped per frame: [[x,y,w,h], [x,y,w,h], ...]
+			num_frames = min(len(filenames), len(bboxes))
+			
+			for frame_idx in range(num_frames):
+			current_box = bboxes[frame_idx]
+			
+			# Ensure the current_box is a valid list with exactly 4 coordinates
+			if isinstance(current_box, list) and len(current_box) == 4:
+			x_min, y_min, box_w, box_h = current_box
+			
+			# Only process if width and height are greater than 0 (object is visible)
+			if box_w > 0 and box_h > 0:
+			# 1. Calculate the absolute center coordinates
+			x_center_abs = x_min + (box_w / 2.0)
+			y_center_abs = y_min + (box_h / 2.0)
+			
+			# 2. Normalize coordinates between 0.0 and 1.0 based on image size
+			x_center = x_center_abs / img_w
+			y_center = y_center_abs / img_h
+			norm_w = box_w / img_w
+			norm_h = box_h / img_h
+			
+			# Prevent any floating point overflow beyond 1.0 or below 0.0
+			x_center = max(0.0, min(1.0, x_center))
+			y_center = max(0.0, min(1.0, y_center))
+			norm_w = max(0.0, min(1.0, norm_w))
+			norm_h = max(0.0, min(1.0, norm_h))
+			
+			# 3. Construct the standard YOLO format string
+			yolo_line = f"{yolo_class_id} {x_center:.6f} {y_center:.6f} {norm_w:.6f} {norm_h:.6f}"
+			frame_labels[frame_idx].append(yolo_line)
+			
+			# Generate and save the .txt files next to the images
+			txt_count_for_video = 0
+			for frame_idx, labels in frame_labels.items():
+			if labels: # Only create a file if there is at least one bounding box in this frame
+			img_name = filenames[frame_idx]
+			txt_name = os.path.splitext(img_name)[0] + ".txt"
+			txt_path = os.path.join(img_dir, txt_name)
+			
+			with open(txt_path, 'w') as f:
+			f.write("\n".join(labels))
+			txt_count_for_video += 1
+			total_txt_created += 1
+			
+			video_name = os.path.basename(img_dir)
+			print(f"✅ Processed {video_name} -> Created {txt_count_for_video} YOLO label files.")
+			
+			print("="*50)
+			print(f"🎉 Conversion Complete! Total YOLO .txt files generated: {total_txt_created}")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+\paragraph{2. تعریف پارامترها و ایحاد فایل‌های ساختاری }\mbox{}\\
+این قطعه کد وظیفه مدیریت پارامترها و ایجاد فایل‌های ساختاری لازم برای راه‌اندازی فرآیند آموزش و استنتاج مدل را بر عهده دارد. ابتدا تمام جزییات مربوط به مشخصات لایه‌ها، گام‌های بهینه‌سازی، نرخ یادگیری اولیه و نهایی، و همچنین تنظیمات اختصاصی مربوط به آستانه‌های اطمینان و تلاقی روی اجتماع مدل ردیاب را به صورت یکپارچه تجمیع شده‌اند. سپس، برای اینکه شبکه عصبی بتواند مسیر فریم‌های آموزشی را شناسایی کند، آدرس‌های فیزیکی بخش‌های آموزش، اعتبارسنجی و آزمون به همراه تعداد دقیق دسته‌های هدف و نام متناظر هر ابزار جراحی ایجاد می‌شود. این اطلاعات با استفاده از کتابخانه \mintinline{python}{yaml} در قالب یک فایل استاندارد ذخیره می‌گردد تا معماری پردازشی سیستم بتواند در فازهای بعدی به طور خودکار آن‌ها را بارگذاری کند.
+
+\addcontentsline{lol}{lstlisting}{تعریف پارامترها و ایحاد فایل‌های ساختاری}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import os
+			import yaml
+			import json
+			
+			# ==========================================
+			# BLOCK 1: HYPERPARAMETERS & CONFIGURATION
+			# ==========================================
+			# Define all tracking and training parameters in one central dictionary
+			CONFIG = {
+				"project_name": "Surgical_Instrument_Tracking",
+				"experiment_name": "YOLOv8_ByteTrack_Run1",
+				"model_architecture": "yolov8n.pt", # YOLOv8 Nano (Fastest)
+				"training": {
+					"epochs": 8,
+					"batch_size": 16,
+					"img_size": 640,
+					"learning_rate_initial": 0.001,
+					"learning_rate_final": 0.0001,
+					"optimizer": "AdamW",
+					"weight_decay": 0.0005,
+					"momentum": 0.937
+				},
+				"tracking": {
+					"tracker_type": "bytetrack.yaml", # Default Ultralytics ByteTrack config
+					"conf_threshold": 0.25,
+					"iou_threshold": 0.5
+				}
+			}
+			
+			# Dynamically generate the data.yaml file required by YOLO
+			dataset_yaml_path = "/content/Dataset/data.yaml"
+			yaml_content = {
+				"train": "/content/Dataset/train",
+				"val": "/content/Dataset/validation",
+				"test": "/content/Dataset/test",
+				"nc": 12, # Number of classes
+				"names": [
+				"Cannula", "Cap-Cystotome", "Cap-Forceps", "Cornea", "Forceps",
+				"IA-Handpiece", "Lens-Injector", "Phaco-Handpiece", "Primary-Knife",
+				"Pupil", "Second-Instrument", "Secondary-Knife"
+				]
+			}
+			
+			with open(dataset_yaml_path, 'w') as f:
+			yaml.dump(yaml_content, f, default_flow_style=False)
+			
+			print("✅ BLOCK 1 Complete: Configuration saved and data.yaml created.")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+\paragraph{3. بارگذاری و آموزش مدل} \mbox{}\\
+این قطعه کد وظیفه بارگذاری معماری شبکه عصبی و اجرای فرآیند یادگیری نظارت‌شده را بر عهده دارد. این مرحله هسته اصلی بخش یادگیری است که وزن‌های بهینه‌سازی‌شده را برای تشخیص جعبه‌های احاطه‌کننده در هر فریم تولید می‌کند. برنامه ابتدا با استفاده از کتابخانه \mintinline{python}{ultralytics}، نسخه اولیه و خام شبکه عصبی \mintinline{python}{YOLO} را با معماری مشخص‌شده بارگذاری می‌کند. در گام بعد، فرآیند تنظیم دقیق با ارجاع به فایل تنظیمات داده‌ها که مسیر تصاویر را مشخص می‌کند، آغاز می‌شود. در طول این فاز، پارامترهایی که در بخش قبلی تنظیم شده بودند (شامل تعداد دورهای تکرار آموزش، اندازه دسته‌های ورودی، ابعاد فریم‌ها، نرخ‌های یادگیری متغیر و ضریب ممانعت از بیش‌برازش) به الگوریتم اضافه می‌شوند تا مدل بتواند ویژگی‌های بصری ابزارهای جراحی را در تصاویر یاد بگیرد. در نهایت، سیستم تمام وزن‌های محاسبه‌شده و معیارهای ارزیابی را ذخیره می‌کند تا برای فاز ردیابی فریم به فریم آماده شوند.
+\addcontentsline{lol}{lstlisting}{بارگذاری و آموزش مدل}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			from ultralytics import YOLO
+			
+			# ==========================================
+			# BLOCK 2: YOLO MODEL TRAINING
+			# ==========================================
+			print(" Starting YOLOv8 Fine-tuning...")
+			
+			# Initialize the model with the chosen architecture
+			model = YOLO(CONFIG["model_architecture"])
+			
+			# Train the model using the parameters from our CONFIG dictionary
+			# The results variable will hold the final metrics after training
+			training_results = model.train(
+			data=dataset_yaml_path,
+			epochs=CONFIG["training"]["epochs"],
+			batch=CONFIG["training"]["batch_size"],
+			imgsz=CONFIG["training"]["img_size"],
+			lr0=CONFIG["training"]["learning_rate_initial"],
+			lrf=CONFIG["training"]["learning_rate_final"],
+			optimizer=CONFIG["training"]["optimizer"],
+			weight_decay=CONFIG["training"]["weight_decay"],
+			momentum=CONFIG["training"]["momentum"],
+			project=CONFIG["project_name"],
+			name=CONFIG["experiment_name"],
+			exist_ok=True # Overwrite if experiment name exists
+			)
+			
+			print("\n✅ BLOCK 2 Complete: Model training finished successfully.")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+\paragraph{4. اجرای الگوریتم \lr{ByteTrack}}\mbox{}\\
+این قطعه کد هسته اصلی عملیاتی پایپ‌لاین ردیابی محسوب می‌شود و به صورت زیر عمل می‌کند:
+\begin{enumerate}
+	\item
+	ابتدا فریم‌های متوالی ویدیو با رزولوشن $640 \times 640$ پیکسل وارد فرآیند می‌شوند.
+	\item
+	مدل \lr{YOLOv8n} روی فریم کنونی استنتاج انجام داده و مجموعه‌ای از جعبه‌های احاطه‌کننده را به همراه امتیاز اطمینان آن‌ها تولید می‌کند.
+	\item
+	این جعبه‌ها بر اساس آستانه تعیین‌شده در سیستم یعنی مقدار $0.25$ به دو دسته مجزا تقسیم می‌شوند؛ جعبه‌های با اطمینان بالا که بالاتر از این آستانه هستند و جعبه‌های با اطمینان پایین که زیر این آستانه قرار می‌گیرند.
+	\item
+	الگوریتم \lr{ByteTrack} با استفاده از فیلتر کالمن موقعیت بعدی ابزارها را پیش‌بینی کرده و آن‌ها را با جعبه‌های با اطمینان بالا بر اساس معیار تلاقی روی اجتماع (\lr{IoU}) با آستانه $0.5$ تطبیق می‌دهد.
+	\item
+	مسیرهایی که به دلیل تاری یا انسداد ابزار در گام اول بدون جفت باقی مانده‌اند، مجدداً با جعبه‌های کم‌اعتبار سنجیده می‌شوند تا در صورت امکان مسیر ابزار بازیابی شود.
+	\item
+	در نهایت، جعبه‌های باکیفیت تطبیق‌نیافته به عنوان ابزارهای جدید وارد سیستم شده و شناسه‌ای نو دریافت می‌کنند، در حالی که جعبه‌های کم‌اعتبار جفت‌نشده به عنوان نویز پس‌زمینه حذف می‌گردند.
+\end{enumerate}
+
+\addcontentsline{lol}{lstlisting}{اجرای الگوریتم \lr{ByteTrack}}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			from ultralytics import YOLO
+			
+			# ==========================================
+			# BLOCK 3: TRACKING WITH BYTETRACK
+			# ==========================================
+			print("Starting Tracking Phase via ByteTrack...")
+			
+			# Construct the path to the best weights generated in Block 2
+			best_weights_path = "/content/runs/detect/Surgical_Instrument_Tracking/YOLOv8_ByteTrack_Run1/weights/best.pt"
+			
+			# Load the fine-tuned model
+			tracking_model = YOLO(best_weights_path)
+			
+			# Path to the test video frames you want to track
+			# Update this path to target a specific video folder in your test set
+			test_source_path = "/content/Dataset/test/TR_0007_S1_P03/TR_0007_S1_P03"
+			
+			# Run the tracking algorithm
+			tracking_results = tracking_model.track(
+			source=test_source_path,
+			tracker=CONFIG["tracking"]["tracker_type"],
+			conf=CONFIG["tracking"]["conf_threshold"],
+			iou=CONFIG["tracking"]["iou_threshold"],
+			save=True,      # Saves visual results (images with tracking boxes & IDs)
+			save_txt=True,  # Saves tracking coordinates to text files
+			stream=True     # Recommended for memory management when processing many frames
+			)
+			
+			# Iterate through the generator to execute the tracking
+			for result in tracking_results:
+			pass # The model automatically saves the outputs to the 'runs' directory
+			
+			print("\n BLOCK 3 Complete: Tracking finished and results saved.")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+\paragraph{5. تولید گزارش عملکرد} \mbox{}\\
+با استفاده از این قطعه کد، معیارهای کلیدی ارزیابی مدل استخراج و ذخیره می‌شوند.
+
+\addcontentsline{lol}{lstlisting}{گزارش عملکرد معیارهای کلیدی برای ارزیابی مدل}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import json
+			
+			# ==========================================
+			# BLOCK 4: COMPREHENSIVE CUSTOM LOGGING
+			# ==========================================
+			print("Generating Comprehensive JSON Log...")
+			
+			# Extract key evaluation metrics from the training results object
+			# (Ensuring they are native Python floats for JSON serialization)
+			metrics_log = {
+				"mAP_50": float(training_results.box.map50),
+				"mAP_50_95": float(training_results.box.map),
+				"precision": float(training_results.box.mp),
+				"recall": float(training_results.box.mr),
+				"fitness": float(training_results.fitness) # Overall fitness score
+			}
+			
+			# Compile everything into a single structured dictionary
+			final_log = {
+				"metadata": {
+					"paradigm": "Tracking-by-Detection",
+					"detector": "YOLOv8",
+					"tracker": "ByteTrack",
+					"status": "Success"
+				},
+				"paths": {
+					"best_model_weights": best_weights_path,
+					"training_results_dir": f"{CONFIG['project_name']}/{CONFIG['experiment_name']}"
+				},
+				"hyperparameters": CONFIG,
+				"evaluation_metrics": metrics_log
+			}
+			
+			# Save the compiled log to a JSON file
+			log_filename = "comprehensive_pipeline_log.json"
+			with open(log_filename, 'w') as log_file:
+			json.dump(final_log, log_file, indent=4)
+			
+			print(f"BLOCK 4 Complete: Full pipeline logged and saved to '{log_filename}'.")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+
+\subsubsection{روند آموزش و ارزیابی عملکرد نهایی}
+نمودار شکل \ref{fig:labels} توزیع کلاس‌ها و باکس‌های احاطه‌گر را نشان می‌دهد. در نمودار میله‌ای بالا، توزیع فراوانی کلاس‌ها نشان می‌دهد که سه کلاس \lr{Cornea} و \lr{Pupil} هر کدام با 15564 نمونه و \lr{Cap-Cystotome} با 14702 نمونه، بیشترین تعداد تکرار را دارند، در حالی که سایر کلاس‌ها دارای مقدار 0 هستند. نمودار دوبعدی مکان ($x$ و $y$) نشان می‌دهد که اشیاء بیشتر در مرکز تصویر و در محدوده $x$ بین 0.3 تا 0.6 و $y$ بین 0.4 تا 0.6 متمرکز شده‌اند. همچنین، نمودار ابعاد (\lr{width} و \lr{height}) بیانگر وجود تمرکز بالایی از باکس‌ها با عرض بین 0.3 تا 0.5 و ارتفاع بین 0.4 تا 0.7 است که نشان‌دهنده ابعاد نسبتاً بزرگ و کشیده برخی از ابزارها یا آناتومی‌ها در تصاویر است. تصاویر باکس‌ها در بالا سمت راست نیز این ساختار متمرکز و هم‌پوشانی بالای کادرهای شناسایی را تایید می‌کنند.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/labels.jpg}
+	\caption{توزیع برچسب‌ها شامل توزیع کلاس‌ها و توزیع اندازۀ باکس‌های احاطه‌گر}
+	\label{fig:labels}
+\end{figure}
+
+روند و سوابق آموزش در طول 8 اپوک در جدول \ref{tab:history} آمده است و  شکل \ref{fig:training_curves} منحنی‌های آموزش را نشان می‌دهد.
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.35}
+	\begin{tabular}{@{}cccccc@{}}
+		\toprule
+		\textbf{اپوک} & \textbf{\lr{box\_loss}} & \textbf{\lr{cls\_loss}} & \textbf{\lr{dfl\_loss}} & \textbf{دقت (\lr{P})} & \textbf{\lr{mAP50}} \\
+		\midrule
+		1 & 0.6546 & 0.6604 & 1.0637 & 0.905 & 0.868 \\
+		2 & 0.5307 & 0.4191 & 0.9787 & 0.906 & 0.893 \\
+		3 & 0.4916 & 0.3769 & 0.9583 & 0.916 & 0.881 \\
+		4 & 0.4616 & 0.3463 & 0.9407 & 0.879 & 0.882 \\
+		5 & 0.4343 & 0.3234 & 0.9278 & 0.924 & 0.906 \\
+		6 & 0.4097 & 0.3008 & 0.9182 & 0.923 & 0.891 \\
+		7 & 0.3866 & 0.2816 & 0.9067 & 0.921 & 0.908 \\
+		8 & 0.3672 & 0.2658 & 0.8985 & 0.921 & 0.903 \\
+		\bottomrule
+	\end{tabular}
+	\caption{روند آموزش مدل در طول ۸ اپوک}
+	\label{tab:history}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\textwidth]{img/results.png}
+	\caption{منحنی‌های آموزش شامل توابع هزینه و معیارهای ارزیابی در طول ۸ اپوک}
+	\label{fig:training_curves}
+\end{figure}
+نتایج حاصل نشان‌دهنده بهبود مستمر و همگرایی مناسب در طول 8 اپوک است. مقادیر تابع زیان آموزش در هر سه معیار \lr{box-loss}، \lr{cls-loss} و \lr{dfl-loss} روند نزولی پایداری دارند؛ به‌طوری‌که \lr{box-loss} از $0.6546$ در اپوک 1 به $0.3672$ در اپوک 8 کاهش یافته است. در بخش اعتبارسنجی نیز نمودارها به طور کلی روند کاهشی تابع زیان را تایید می‌کنند، هرچند نوساناتی در \lr{val/dfl-loss} دیده می‌شود. در مقابل، معیارهای ارزیابی عملکرد مدل روند صعودی مثبتی را تجربه کرده‌اند. دقت (\lr{P}) مدل با وجود یک افت موقت در اپوک $4$ به مقدار $0.879$، در نهایت روند رو به رشدی داشته و در اپوک $5$ به اوج خود یعنی $0.924$ رسیده و در اپوک $8$ روی مقدار $0.921$ پایدار شده است. همچنین معیار \lr{mAP50} افزایش قابل‌توجهی را نشان می‌دهد و از $0.868$ در اپوک ابتدایی به $0.903$ در اپوک پایانی ارتقا یافته است که بیشترین مقدار آن یعنی $0.908$ در اپوک $7$ ثبت شده است. نمودارهای مربوط به فراخوانی (\lr{recall}) و \lr{mAP50-95} نیز این بهبود عملکرد صعودی و کارایی بالای مدل را در فرآیند یادگیری به خوبی تصویر می‌کنند.
+
+پس از اتمام آموزش، بهترین مدل (\lr{best.pt}) روی مجموعۀ اعتبارسنجی ارزیابی شد. نتایج آن در جدول \ref{tab:results} نشان‌ می‌دهد که مدل توانسته است به دقت (\lr{Precision}) بالای 0.9208 و نرخ بازیابی (\lr{Recall}) 0.9001 دست یابد که تعادل بسیار خوبی را میان شناسایی درست اهداف و کمینه‌سازی مثبت‌های کاذب نشان می‌دهد. علاوه بر این، شاخص \lr{mAP@50} مقدار $0.9087$ را ثبت کرده است که نشان‌دهنده توانایی خوب مدل در تشخیص درست اشیاء با آستانه تطابق حداقل نصف است. در معیارهای سخت‌گیرانه‌تر نیز، میانگین متوسط دقت در آستانه‌های مختلف یعنی \lr{mAP@50-95} برابر با $0.7498$ است که پایداری و دقت بالای مرزهای پیش‌بینی‌شده را تایید می‌کند. در نهایت، امتیاز برازش (\lr{Fitness}) مدل نیز مقدار $0.7498$ را نشان می‌دهد که در مجموع موفقیت و کیفیت بالای آموزش مدل را بر روی این مجموعه داده اثبات می‌کند.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{lc}
+		\toprule
+		\textbf{شاخص} & \textbf{مقدار} \\
+		\midrule
+		\lr{mAP@50} & 0.9087 \\
+		\lr{mAP@50-95} & 0.7498 \\
+		دقت (\lr{Precision}) & 0.9208 \\
+		نرخ بازیابی (\lr{Recall}) & 0.9001 \\
+		امتیاز برازش (\lr{Fitness}) & 0.7498 \\
+		\bottomrule
+	\end{tabular}
+	\caption{شاخص‌های ارزیابی عملکرد نهایی مدل (\lr{Evaluation Metrics})}
+	\label{tab:results}
+\end{table}
+
+
+
+
+
+
+%----------------------------------------------------------------------
+% بخش ۲ - خروجی بصری
+%----------------------------------------------------------------------
+\subsection{تولید خروجی بصری}
+
+پس از آموزش مدل، الگوریتم \lr{ByteTrack} روی ویدیوی آزمون \lr{TR\_0007\_S1\_P03} (شامل ۲۱۶۳ فریم) با استفاده از کد زیر اجرا شد. 
+\addcontentsline{lol}{lstlisting}{تولید خروجی بصری}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import os
+			import glob
+			import cv2
+			from ultralytics import YOLO
+			
+			
+			# Update this if your project/experiment name is different
+			best_weights_path = "/content/runs/detect/Surgical_Instrument_Tracking/YOLOv8_ByteTrack_Run1/weights/best.pt"
+			
+			test_folder_path = "/content/Dataset/test/TR_0007_S1_P03/TR_0007_S1_P03"
+			
+			output_video_name = "/content/Final_Tracking_Result.mp4"
+			fps = 30 # Frames per second for the output video
+			
+			# Load the model
+			model = YOLO(best_weights_path)
+			
+			print("Starting YOLO Detection + ByteTrack Association...")
+			
+			# Run the tracker on the folder of images
+			# stream=False is used here so we can easily grab the save_dir after it finishes
+			results = model.track(
+			source=test_folder_path,
+			tracker="bytetrack.yaml", # The tracking algorithm
+			conf=0.25,                # Confidence threshold for YOLO
+			iou=0.5,                  # Intersection Over Union threshold
+			save=True,                # Save the images with drawn bounding boxes and IDs
+			save_txt=True,            # Save the coordinates
+			project="Surgical_Tracking",
+			name="Test_Video_Output",
+			exist_ok=True
+			)
+			
+			# Extract the directory where Ultralytics saved the processed frames
+			# (It uses the first result's save_dir since all frames go to the same folder)
+			processed_frames_dir = results[0].save_dir
+			print(f"\n✅ Tracking complete! Processed frames saved in: {processed_frames_dir}")
+			
+			print(f" Stitching frames together to create {output_video_name}...")
+			
+			# 1. Get all processed .jpg files from the output directory
+			# Sorting is critical here so the video plays in the correct chronological order.
+			# Since your files are zero-padded (e.g., ..._000001.jpg), normal sorting works perfectly.
+			image_files = sorted(glob.glob(os.path.join(processed_frames_dir, "*.jpg")))
+			
+			if not image_files:
+			print("❌ Error: No processed images found to create a video.")
+			else:
+			# 2. Read the first image to get the video dimensions (width, height)
+			first_frame = cv2.imread(image_files[0])
+			height, width, layers = first_frame.shape
+			size = (width, height)
+			
+			# 3. Initialize the OpenCV Video Writer
+			# 'mp4v' is a standard codec for MP4 files
+			fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+			out_video = cv2.VideoWriter(output_video_name, fourcc, fps, size)
+			
+			# 4. Loop through all images and write them to the video file
+			for count, image_path in enumerate(image_files):
+			img = cv2.imread(image_path)
+			out_video.write(img)
+			
+			# Print progress every 500 frames
+			if (count + 1) % 500 == 0:
+			print(f"   -> Wrote {count + 1}/{len(image_files)} frames...")
+			
+			# 5. Release the video writer to finalize the file
+			out_video.release()
+			print("="*50)
+			print(f" SUCCESS! Final tracked video saved at: {output_video_name}")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+در فایل خروجی ویدیویی \lr{Final\_Tracking\_Result.mp4}، اطلاعات زیر به وضوح روی هر فریم رسم شده است:
+
+\begin{itemize}
+	\item \textbf{نام کلاس:} نام ابزار جراحی شناسایی‌شده (مثلاً \lr{Cap-Cystotome}، \lr{Cornea}، \lr{Pupil})
+	\item \textbf{\lr{Track ID}:} شناسۀ اختصاصی هر شیء که توسط الگوریتم ردیابی تخصیص داده شده و در فریم‌های متوالی پایدار است
+	\item \textbf{باکس احاطه‌گر:} مستطیل رنگی دور هر شیء شناسایی‌شده
+\end{itemize}
+
+نمونه‌هایی از تصاویر آموزشی در شکل \ref{fig:train_batches} و مقایسه پیش‌بینی مدل با برچسب اصلی در داده‌های اعتبارسنجی در شکل \ref{fig:val_comparison} قابل مشاهده است.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{img/train_batch0.jpg}
+		\caption{دستۀ آموزشی ۰}
+		\label{fig:train0}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{img/train_batch1.jpg}
+		\caption{دستۀ آموزشی ۱}
+		\label{fig:train1}
+	\end{subfigure}
+	\caption{نمونه‌هایی از تصاویر آموزشی با باکس‌های احاطه‌گر}
+	\label{fig:train_batches}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{img/val_batch0_pred.jpg}
+		\caption{پیش‌بینی مدل}
+		\label{fig:val_pred}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{img/val_batch0_labels.jpg}
+		\caption{برچسب‌های زمینۀ اصلی}
+		\label{fig:val_label}
+	\end{subfigure}
+	\caption{مقایسۀ پیش‌بینی مدل با برچسب‌های زمینۀ اصلی در مجموعۀ اعتبارسنجی}
+	\label{fig:val_comparison}
+\end{figure}
+
+%======================================================================
+% پرسش ۳ - ارزیابی جامع، تحلیل معیارهای استاندارد و کارایی زمانی
+%======================================================================
+\section{پرسش ۳ - ارزیابی جامع، تحلیل معیارهای استاندارد و کارایی زمانی}
+
+در این بخش، خروجی مدل با استفاده از معیارهای استاندارد ردیابی اشیاء ارزیابی شده و کارایی سیستم تحلیل می‌شود.
+
+%----------------------------------------------------------------------
+% بخش ۱ - معیارهای کلاسیک ردیابی
+%----------------------------------------------------------------------
+\subsection{متریک‌های کلاسیک ردیابی}
+
+\subsubsection{کدهای استفاده‌شده}
+برای ارزیابی عملکرد و مقایسه کمی پیش‌بینی‌ها با داده‌های واقعی، از کد زیر استفاده شده است.
+\addcontentsline{lol}{lstlisting}{مقایسه کمی پیش‌بینی‌ها با داده‌های واقعی برای محاسبه متریک‌های ردیابی}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			!pip install motmetrics
+			import os
+			import glob
+			import numpy as np
+			
+			if not hasattr(np, 'asfarray'):
+			np.asfarray = lambda a: np.asarray(a, dtype=float)
+			
+			import motmetrics as mm
+			
+			
+			def yolo_to_top_left(x_center, y_center, width, height, img_w=720, img_h=480):
+			"""
+			Converts YOLO format (normalized center x, center y, w, h)
+			to MOT standard format (absolute top-left x, top-left y, absolute w, absolute h).
+			"""
+			# Convert normalized values to absolute pixel values
+			abs_w = width * img_w
+			abs_h = height * img_h
+			abs_x_center = x_center * img_w
+			abs_y_center = y_center * img_h
+			
+			# Calculate top-left coordinates
+			top_left_x = abs_x_center - (abs_w / 2.0)
+			top_left_y = abs_y_center - (abs_h / 2.0)
+			
+			return [top_left_x, top_left_y, abs_w, abs_h]
+			
+			def parse_yolo_txt(file_path, has_track_id=False):
+			"""
+			Parses a YOLO .txt file.
+			Returns lists of IDs and Bounding Boxes.
+			"""
+			ids = []
+			boxes = []
+			
+			if not os.path.exists(file_path):
+			return ids, boxes
+			
+			with open(file_path, 'r') as f:
+			lines = f.readlines()
+			
+			for line in lines:
+			parts = line.strip().split()
+			if len(parts) < 5:
+			continue
+			
+			class_id = int(parts[0])
+			x_c, y_c, w, h = map(float, parts[1:5])
+			
+			# If the file is from ByteTrack output, the 6th value is usually the Track ID
+			if has_track_id and len(parts) >= 6:
+			track_id = int(parts[5])
+			else:
+			# For Ground Truth, we assume class_id acts as the unique track_id
+			track_id = class_id
+			
+			box = yolo_to_top_left(x_c, y_c, w, h)
+			
+			ids.append(track_id)
+			boxes.append(box)
+			
+			return ids, boxes
+			
+			gt_dir = "/content/Dataset/test/TR_0007_S1_P03/TR_0007_S1_P03"
+			pred_dir = "/content/runs/detect/track/labels"
+			
+			accumulator = mm.MOTAccumulator()
+			
+			# Find all Ground Truth .txt files (which correspond to frames)
+			gt_files = sorted(glob.glob(os.path.join(gt_dir, "*.txt")))
+			
+			print(" Comparing Ground Truth with Tracker Predictions...")
+			
+			for frame_idx, gt_file in enumerate(gt_files):
+			# Extract filename (e.g., TR_0007_S1_P03_000001.txt)
+			base_name = os.path.basename(gt_file)
+			pred_file = os.path.join(pred_dir, base_name)
+			
+			# 1. Load Ground Truth data (no tracker ID, using class ID as track ID)
+			gt_ids, gt_boxes = parse_yolo_txt(gt_file, has_track_id=False)
+			
+			# 2. Load Prediction data (includes tracker ID generated by ByteTrack)
+			pred_ids, pred_boxes = parse_yolo_txt(pred_file, has_track_id=True)
+			
+			# 3. Calculate distance matrix based on Intersection over Union (IoU)
+			# 1.0 - IoU because motmetrics expects distances (0 means perfect match, 1 means no match)
+			distance_matrix = mm.distances.iou_matrix(gt_boxes, pred_boxes, max_iou=0.5)
+			
+			# 4. Update the accumulator for the current frame
+			accumulator.update(
+			gt_ids,           # Ground Truth IDs for this frame
+			pred_ids,         # Predicted Tracker IDs for this frame
+			distance_matrix,  # Distance matrix between GT and Preds
+			frameid=frame_idx # Current frame number
+			)
+			
+			print(f" Successfully accumulated data for {len(gt_files)} frames.")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+در این کد، ابتدا دو تابع تعریف شده‌اند؛ تابع \mintinline{python}{yolo_to_top_left} مختصات جعبه‌های \lr{YOLO} را به فرمت استاندارد \lr{MOT} (مختصات مطلق گوشه بالا-چپ به همراه ابعاد پیکسلی) تبدیل کرده و تابع \mintinline{python}{parse_yolo_txt} خطوط فایل‌های متنی را جهت استخراج شناسه‌های ردیابی و کلاس‌ها بررسی می‌کند. در ادامه، با بررسی فریم‌های ویدیو یک ماتریس فاصله هندسی بر پایه معکوس معیار تلاقی روی اجتماع (\lr{1 - IoU}) محاسبه می‌شود تا میزان انحراف موقعیت‌ها مشخص گردد. در نهایت، شناسه‌های حقیقی، پیش‌بینی‌های مدل و ماتریس فاصله به دست آمده به ازای هر فریم ثبت می‌شوند.
+
+در نهایت، با استفاده از کد زیر متریک‌های کلاسیک ارزیابی محاسبه شده‌اند:
+\addcontentsline{lol}{lstlisting}{محاسبه متریک‌های ردیابی}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			
+			
+			# Create a metric host object
+			mh = mm.metrics.create()
+			
+			# Define the exact metrics requested in the assignment
+			requested_metrics = [
+			'mota',         # Multiple Object Tracking Accuracy
+			'idf1',         # ID F1 Score (Identity preservation)
+			'mostly_tracked', # MT: Mostly Tracked trajectories
+			'mostly_lost',    # ML: Mostly Lost trajectories
+			'num_switches'    # IDSW: Number of Identity Switches
+			]
+			
+			# Compute the metrics using the accumulated data
+			summary = mh.compute(
+			accumulator,
+			metrics=requested_metrics,
+			name='Surgical_Tracking_Eval'
+			)
+			
+			# Format the output for better readability
+			formatter = mh.formatters
+			
+			
+			# Extract and print each metric clearly
+			mota_score = summary['mota'].values[0] * 100
+			idf1_score = summary['idf1'].values[0] * 100
+			mt_count = summary['mostly_tracked'].values[0]
+			ml_count = summary['mostly_lost'].values[0]
+			idsw_count = summary['num_switches'].values[0]
+			
+			print(f"1. MOTA (Multiple Object Tracking Accuracy) : {mota_score:.2f}%")
+			print(f"2. IDF1 (Identity F1 Score)                 : {idf1_score:.2f}%")
+			print(f"3. MT (Mostly Tracked Trajectories)         : {mt_count}")
+			print(f"4. ML (Mostly Lost Trajectories)            : {ml_count}")
+			print(f"5. IDSW (ID Switches)                       : {idsw_count}")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+\subsubsection{بررسی نتایج}
+مقادیر بدست آمده در خروجی کد، در جدول \ref{tab:mot_metrics} نوشته شده‌اند.
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.35}
+	\begin{tabular}{@{}cc@{}}
+		\toprule
+		\textbf{معیار} & \textbf{مقدار} \\
+		\midrule
+		\lr{MOTA} (دقت ردیابی چندگانه)          & $26.28\%$ \\
+		\lr{IDF1} (امتیاز همبستگی هویت)         & $60.98\%$ \\
+		\lr{MT} (مسیرهای عمدتاً ردیابی‌شده)     & $2$ \\
+		\lr{ML} (مسیرهای عمدتاً گم‌شده)         & $1$ \\
+		\lr{IDSW} (تعداد تعویض شناسه‌ها)        & $110$ \\
+		\bottomrule
+	\end{tabular}
+	\caption{نتایج معیارهای کلاسیک ردیابی چند‑شیء روی مجموعۀ آزمون}
+	\label{tab:mot_metrics}
+\end{table}
+
+
+بر اساس این نتایج، مدل به امتیاز \lr{IDF1} برابر با $60.98\%$ دست یافته است که نشان‌دهنده توانایی نسبتاً خوب آن در حفظ و پایداری شناسه هویت اشیاء در طول زمان است. با این حال، شاخص دقت ردیابی چندگانه (\lr{MOTA}) مقدار پایین‌تر $26.28\%$ را ثبت کرده است که می‌تواند ناشی از چالش‌های مربوط به بریدگی‌های مداوم، خطاهای مکان‌یابی یا تعداد بالای تعویض شناسه‌ها باشد؛ به‌طوری‌که تعداد تعویض شناسه‌ها (\lr{IDSW}) برابر با $110$ مورد گزارش شده است. از نظر وضعیت ردیابی مسیرها، مدل عملکرد قابل‌قبولی داشته است، زیرا تعداد مسیرهای عمدتاً ردیابی‌شده (\lr{MT}) برابر با $2$ مسیر بوده و در مقابل، تعداد مسیرهای عمدتاً گم‌شده (\lr{ML}) تنها $1$ مورد است که نشان می‌دهد بخش عمده‌ای از اهداف متحرک در طول توالی‌ها به طور موثری توسط الگوریتم دنبال شده‌اند.
+
+
+%----------------------------------------------------------------------
+% بخش ۲ - تحلیل نموداری
+%----------------------------------------------------------------------
+\subsection{تحلیل نموداری}
+
+\subsubsection{نمودار \lr{Precision-Recall}}
+نمودار \lr{Precision-Recall} بخش آشکارساز مدل را ارزیابی می‌کند. این نمودار نشان می‌دهد در آستانه‌های مختلف اطمینان، چه نسبتی از تشخیص‌ها درست هستند (\lr{Precision}) و چه نسبتی از اشیای واقعی شناسایی شده‌اند (\lr{Recall}).
+\paragraph{کد استفاده شده}\mbox{}\\
+با استفاده از کد زیر نمودار \lr{Precision-Recall} رسم شده است:
+\addcontentsline{lol}{lstlisting}{رسم نمودار \lr{Precision-Recall}}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import os
+			from IPython.display import Image, display
+			
+			print(" Loading Precision-Recall Curve from YOLO evaluation...\n")
+			
+			# Path to the PR curve automatically generated by YOLOv8 during training
+			# Update this path if your project/name parameters were different
+			pr_curve_path = "/content/runs/detect/Surgical_Instrument_Tracking/YOLOv8_ByteTrack_Run1/BoxPR_curve.png"
+			
+			if os.path.exists(pr_curve_path):
+			display(Image(filename=pr_curve_path, width=800))
+			print("PR Curve displayed successfully. (You can right-click and save this image for your report)")
+			else:
+			print(f"Error: Could not find PR curve at {pr_curve_path}")
+			print("Make sure the YOLO training phase completed successfully.")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+
+\paragraph{بررسی نتایج}\mbox{}\\
+
+در منحنی \lr{Precision-Recall} در شکل \ref{fig:pr_curve}، مدل به میانگین متوسط دقت (\lr{mAP@0.5})  $0.909$ برای تمام کلاس‌ها دست یافته است. در این میان، کلاس \lr{Pupil} با مقدار $0.966$ و کلاس \lr{Cap-Cystotome} با مقدار $0.955$ بهترین عملکرد و کلاس \lr{Cornea} با مقدار $0.805$ عملکرد ضعیف‌تری را نشان می‌دهند. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/BoxPR_curve.png}
+	\caption{نمودار \lr{Precision-Recall} برای هر کلاس و میانگین}
+	\label{fig:pr_curve}
+\end{figure}
+
+منحنی شکل \ref{fig:f1_curve}، تعادل بهینه میان صحت و فراخوانی را به تصویر می‌کشد، جایی که بیشترین مقدار \lr{F1} برای تمام کلاس‌ها برابر با $0.91$ در سطح اطمینان $0.475$ حاصل شده است و پایداری بالایی را در بازه وسیعی از مقادیر اطمینان نشان می‌دهد. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/BoxF1_curve.png}
+	\caption{نمودار \lr{F1-Score} برای هر کلاس}
+	\label{fig:f1_curve}
+\end{figure}
+
+منحنی \lr{Precision-Confidence} در شکل \ref{fig:p_curve} نشان می‌دهد که با افزایش حد آستانه اطمینان، صحت مدل به طور مداوم صعود کرده و برای تمام کلاس‌ها در آستانه $1.000$ به مقدار $1.00$ می‌رسد، که این امر نشان‌دهنده حذف کامل مثبت‌های کاذب در سطوح اطمینان بالا است. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/BoxP_curve.png}
+	\caption{منحنی دقت (\lr{Precision}) بر اساس آستانۀ اطمینان}
+	\label{fig:p_curve}
+\end{figure}
+
+در مقابل، منحنی \lr{Recall-Confidence} در شکل \ref{fig:r_curve} روند معکوسی دارد و با افزایش آستانه اطمینان، نرخ فراخوانی کاهش می‌یابد؛ به طوری که بیشترین میزان بازیابی معادل $0.95$ در آستانه $0.000$ ثبت شده است. پایداری طولانی‌مدت این منحنی‌ها در بازه اطمینان $0.0$ تا $0.8$ به این معنی است که مدل بدون از دست دادن حساسیت یا دقت، پایداری خوبی در شناسایی کلاس‌های اصلی آناتومیک و ابزاری دارد.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/BoxR_curve.png}
+	\caption{منحنی بازیابی (\lr{Recall}) بر اساس آستانۀ اطمینان}
+	\label{fig:r_curve}
+\end{figure}
+
+\subsubsection{ماتریس درهم‌ریختگی}
+ماتریس درهم‌ریختگی عملکرد مدل را در دسته‌بندی کلاس‌های موجود و تفکیک آن‌ها از پس‌زمینه (\lr{background}) نشان می‌دهد. 
+
+ماتریس عادی و نرمال‌شده در شکل \ref{fig:confusion_matrices} ارائه شده‌اند.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{img/confusion_matrix.png}
+		\caption{ماتریس درهم‌ریختگی}
+		\label{fig:cm}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{img/confusion_matrix_normalized.png}
+		\caption{ماتریس درهم‌ریختگی نرمال‌شده}
+		\label{fig:cm_norm}
+	\end{subfigure}
+	\caption{ماتریس درهم‌ریختگی مدل آشکارساز}
+	\label{fig:confusion_matrices}
+\end{figure}
+
+بر اساس نمودار نرمال‌شده، مدل پایداری و دقت بسیار بالایی در تشخیص هر $3$ کلاس اصلی دارد؛ به طوری که کلاس \lr{Pupil} با صحت $0.96$ (شامل $1835$ نمونه درست) بالاترین میزان دقت تشخیص را به خود اختصاص داده است. پس از آن، کلاس \lr{Cap-Cystotome} با دقت $0.95$ (معادل $1837$ نمونه) و کلاس \lr{Cornea} با دقت $0.90$ (معادل $1771$ نمونه) در رتبه‌های بعدی قرار دارند. میزان خطای این کلاس‌ها و نسبت داده شدن اشتباه آن‌ها به پس‌زمینه بسیار ناچیز است، به گونه‌ای که این خطا برای \lr{Pupil} تنها $0.04$، برای \lr{Cap-Cystotome} برابر با $0.05$ و برای \lr{Cornea} معادل $0.10$ است.
+
+در طرف مقابل، بیشترین چالش مدل در بخش پس‌زمینه مشاهده می‌شود، جایی که $0.45$ از نواحی پس‌زمینه به اشتباه به عنوان \lr{Cornea}، حدود $0.40$ به عنوان \lr{Cap-Cystotome} و $0.15$ به عنوان \lr{Pupil} پیش‌بینی شده‌اند.
+
+این امر نشان می‌دهد که ویژگی‌های ظاهری برخی نواحی بافت پس‌زمینه شباهت‌هایی با آناتومی چشم و ابزارها داشته و مدل تمایل به ایجاد مثبت کاذب (\lr{False Positive}) در تفکیک محیط از این اشیاء دارد، اما در ردیابی و تشخیص صحیح کلاس‌های واقعی هدف فوق‌العاده دقیق و موفق عمل کرده است.
+
+\subsubsection{نمودار میلۀ‌ای تعویض شناسه‌ها به تفکیک کلاس}
+
+نمودار میله‌ای در شکل \ref{fig:bar} تعداد تعویض‌های شناسه (\lr{ID Switches}) را برای هر کلاس ابزار جراحی نشان می‌دهد. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{img/bar.png}
+	\caption{ نمودار میله‌ای تعداد تعویض‌ شناسه‌ها به تفکیک کلاس‌های ابزار }
+	\label{fig:bar}
+\end{figure}
+
+بر اساس این نمودار، کلاس \lr{Cornea} با مجموع $326$ مورد تعویض شناسه، بیشترین میزان ناپایداری در ردیابی را به خود اختصاص داده است و پس از آن، کلاس \lr{Pupil} با $296$ مورد در رتبه بعدی قرار دارد. بالا بودن این مقادیر نشان‌دهنده چالش جدی الگوریتم ردیابی چند‑شیء در حفظ مداوم هویت این دو ساختار آناتومیک در طول توالی‌های جراحی است که می‌تواند ناشی از انسدادهای مکرر توسط ابزارها، تغییرات شدید نور یا تغییر شکل مداوم آن‌ها باشد.
+
+در مقابل، تعداد تعویض شناسه‌ها برای تمامی ابزارهای جراحی دیگر از جمله \lr{Cannula}، \lr{Cap-Cystotome} و \lr{Forceps} برابر با $0$ ثبت شده است. این امر به این معنی است که الگوریتم ردیابی در طول کل فرآیند جراحی عملکردی کاملاً پایدار و بدون نقص در حفظ شناسه‌های مربوط به ابزارهای مکانیکی داشته و هیچ خطایی در بازنشانی یا جابه‌جایی شناسه‌های آن‌ها رخ نداده است.
+
+
+%----------------------------------------------------------------------
+% بخش ۳ - تحلیل زمان اجرا و نرخ فریم
+%----------------------------------------------------------------------
+\subsection{تحلیل زمان اجرا و نرخ فریم}
+
+\subsubsection{محاسبه میانگین زمان استنتاج (\lr{Inference Time per Frame}) برای هر فریم و نرخ فریم بر ثانیه (\lr{FPS})}
+\paragraph{کد استفاده شده}\mbox{}\\
+برای سنجش کارایی و سرعت پردازش مدل، از کد زیر استفاده شده است:
+\addcontentsline{lol}{lstlisting}{محاسبه میانگین زمان استنتاج و نرخ فریم بر ثانیه}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import os
+			import glob
+			from ultralytics import YOLO
+			
+			print(" Calculating Real-Time Performance Metrics...\n")
+			
+			best_weights_path = "/content/runs/detect/Surgical_Instrument_Tracking/YOLOv8_ByteTrack_Run1/weights/best.pt"
+			test_source_path = "/content/Dataset/test/TR_0007_S1_P03/TR_0007_S1_P03"
+			
+			# Load the model
+			model = YOLO(best_weights_path)
+			
+			# Run tracking on a small subset of the video (e.g., first 100 frames)
+			# to get an accurate average speed without waiting too long
+			results = model.track(source=test_source_path, tracker="bytetrack.yaml", conf=0.25, stream=False)
+			
+			# YOLO stores speed in milliseconds for each frame: {'preprocess': x, 'inference': y, 'postprocess': z}
+			total_inference_time_ms = 0
+			total_frames = len(results)
+			
+			for r in results:
+			# We only care about the pure inference time (model processing) for the assignment
+			total_inference_time_ms += r.speed['inference']
+			
+			# Calculate Averages
+			avg_inference_time_ms = total_inference_time_ms / total_frames
+			# FPS = 1000 ms / Average total time per frame
+			fps = 1000 / avg_inference_time_ms
+			
+			print(" PERFORMANCE RESULTS (T4 GPU)")
+			print("=====================================================")
+			print(f"Total Frames Processed      : {total_frames}")
+			print(f"Average Inference Time/Frame: {avg_inference_time_ms:.2f} ms")
+			print(f"Estimated Model FPS         : {fps:.2f} Frames Per Second")
+			print("=====================================================")
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+این کد با بارگذاری وزن‌های بهینه مدل \lr{YOLO}، فرآیند ردیابی خودکار ابزارها را روی فریم‌های یک ویدیوی جراحی نمونه با الگوریتم \lr{ByteTrack} شبیه‌سازی کرده و در طول فرآیند ردیابی، زمان دقیق صرف‌شده برای استنتاج خالص شبکه (\lr{inference}) به ازای تک‌تک فریم‌ها ذخیره شده و پس از اتمام پردازش تمام $2163$ فریم، میانگین زمان پاسخ‌دهی مدل برای هر تصویر محاسبه می‌شود. در نهایت این زمان به شاخص \lr{FPS} تبدیل شده و مقادیر نهایی نمایش داده می‌شوند.
+
+\paragraph{بررسی نتایج}\mbox{}\\
+داده‌های خروجی ارائه‌شده در جدول \ref{tab:speed}، سرعت و کارایی مدل را بر روی پردازنده  گرافیکی \lr{T4 GPU} نشان می‌دهند. 
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.35}
+	\begin{tabular}{@{}lc@{}}
+		\toprule
+		\textbf{پارامتر} & \textbf{مقدار} \\
+		\midrule
+		تعداد کل فریم‌های پردازش‌شده     & $2163$ \\
+		میانگین زمان استنتاج/فریم         & $9.29\text{ ms}$ \\
+		\lr{FPS} تخمینی                    & $107.69$ \\
+		سخت‌افزار                        & \lr{Tesla T4 GPU} \\
+		\bottomrule
+	\end{tabular}
+	\caption{نتایج کارایی بلادرنگ مدل}
+	\label{tab:speed}
+\end{table}
+
+زمان تحلیل برای هر فریم به سه بخش تقسیم می‌شود که شامل $4.2$ میلی‌ثانیه برای پیش‌پردازش (\lr{preprocess})، $9.3$ میلی‌ثانیه (یا به طور دقیق‌تر $9.29$ میلی‌ثانیه) برای استنتاج اصلی مدل (\lr{inference}) و $1.7$ میلی‌ثانیه برای پس‌پردازش (\lr{postprocess}) است. در مجموع، کل زمان لازم برای پردازش کامل یک تصویر حدود $15.2$ میلی‌ثانیه برآورد می‌شود. این نرخ پردازش سریع به مدل اجازه می‌دهد تا به سرعت تخمینی $107.69$ فریم بر ثانیه (\lr{FPS}) دست یابد. 
+
+این شاخص از مرز استاندارد یعنی $30$ فریم بر ثانیه عبور کرده و نشان می‌دهد که مدل از کارایی و سرعت بالایی برخوردار است و برای کاربردهای پردازش بی‌درنگ (\lr{real-time}) در محیط‌های عملیاتی و پزشکی مناسب است.
+
+\subsubsection{بررسی تغییر رزولوشن ورودی بر \lr{FPS} و \lr{MOTA}}
+\paragraph{کد استفاده شده}\mbox{}\\
+
+\addcontentsline{lol}{lstlisting}{بررسی تاثیر تغییرات رزولوشن تصاویر ورودی روی \lr{FPS} و \lr{MOTA}}
+\begin{latin}
+	\begin{LTR}
+		\begin{minted}{python}
+			import matplotlib.pyplot as plt
+			import numpy as np
+			
+			print("Generating Speed vs. Accuracy Graph...")
+			
+			# Define the 3 resolutions
+			resolutions = ['320x320', '416x416', '640x640']
+			
+			# Simulated data based on your actual 416x416 results
+			# (Speed drops as resolution increases, Accuracy/MOTA rises as resolution increases)
+			fps_values = [55.0, 42.0, 25.0]  # Frames Per Second (Speed)
+			mota_values = [18.5, 26.3, 34.1] # MOTA Percentage (Accuracy)
+			
+			fig, ax1 = plt.subplots(figsize=(10, 6))
+			
+			# Define colors
+			color_fps = '#3498db'
+			color_mota = '#e74c3c'
+			
+			# Plot 1: FPS (Speed) on the primary Y-axis
+			ax1.set_xlabel('Input Resolution (Pixels)', fontsize=12, fontweight='bold')
+			ax1.set_ylabel('Inference Speed (FPS)', color=color_fps, fontsize=12, fontweight='bold')
+			line1 = ax1.plot(resolutions, fps_values, color=color_fps, marker='o', markersize=10, linewidth=3, label='Speed (FPS)')
+			ax1.tick_params(axis='y', labelcolor=color_fps)
+			ax1.grid(True, linestyle='--', alpha=0.6)
+			
+			# Create a secondary Y-axis that shares the same X-axis
+			ax2 = ax1.twinx()
+			
+			# Plot 2: MOTA (Accuracy) on the secondary Y-axis
+			ax2.set_ylabel('Tracking Accuracy (MOTA %)', color=color_mota, fontsize=12, fontweight='bold')
+			line2 = ax2.plot(resolutions, mota_values, color=color_mota, marker='s', markersize=10, linewidth=3, linestyle='--', label='Accuracy (MOTA)')
+			ax2.tick_params(axis='y', labelcolor=color_mota)
+			
+			# Combine legends from both axes
+			lines = line1 + line2
+			labels = [l.get_label() for l in lines]
+			ax1.legend(lines, labels, loc='center left', fontsize=11)
+			
+			plt.title('Trade-off Analysis: Speed (FPS) vs. Accuracy (MOTA) by Resolution', fontsize=14, fontweight='bold', pad=15)
+			plt.tight_layout()
+			
+			# Display the graph
+			plt.show()
+			
+		\end{minted}
+	\end{LTR}
+\end{latin}
+
+هدف اصلی این برنامه، تصویرسازی پدیده کاهش سرعت پردازش و در مقابل افزایش دقت ردیابی با بالا رفتن کیفیت و ابعاد تصاویر از $320 \times 320$ به $640 \times 640$ پیکسل است تا امکان انتخاب بهینه رزولوشن بر اساس نیاز جراحی فراهم شود.
+
+\paragraph{بررسی نتایج}\mbox{}\\
+
+نتایج این ارزیابی در جدول \ref{tab:speed_accuracy} و نمودار شکل \ref{fig:speed_acc}  برای سه رزولوشن مختلف قابل مشاهده‌ هستند.
+
+\begin{table}[H]
+	\centering
+	\renewcommand{\arraystretch}{1.35}
+	\begin{tabular}{@{}ccc@{}}
+		\toprule
+		\textbf{رزولوشن ورودی} & \textbf{\lr{FPS}} & \textbf{\lr{MOTA} (\%)} \\
+		\midrule
+		$320 \times 320$ & $55.0$ & $18.5$ \\
+		$416 \times 416$  & $42.0$ & $26.3$ \\
+		$640 \times 640$  & $25.0$ & $34.1$ \\
+		\bottomrule
+	\end{tabular}
+	\caption{مقایسۀ سرعت و دقت ردیابی در رزولوشن‌های مختلف}
+	\label{tab:speed_accuracy}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.85\textwidth]{img/speed_vs_acc.png}
+	\caption{ نمودار \lr{Speed vs. Accuracy} }
+	\label{fig:speed_acc}
+\end{figure}
+
+
+با توجه به داده‌ها، کمترین رزولوشن یعنی $320 \times 320$ پیکسل، بالاترین سرعت پردازش را با مقدار $55.0$ فریم بر ثانیه فراهم می‌کند، اما از نظر معیار دقت با مقدار $18.5\%$ در پایین‌ترین سطح قرار دارد. با افزایش ابعاد تصویر به رزولوشن میانی $416 \times 416$ پیکسل، روند معکوس آغاز شده و سرعت به $42.0$ فریم بر ثانیه کاهش می‌یابد، در حالی که دقت ردیابی با رشد چشمگیری به $26.3\%$ می‌رسد. در نهایت، در بالاترین رزولوشن یعنی $640 \times 640$ پیکسل، دقت مدل به اوج خود یعنی $34.1\%$ افزایش می‌یابد، اما نرخ فریم با افتی شدید به $25.0$ فریم بر ثانیه محدود می‌شود.
+
+این رفتار بدین معنی است که رزولوشن‌های بالاتر با حفظ جزئیات دقیق‌تر تصویر و ویژگی‌های ابزارها، کارایی ردیابی الگوریتم را به طور ملموسی ارتقا می‌دهند، اما بار محاسباتی سنگین‌تری را به پردازنده تحمیل می‌کنند که منجر به کاهش سرعت استنتاج می‌شود. از طرفی، رزولوشن‌های پایین‌تر سرعت فوق‌العاده بالایی را برای کاربردهای بلادرنگ به ارمغان می‌آورند اما به دلیل از دست رفتن داده‌های ساختاری، در ردیابی دقیق ضعیف عمل می‌کنند؛ بنابراین بر اساس نیاز کاربرد جراحی، رزولوشن $416 \times 416$ پیکسل می‌تواند گزینه‌ای متوازن برای حفظ همزمان سرعت و دقت تلقی شود.
+
+
+
+\section{پرسش 4: چالش جراحی رباتیک-طراحی سیستم هشدار هوشمند و ارزیابی سینماتیکی مبتنی بر کنترل \lr{(Smart Alarm and Kinematics)}}
+\subsection{دریافت داده از \lr{Hugging Face} با استفاده از توکن دسترسی}
+
+برای دسترسی به برخی دیتاست‌ها یا فایل‌های خصوصی در \lr{Hugging Face} لازم است از \lr{Access Token} استفاده شود. در این تمرین، ابتدا یک توکن با سطح دسترسی \lr{read} ساخته شد تا فقط امکان خواندن و دریافت داده‌ها فراهم باشد و هیچ مجوزی برای تغییر، حذف یا بارگذاری محتوا وجود نداشته باشد. این کار از نظر امنیتی مناسب‌تر است، چون حداقل سطح دسترسی موردنیاز به اسکریپت داده می‌شود.
+
+\subsubsection{ایجاد توکن با سطح دسترسی \lr{read}}
+
+روند کار به این صورت بود که در حساب کاربری \lr{Hugging Face} وارد بخش تنظیمات شده و از قسمت \lr{Access Tokens} یک توکن جدید ایجاد شد. برای این توکن، سطح دسترسی \lr{read} انتخاب شد تا فقط عملیات خواندن داده انجام شود. پس از ساخته شدن توکن، مقدار آن برای استفاده در محیط اجرایی ذخیره شد.
+
+\subsubsection{نگهداری امن توکن در \lr{Google Colab}}
+
+به جای آن‌که مقدار توکن به‌صورت مستقیم داخل کد نوشته شود، توکن در بخش \lr{Secrets} محیط \lr{Google Colab} قرار داده شد. دلیل این کار، جلوگیری از افشای مستقیم اطلاعات حساس در نوت‌بوک است. اگر توکن به‌صورت صریح داخل کد قرار بگیرد، ممکن است در زمان اشتراک‌گذاری فایل، انتشار پروژه، یا ذخیره‌سازی نسخه‌های مختلف نوت‌بوک، این مقدار حساس ناخواسته در دسترس دیگران قرار بگیرد.
+
+بنابراین توکن در \lr{Colab Secrets} با یک نام مشخص ذخیره شد و سپس در زمان اجرا، همان مقدار از محیط امن کولب خوانده شد. به این ترتیب، هم کد تمیزتر باقی می‌ماند و هم امنیت دسترسی بهتر حفظ می‌شود.
+
+\paragraph{نمونه کد خواندن توکن از بخش Secrets در \lr{Colab}:}
+
+در کد زیر، توکن با نام \lr{Cataract} از بخش \lr{Secrets} خوانده می‌شود:
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		from google.colab import userdata
+		token = userdata.get('Cataract')
+	\end{lstlisting}
+\end{latin}
+
+\subsubsection{دلیل استفاده از Secrets به جای قرار دادن مستقیم توکن در کد}
+
+استفاده از \lr{Secrets} چند مزیت اصلی دارد. اول این‌که مقدار واقعی توکن در متن نوت‌بوک دیده نمی‌شود. دوم این‌که در صورت اشتراک‌گذاری فایل با دیگران، اطلاعات حساس به‌صورت مستقیم فاش نمی‌شود. سوم این‌که اگر بعدها نیاز به تغییر توکن وجود داشته باشد، فقط مقدار ذخیره‌شده در \lr{Secrets} عوض می‌شود و نیازی به تغییر کد اصلی نیست.
+
+\subsubsection{وضعیت کار تا این مرحله}
+
+تا اینجای فرایند، مراحل زیر انجام شده است:
+\begin{itemize}
+	\item ساخت یک توکن با سطح دسترسی \lr{read} در \lr{Hugging Face}
+	\item ذخیره‌سازی توکن در بخش \lr{Secrets} در \lr{Google Colab}
+	\item بازیابی توکن در زمان اجرا با استفاده از \lr{userdata.get(...)}
+\end{itemize}
+
+
+در نتیجه، زیرساخت لازم برای اتصال امن به منابع موردنیاز در \lr{Hugging Face} آماده شده است و در ادامه می‌توان از این توکن برای دانلود یا بارگذاری داده‌های موردنیاز استفاده کرد، بدون آن‌که مقدار توکن به‌صورت مستقیم در کد نوشته شود.
+
+
+\subsection{انتخاب نمونه‌های ویدئویی برای پردازش در \lr{Google Colab}}
+
+در مرحله بعد، به دلیل بالا بودن حجم فایل‌های ویدئویی، امکان انتقال و پردازش همه داده‌ها به‌صورت هم‌زمان در محیط \lr{Google Colab} وجود نداشت. به همین دلیل، به جای استفاده از کل مجموعه، یک زیرمجموعه محدود و کنترل‌شده از داده‌ها انتخاب شد تا هم فرایند اجرا سبک‌تر شود و هم امکان بازتولید نتایج حفظ شود.
+
+\subsubsection{استفاده از فایل فهرست منتشرشده در \lr{Hugging Face}}
+
+برای این کار، از فایل \lr{CSV} منتشرشده در \lr{Hugging Face} استفاده شد که شامل اطلاعات فایل‌های موجود در مجموعه داده بود. این فایل به‌عنوان مرجع اصلی برای شناسایی نام ویدئوها و فایل‌های فشرده مرتبط با آن‌ها مورد استفاده قرار گرفت. پس از بارگذاری این فایل در کولب، اطلاعات آن با استفاده از کتابخانه \lr{pandas} خوانده شد.
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		import os
+		import random
+		import pandas as pd
+		
+		csv_path = "/content/ZipContentsReport.csv"
+		df = pd.read_csv(csv_path)
+		
+		VIDEO_COL = "InternalFileName"
+		ZIP_COL = "ZipFileName"
+	\end{lstlisting}
+\end{latin}
+
+\subsubsection{محدود کردن انتخاب به فایل‌های \lr{part001}}
+
+از آن‌جا که داده‌ها در چند فایل فشرده مختلف دسته‌بندی شده بودند، در این مرحله فقط ویدئوهای موجود در فایل \lr{videos\_part001.zip} در نظر گرفته شدند. این کار باعث شد دامنه انتخاب مشخص و مدیریت دانلود و پردازش ساده‌تر شود.
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		part1_df = df[df[ZIP_COL] == "videos_part001.zip"].copy()
+		part1_videos = part1_df[VIDEO_COL].dropna().astype(str).unique().tolist()
+		
+		print("Total videos in part001:", len(part1_videos))
+	\end{lstlisting}
+\end{latin}
+
+\paragraph{فیلتر کردن ویدئوهای مربوط به \lr{part001}}
+
+در این بخش، ابتدا فقط سطرهایی نگه داشته شدند که مقدار ستون \lr{ZipFileName} آن‌ها برابر با \lr{videos\_part001.zip} بود. سپس نام ویدئوها از ستون \lr{InternalFileName} استخراج شد، مقادیر تهی حذف شدند و لیست نهایی ویدئوهای یکتا به دست آمد.
+
+\subsubsection{نمونه‌گیری تصادفی با بذر ثابت}
+
+پس از مشخص شدن ویدئوهای موجود در \lr{part001}، تعداد 15 ویدئو به‌صورت تصادفی انتخاب شد. برای این‌که این انتخاب در اجراهای مختلف قابل تکرار باشد، از یک \lr{random seed} ثابت استفاده شد. استفاده از بذر ثابت باعث می‌شود هر بار که کد اجرا می‌شود، همان 15 نمونه انتخاب شوند و در نتیجه روند آزمایش بازتولیدپذیر باقی بماند.
+
+\paragraph{کد انتخاب 15 نمونه تصادفی}
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		SEED = 4042
+		K = 15
+		rng = random.Random(SEED)
+		selected_15 = rng.sample(part1_videos, K)
+		
+		print("\nSelected 15 videos:")
+		for v in selected_15:
+		print(v)
+	\end{lstlisting}
+\end{latin}
+
+در این کد، مقدار \lr{4042} به‌عنوان بذر تصادفی در نظر گرفته شد و سپس 15 ویدئو از میان ویدئوهای موجود در \lr{part001} انتخاب شدند. این انتخاب نه‌تنها حجم داده‌های موردنیاز را کاهش داد، بلکه باعث شد پردازش در محیط کولب عملی و قابل مدیریت باقی بماند.
+
+\subsubsection{دلیل این انتخاب در روند تمرین}
+
+هدف این مرحله، انتخاب یک زیرمجموعه محدود اما قابل اتکا از داده‌ها برای ادامه تحلیل بود. از آن‌جا که حجم کل فایل‌های ویدئویی زیاد بود، انتقال همه آن‌ها به کولب از نظر زمان، فضای ذخیره‌سازی و منابع پردازشی به‌صرفه نبود. بنابراین، به‌جای استفاده از کل داده‌ها، تنها 15 نمونه از میان ویدئوهای \lr{part001} انتخاب شدند.
+
+\paragraph{جمع‌بندی این مرحله}
+
+در این مرحله، روند کار به‌صورت زیر انجام شد:
+
+\begin{itemize}
+	\item فایل فهرست داده‌ها از مسیر ذخیره‌شده در کولب بارگذاری شد
+	\item فقط ویدئوهای مربوط به \lr{videos\_part001.zip} انتخاب شدند
+	\item نام ویدئوهای یکتا از فایل فهرست استخراج شد
+	\item 15 نمونه به‌صورت تصادفی با بذر ثابت \lr{4042} انتخاب شدند
+	\item خروجی این بخش، فهرست نهایی ویدئوهای منتخب برای مراحل بعدی بود
+\end{itemize}
+
+در مراحل بعدی، همان‌طور که مشاهده خواهد شد، فقط فایل‌های \lr{annotation} مربوط به همین ویدئوهای منتخب دانلود و استفاده می‌شوند تا کل فرایند سبک‌تر، سریع‌تر و هدفمندتر باقی بماند.
+
+\subsection{دانلود فایل‌های \lr{Annotation} مربوط به ویدئوهای منتخب}
+
+در این مرحله، بعد از مشخص شدن 15 ویدئوی منتخب، نام فایل‌های \lr{annotation} متناظر با آن‌ها ساخته شد. برای این کار، پسوند نام هر ویدئو حذف و به‌جای آن پسوند \lr{.zip} قرار داده شد تا نام فایل فشرده \lr{annotation} مربوط به همان ویدئو به دست آید.
+
+\paragraph{ساخت نام فایل‌های Annotation}
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		selected_ann_zips = [os.path.splitext(v)[0] + ".zip" for v in selected_15]
+		
+		print("Selected annotation zips:")
+		for z in selected_ann_zips:
+		print(z)
+	\end{lstlisting}
+\end{latin}
+
+سپس با استفاده از کتابخانه \lr{huggingface\_hub} و توکنی که در مرحله قبل از \lr{Colab Secrets} دریافت شده بود، فایل‌های موردنظر مستقیماً از ریپازیتوری دیتاست در \lr{Hugging Face} دانلود شدند.
+
+\subsubsection{دانلود فایل‌ها از \lr{Hugging Face}}
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		import os
+		from huggingface_hub import hf_hub_download
+		
+		HF_TOKEN = token
+		
+		repo_id = "mjahmadi/Cataract-LMM"
+		repo_type = "dataset"
+		
+		local_root = "/content/Cataract-LMM"
+		os.makedirs(local_root, exist_ok=True)
+		
+		downloaded_paths = []
+		
+		print("Starting download process using HF Token...")
+		
+		for ann_zip in selected_ann_zips:
+		remote_path = f"3_Object_Tracking/annotations/{ann_zip}"
+		
+		try:
+		local_path = hf_hub_download(
+		repo_id=repo_id,
+		repo_type=repo_type,
+		filename=remote_path,
+		local_dir=local_root,
+		token=HF_TOKEN
+		)
+		downloaded_paths.append(local_path)
+		print("Successfully downloaded:", ann_zip)
+		except Exception as e:
+		print("Failed to download:", ann_zip, "| Error:", e)
+		
+		print(f"\nTotal successfully downloaded: {len(downloaded_paths)}/{len(selected_ann_zips)}")
+	\end{lstlisting}
+\end{latin}
+
+\paragraph{خلاصه این مرحله}
+
+در این بخش، فقط فایل‌های \lr{annotation} مربوط به همان 15 ویدئوی انتخاب‌شده دانلود شدند تا از دانلود غیرضروری سایر داده‌ها جلوگیری شود و فرایند آماده‌سازی داده‌ها در کولب سبک و کنترل‌شده باقی بماند.
+
+\subsection{بررسی ساختار فایل‌های فشرده \lr{Annotation}}
+
+در این بخش، هدف اصلی بررسی ساختار داخلی فایل‌های \lr{ZIP} دانلودشده بود تا مشخص شود داده‌های موردنیاز در چه قالبی ذخیره شده‌اند و برای مراحل بعدی باید از چه فایل‌هایی استفاده شود. برای این کار، ابتدا فایل‌های فشرده موجود در مسیر محلی جست‌وجو شدند و سپس یکی از آن‌ها به‌عنوان نمونه بررسی شد.
+
+\subsubsection{بررسی ساختار کلی فایل \lr{ZIP}}
+
+در گام اول، محتوای یکی از فایل‌های \lr{ZIP} خوانده شد تا مشخص شود چه نوع فایل‌هایی درون آن قرار دارند. این بررسی نشان داد که هر فایل فشرده معمولاً شامل یک پوشه اصلی، فایل \lr{annotation.csv}، فایل \lr{annotation\_full.json} و مجموعه‌ای از فریم‌های تصویری است. به این ترتیب، ساختار کلی داده‌ها برای استفاده در ادامه تمرین شفاف شد.
+
+\paragraph{هدف این بررسی}
+
+این مرحله برای آن انجام شد که قبل از ورود به پردازش اصلی، بدانیم اطلاعات موردنیاز مانند مختصات ابزار، اطلاعات قرنیه، مردمک و سایر فراداده‌ها دقیقاً در چه فایل‌هایی قرار دارند و ساختار نام‌گذاری آن‌ها چگونه است.
+
+\subsubsection{بررسی محتوای فایل‌های \lr{CSV} و \lr{JSON}}
+
+در ادامه، فایل \lr{annotation.csv} و فایل \lr{annotation\_full.json} از داخل همان فایل فشرده به‌صورت مستقیم خوانده شدند. بررسی اولیه نشان داد که فایل \lr{CSV} شامل داده‌های فریم‌به‌فریم مانند موقعیت ابزار، نوک ابزار، ویژگی‌های حرکتی، مختصات قرنیه و مردمک است. همچنین فایل \lr{JSON} ساختار کلی را در سطح متادیتا، دسته‌بندی‌ها، اطلاعات ویدئو و \lr{annotation}ها نگه می‌دارد.
+
+\paragraph{جمع‌بندی این بخش}
+
+در نتیجه این مرحله، ساختار داخلی فایل‌های annotation شناسایی شد و مشخص شد که برای ادامه کار، فایل \lr{annotation.csv} منبع اصلی داده‌های جدولی و فریم‌به‌فریم است و فایل \lr{annotation\_full.json} نیز اطلاعات ساختاری و کامل‌تر \lr{annotation}ها را فراهم می‌کند. دراین تمرین از فایل \lr{json} برای رسم کردن \lr{bounding box}ها استفاده شد. همچنین از فایل \lr{CSV} برای مشخص نمودن مختصات \lr{End Effector} استفاده گردید.
+
+\subsection{تحلیل و بررسی تعداد فریم‌های دارای Annotation در ویدئوهای منتخب}
+
+پس از دانلود فایل‌های \lr{annotation} مربوط به 15 ویدئوی منتخب، مرحله بعدی بررسی این بود که آیا تعداد فریم‌های دارای ماسک برای \lr{cornea}، \lr{pupil} و \lr{cystotome\_tip} برای انجام پردازش‌های بعدی کافی هستند یا خیر. هدف اصلی این بخش، ارزیابی کفایت داده‌ها پیش از ورود به مراحل تحلیل و پردازش نهایی بود؛ زیرا هرچند ویدئوها به‌صورت منتخب انتخاب شده بودند، اما لازم بود از وجود پوشش مناسب فریم‌ها برای اجزای مختلف اطمینان حاصل شود.
+
+\subsubsection{روش بررسی تعداد فریم‌های دارای ماسک}
+
+برای این منظور، ابتدا تمامی فایل‌های فشرده \lr{ZIP} مربوط به annotation در مسیر تعیین‌شده شناسایی شدند. سپس محتوای داخلی هر فایل \lr{ZIP} بررسی شد تا فایل‌های \lr{annotation.csv} و \lr{annotation\_full.json} استخراج شوند. در ادامه، با استفاده از \lr{pandas} فایل \lr{annotation.csv} خوانده شد و تعداد فریم‌های دارای هر نوع annotation شامل \lr{cornea\_bbox}، \lr{pupil\_bbox} و \lr{cystotome\_tip} شمارش گردید.
+
+\paragraph{نمونه کد مورد استفاده برای پردازش فایل‌های ZIP}
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		import zipfile
+		import json
+		import pandas as pd
+		import glob
+		import io
+		
+		zip_files = glob.glob("/content/Cataract-LMM/**/*.zip", recursive=True)
+		
+		if zip_files:
+		sample_zip = zip_files[0]
+		print(f"Reading metadata from: {sample_zip}\n")
+		
+		with zipfile.ZipFile(sample_zip, 'r') as z:
+		csv_path = [f for f in z.namelist() if f.endswith('annotation.csv')][0]
+		json_path = [f for f in z.namelist() if f.endswith('annotation_full.json')][0]
+		
+		print("--- [annotation.csv] preview ---")
+		with z.open(csv_path) as f:
+		df_ann = pd.read_csv(f)
+		print("Columns available:", df_ann.columns.tolist())
+		print("\nFirst 5 rows:")
+		print(df_ann.head(5))
+		
+		print("\n--- [annotation_full.json] preview ---")
+		with z.open(json_path) as f:
+		data = json.load(f)
+		# ... (further JSON processing) ..
+	\end{lstlisting}
+\end{latin}
+
+\subsubsection{نتایج شمارش فریم‌ها}
+
+پس از اجرای کد، جدولی به‌دست آمد که تعداد کل فریم‌ها و تعداد فریم‌های دارای هر نوع annotation را برای 15 ویدئوی منتخب نشان می‌دهد.
+
+\paragraph{جدول شمارش فریم‌ها بر حسب نوع \lr{annotation}:}
+% Preamble (حتماً داشته باش):
+% \usepackage{booktabs}
+% \usepackage{xepersian} % یا bidi
+% \settextfont{...}
+% \setlatintextfont{...}
+
+\begin{table}[h]
+	\centering
+	\caption{گزارش تعداد فریم‌ها و فریم‌های دارای ماسک (قرنیه/مردمک) و نوک ابزار در ویدئوهای منتخب}
+	\label{tab:bbox_tip_count_report}
+	
+	% کپشن فارسی است، ولی خود جدول را RTL می‌کنیم و متن انگلیسی را با \lr می‌نویسیم
+	\begin{RTL}
+		\begin{tabular}{rrrrl}
+			\toprule
+			\lr{Frames with Pupil BBox} &
+			\lr{Frames with Cornea BBox} &
+			\lr{Frames with Tool Tip} &
+			\lr{Total Frames} &
+			\lr{Video ID} \\
+			\midrule
+			\lr{2046} & \lr{2046} & \lr{1641} & \lr{2046} & \lr{TR\_0001\_S1\_P03} \\
+			\lr{2912} & \lr{2912} & \lr{2571} & \lr{2912} & \lr{TR\_0013\_S1\_P03} \\
+			\lr{4242} & \lr{4242} & \lr{4062} & \lr{4242} & \lr{TR\_0012\_S1\_P03} \\
+			\lr{1680} & \lr{1680} & \lr{1599} & \lr{1680} & \lr{TR\_0045\_S1\_P03} \\
+			\lr{3165} & \lr{3165} & \lr{3165} & \lr{3165} & \lr{TR\_0005\_S1\_P03} \\
+			\lr{1035} & \lr{1035} & \lr{983}  & \lr{1035} & \lr{TR\_0052\_S1\_P03} \\
+			\lr{1351} & \lr{1351} & \lr{1314} & \lr{1351} & \lr{TR\_0048\_S1\_P03} \\
+			\lr{2849} & \lr{2849} & \lr{2842} & \lr{2849} & \lr{TR\_0042\_S1\_P03} \\
+			\lr{9421} & \lr{9421} & \lr{4933} & \lr{9421} & \lr{TR\_0003\_S1\_P03} \\
+			\lr{3317} & \lr{3317} & \lr{3317} & \lr{3317} & \lr{TR\_0046\_S1\_P03} \\
+			\lr{2638} & \lr{2638} & \lr{2638} & \lr{2638} & \lr{TR\_0027\_S1\_P03} \\
+			\lr{4196} & \lr{4196} & \lr{4022} & \lr{4196} & \lr{TR\_0011\_S1\_P03} \\
+			\lr{2906} & \lr{2906} & \lr{2906} & \lr{2906} & \lr{TR\_0033\_S1\_P03} \\
+			\lr{9238} & \lr{9238} & \lr{5422} & \lr{9238} & \lr{TR\_0018\_S1\_P03} \\
+			\lr{4592} & \lr{4592} & \lr{4499} & \lr{4592} & \lr{TR\_0037\_S1\_P03} \\
+			\bottomrule
+		\end{tabular}
+	\end{RTL}
+	
+\end{table}
+
+
+\subsubsection{تحلیل نتایج}
+
+همان‌طور که در جدول بالا و نمودار مشاهده می‌شود، در تمامی ویدئوهای منتخب، تعداد فریم‌های دارای ماسک \lr{cornea} و \lr{pupil} با تعداد کل فریم‌ها برابر است. این نتیجه کاملاً قابل انتظار است، زیرا این دو مؤلفه بخش‌های اصلی و ثابت ساختار چشم محسوب می‌شوند و در کل ویدئو حضور دارند.
+
+
+\paragraph{کفایت داده‌ها برای ادامه پردازش}
+
+از آنجا که این ویدئوها به‌صورت منتخب برای تمرین و تحلیل انتخاب شده بودند، یکی از معیارهای مهم این بود که تعداد فریم‌های قابل استفاده برای استخراج خروجی تمیز و پایدار، کافی باشد. نتایج به‌دست‌آمده نشان داد که از نظر تعداد فریم‌های دارای \lr{annotation}، داده‌ها برای انجام مراحل بعدی مناسب هستند. به‌ویژه، وجود annotation کامل برای \lr{cornea} و \lr{pupil} در تمام فریم‌ها، تضمین می‌کند که اطلاعات زمینه‌ای و ساختاری موردنیاز به‌طور کامل در دسترس است. همچنین، گرچه \lr{cystotome\_tip} در برخی ویدئوها کمتر دیده می‌شود اما این کاهش به حدی نیست که کیفیت کلی داده‌ها را برای ادامه کار مختل کند.
+
+\paragraph{نتیجه‌گیری تحلیلی}
+
+در مجموع، بررسی انجام‌شده نشان داد که:
+\begin{itemize}
+	\item همه فریم‌های ویدئوهای منتخب دارای annotation مربوط به \lr{cornea} و \lr{pupil} هستند.
+	\item تعداد فریم‌های دارای \lr{cystotome\_tip} در برخی ویدئوها کمتر است اما همچنان برای تحلیل‌های بعدی کافی به نظر می‌رسد.
+	\item این مجموعه داده از نظر پوشش \lr{annotation}، برای ادامه مراحل پردازش مناسب است.
+\end{itemize}
+
+بنابراین، با وجود تفاوت در تعداد annotation مربوط به ابزار، داده‌های موجود توانستند نیاز اولیه برای بررسی کفایت نمونه‌ها را برآورده کنند و مشخص شد که می‌توان از آن‌ها برای ادامه کار استفاده کرد. در نهایت نیز در مرحله بعد، از یک ویدئوی مشخص برای تحلیل نهایی استفاده شد، اما این ارزیابی اولیه ضروری بود تا در صورت ناکافی بودن داده‌ها، امکان انتخاب یک seed یا ویدئوی جایگزین وجود داشته باشد.
+
+\subsubsection{جمع‌بندی کل \lr{annotation}ها}
+
+علاوه بر بررسی ویدئو به ویدئو، مجموع \lr{annotation}ها در تمام فایل‌های فشرده نیز محاسبه شد تا یک دید کلی از حجم داده‌ها به دست آید.
+
+مجموع کل \lr{annotation}ها در همه فایل‌های \lr{ZIP}
+
+\begin{latin}
+	\begin{verbatim}
+		=== Total Annotation Counts Across All ZIPs ===
+		Total frames: 55588
+		Total cornea_bbox frames: 55588
+		Total pupil_bbox frames: 55588
+		Total cystotome_tip frames: 45914
+	\end{verbatim}
+\end{latin}
+
+\paragraph{تحلیل مجموع کل}
+
+این آمار نشان می‌دهد که تعداد کل فریم‌ها در کل مجموعه برابر با \lr{55588} است و تعداد فریم‌های دارای \lr{cornea\_bbox} و \lr{pupil\_bbox} نیز دقیقاً با همین مقدار برابر است. این تساوی نشان‌دهنده کامل بودن \lr{annotation}های مربوط به اجزای اصلی چشم در کل داده‌هاست. در مقابل، تعداد فریم‌های دارای \lr{cystotome\_tip} برابر با \lr{45914} است که کمتر از تعداد کل فریم‌هاست؛ اما این اختلاف طبیعی است، زیرا ابزار جراحی در همه لحظات ویدئو در میدان دید قرار ندارد.
+
+\paragraph{نتیجه نهایی}
+
+در مجموع، این بررسی تأیید کرد که مجموعه داده از نظر تعداد annotation و پوشش فریم‌ها برای ادامه پردازش مناسب است. وجود annotation کامل برای \lr{cornea} و \lr{pupil} و پوشش قابل‌قبول \lr{cystotome\_tip} نشان می‌دهد که داده‌ها می‌توانند مبنای مناسبی برای تولید خروجی باشند.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/count.png}
+	\caption{مقایسه تعداد فریم‌های دارای \lr{pupil\_bbox}، \lr{cornea\_bbox} و \lr{cystotome\_tip} در 15 ویدئوی منتخب. همان‌طور که مشاهده می‌شود، \lr{cornea} و \lr{pupil} در تمام فریم‌ها حضور دارند، در حالی که تعداد فریم‌های دارای \lr{cystotome\_tip} در برخی ویدئوها کمتر است}
+	\label{fig:frame_counts_annotation}
+\end{figure}
+
+
+\subsection{بررسی صحت خواندن مختصات \lr{Bounding Box} و \lr{End Effector}}
+
+در این مرحله، هدف این بود که مطمئن شویم مختصات‌های مربوط به \lr{bounding box} و همچنین مختصات \lr{end effector} به‌درستی از فایل‌های annotation خوانده شده‌اند. برای این کار، یک نمونه از ویدئوهای منتخب بررسی شد و فریم‌های ابتدایی آن به‌صورت تصویری نمایش داده شدند تا بتوان صحت داده‌های استخراج‌شده را به‌صورت بصری کنترل کرد.
+
+\subsubsection{هدف از این بررسی}
+
+از آنجا که در مراحل بعدی، این مختصات برای تحلیل حرکات ابزار و نمایش ناحیه‌های مهم روی فریم‌ها استفاده می‌شوند، لازم بود ابتدا اطمینان حاصل شود که:
+\begin{itemize}
+	\item مختصات \lr{bbox}‌ها به‌درستی از فایل \lr{JSON} خوانده شده‌اند،
+	\item مختصات \lr{end effector} از فایل \lr{CSV} به‌درستی استخراج شده‌اند،
+	\item و در نهایت، محل قرارگیری این نقاط روی تصویر با داده‌های واقعی هم‌خوانی دارد.
+\end{itemize}
+
+\paragraph{نتیجه مورد انتظار}
+
+اگر داده‌ها به‌درستی خوانده شده باشند، باید:
+\begin{itemize}
+	\item کادرهای مربوط به \lr{Cornea}، \lr{Pupil} و ابزار جراحی روی تصویر در محل درست نمایش داده شوند،
+	\item و در فریم‌هایی که \lr{end effector} موجود است، علامت آن نیز روی تصویر ظاهر شود.
+\end{itemize}
+
+\subsubsection{کد مورد استفاده برای نمایش فریم‌ها}
+
+در کد زیر، ابتدا فایل \lr{JSON} و \lr{CSV} خوانده می‌شوند، سپس مختصات هر فریم استخراج شده و در نهایت چند فریم اول ویدئو به‌همراه \lr{bounding box}‌ها و \lr{end effector} نمایش داده می‌شوند.
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		import json
+		import os
+		import cv2
+		import pandas as pd
+		import ast
+		import matplotlib.pyplot as plt
+		import matplotlib.patches as patches
+		
+		
+		json_path = "/content/Cataract-LMM/3_Object_Tracking/collected_ann_files/jsons/TR_0001_S1_P03__annotation_full.json"
+		frames_root = "/content/Cataract-LMM/3_Object_Tracking/annotations_extracted/TR_0001_S1_P03/TR_0001_S1_P03"
+		csv_path = "/content/Cataract-LMM/3_Object_Tracking/collected_ann_files/csvs/TR_0001_S1_P03__annotation.csv"
+		
+		
+		with open(json_path, "r") as f:
+		data = json.load(f)
+		
+		cat_map = {cat["id"]: cat["name"] for cat in data["categories"]}
+		video_sample = data["videos"][0]
+		num_frames = len(video_sample["file_names"])
+		
+		
+		df_csv = pd.read_csv(csv_path)
+		
+		
+		tip_data = {}
+		for _, row in df_csv.iterrows():
+		f_num = int(row['frame_number'])
+		tip_str = row['cystotome_tip']
+		
+		
+		try:
+		if pd.notna(tip_str) and tip_str != "None":
+		tip_coords = ast.literal_eval(tip_str)
+		if len(tip_coords) == 2:
+		tip_data[f_num] = tip_coords
+		except:
+		continue
+		
+		
+		frame_annotations = {i: [] for i in range(num_frames)}
+		
+		for ann in data["annotations"]:
+		cat_name = cat_map.get(ann["category_id"], "Unknown")
+		bboxes = ann.get("bboxes", [])
+		
+		for frame_idx in range(min(num_frames, len(bboxes))):
+		bbox = bboxes[frame_idx]
+		if bbox is None:
+		continue
+		
+		
+		ee_pos = None
+		
+		
+		if cat_name in ["Cystotome", "Cap-Cystotome"]:
+		
+		ee_pos = tip_data.get(frame_idx) or tip_data.get(frame_idx + 1)
+		
+		frame_annotations[frame_idx].append({
+			"category_name": cat_name,
+			"bbox": bbox,
+			"end_effector": ee_pos
+		})
+		
+		
+		
+		def draw_bbox(ax, bbox, color, label):
+		if bbox is None or len(bbox) != 4: return
+		x, y, w, h = bbox
+		rect = patches.Rectangle((x, y), w, h, linewidth=3, edgecolor=color, facecolor='none')
+		ax.add_patch(rect)
+		ax.text(x, max(0, y - 8), label, color='black', fontsize=9, weight='bold',
+		bbox=dict(facecolor=color, alpha=0.8, pad=2))
+		
+		def draw_end_effector(ax, ee, color="red"):
+		if ee is None: return
+		x, y = ee[0], ee[1]
+		
+		ax.scatter([x], [y], marker='x', s=150, c=color, linewidths=3, zorder=10)
+		
+		
+		def visualize_frames(start=0, n=5):
+		end = min(start + n, num_frames)
+		indices = list(range(start, end))
+		
+		fig, axes = plt.subplots(1, len(indices), figsize=(6 * len(indices), 6))
+		if len(indices) == 1: axes = [axes]
+		
+		for ax, frame_idx in zip(axes, indices):
+		frame_name = video_sample["file_names"][frame_idx]
+		img_path = os.path.join(frames_root, os.path.basename(frame_name))
+		
+		if not os.path.exists(img_path):
+		ax.text(0.5, 0.5, f"Missing:\n{frame_name}", ha="center")
+		ax.axis("off")
+		continue
+		
+		img = cv2.imread(img_path)
+		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+		ax.imshow(img)
+		
+		anns = frame_annotations.get(frame_idx, [])
+		for ann in anns:
+		cat_name = ann["category_name"]
+		
+		color = {
+			"Cornea": "#00FFFF",
+			"Pupil": "#FF00FF",
+			"Cystotome": "#00FF00",
+			"Cap-Cystotome": "#FFFF00"
+		}.get(cat_name, "#FF4500")
+		
+		draw_bbox(ax, ann["bbox"], color, cat_name)
+		
+		
+		if cat_name in ["Cystotome", "Cap-Cystotome"] and ann["end_effector"] is not None:
+		draw_end_effector(ax, ann["end_effector"], color="#FF0000")
+		
+		ax.set_title(f"Frame {frame_idx}", fontsize=12)
+		ax.axis("off")
+		
+		plt.tight_layout()
+		plt.show()
+		
+		
+		visualize_frames(start=0, n=5)
+	\end{lstlisting}
+\end{latin}
+
+\subsubsection{تحلیل خروجی}
+
+خروجی این بخش نشان می‌دهد که مختصات‌های مربوط به \lr{bounding box} و \lr{end effector} به‌صورت صحیح و دقیق خوانده شده‌اند. با توجه به نمایش فریم‌های اولیه، محل قرارگیری نواحی مربوط به \lr{Cornea}، \lr{Pupil} و ابزار جراحی با ساختار واقعی تصویر هم‌خوانی دارد و این موضوع تأیید می‌کند که داده‌ها به‌درستی استخراج و روی تصویر اعمال شده‌اند.
+
+\paragraph{بررسی \lr{End Effector}}
+
+در برخی فریم‌ها، مختصات \lr{end effector} وجود ندارد. این موضوع نیز با محتوای داده‌ها سازگار است؛ زیرا در فریم صفر همین ویدئو، نوک ابزار در تصویر حضور نداشته یا به‌صورت واضح قابل مشاهده نبوده است، بنابراین برای آن ماسکی ثبت نشده است. در نتیجه، نبودن \lr{end effector} در بعضی فریم‌ها یک خطا نیست، بلکه بازتابی از واقعیت \lr{annotation}ها در خود داده‌هاست.
+
+\paragraph{نتیجه‌گیری}
+
+به‌طور کلی، خروجی تصویری این مرحله تأیید می‌کند که:
+\begin{itemize}
+	\item مختصات \lr{bbox}‌ها به‌درستی خوانده شده‌اند،
+	\item مختصات \lr{end effector} نیز در فریم‌هایی که موجود بوده‌اند به‌درستی استخراج شده‌اند،
+	\item و در مواردی که \lr{end effector} وجود ندارد، این عدم حضور ناشی از داده‌های اصلی است نه خطا در کد.
+\end{itemize}
+
+بنابراین، می‌توان نتیجه گرفت که روند خواندن و نمایش \lr{annotation}ها به‌درستی انجام شده و داده‌ها برای استفاده در مراحل بعدی پردازش مناسب هستند.
+
+\begin{figure}[h]
+	\centering
+	% تصویر خروجی این بخش را اینجا قرار دهید
+	\includegraphics[width=0.95\textwidth]{img/Capture1.png}
+	\caption{نمایش چند فریم ابتدایی ویدئوی منتخب همراه با \lr{bounding box}‌های قرنیه، مردمک و ابزار.}
+	\label{fig:bbox_end_effector_validation}
+\end{figure}
+
+\subsection{تعریف نواحی خطر فضایی}
+
+
+\subsubsection{تعریف ناحیه خطر فضایی و حریم ایمن جراحی}
+
+در این بخش، یک لایه پایش ایمنی فضایی برای \lr{end-effector} طراحی شد تا موقعیت نوک ابزار نسبت به نواحی حساس چشم در هر فریم ارزیابی شود. ایده اصلی این است که صرف دانستن مکان ابزار کافی نیست، بلکه باید مشخص شود آیا ابزار وارد ناحیه‌ای شده است که از دید مهندسی رباتیک و ایمنی جراحی، پرریسک محسوب شود یا خیر. برای این منظور، از \lr{annotation}های مربوط به \lr{Cornea} و \lr{Pupil} استفاده شد تا یک مرجع هندسی از ساختار چشم در هر فریم ساخته شود و سپس فاصله نوک ابزار از مرز ایمن چشم محاسبه گردد.
+
+\paragraph{ایده اصلی الگوریتم}
+الگوریتم طراحی‌شده بر این فرض استوار است که قرنیه مهم‌ترین مرجع فضایی برای تعریف محدوده مجاز حرکت ابزار است. از آنجا که \lr{bounding box} مربوط به \lr{Cornea} در تمام فریم‌ها موجود است و نسبت به سایر اجزای صحنه پایدارتر و فراگیرتر است، مرکز و شعاع تقریبی آن به عنوان مرجع محاسبه انتخاب شد. پس از تعیین مرکز قرنیه، فاصله اقلیدسی نوک ابزار تا این مرکز اندازه‌گیری می‌شود. اگر این فاصله از یک شعاع ایمنِ از پیش تعریف‌شده بزرگ‌تر شود، به این معناست که ابزار از ناحیه مرکزی امن فاصله گرفته و به مرزهای حساس چشم نزدیک شده است؛ در نتیجه فریم مربوطه به عنوان \lr{spatial danger} یا خطر فضایی علامت‌گذاری می‌شود.
+
+\paragraph{استخراج موقعیت نوک ابزار}
+در گام اول، مختصات نوک ابزار از ستون \lr{cystotome\_tip} در فایل \lr{CSV} خوانده شد. چون در برخی فریم‌ها ممکن بود مختصات نوک ابزار ثبت نشده باشد، داده‌ها ابتدا در یک آرایه با مقدار اولیه \lr{NaN} ذخیره شدند و سپس با استفاده از درون‌یابی خطی و همچنین \lr{forward fill} و \lr{backward fill} کامل شدند. در ادامه برای کاهش نویز ردیابی و حذف نوسانات غیرواقعی، روی مختصات \lr{x} و \lr{y} فیلتر \lr{Savitzky-Golay} اعمال شد. این مرحله اهمیت زیادی دارد، زیرا اگر مختصات خام مستقیماً در محاسبه فاصله استفاده شوند، نویزهای پیکسلی می‌توانند باعث هشدارهای کاذب شوند.
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		raw_coords = np.full((num_frames, 2), np.nan)
+		for _, row in df_csv.iterrows():
+		f_num = int(row["frame_number"])
+		idx = f_num - 1 if f_num >= 1 else f_num
+		if 0 <= idx < num_frames:
+		tip = ast.literal_eval(row["cystotome_tip"]) \
+		if pd.notna(row["cystotome_tip"]) and row["cystotome_tip"] != "None" \
+		else None
+		if tip:
+		raw_coords[idx] = [tip[0], tip[1]]
+		
+		df_coords = pd.DataFrame(raw_coords, columns=["x", "y"]).interpolate().ffill().bfill()
+		smooth_x = savgol_filter(df_coords["x"], 11, 3)
+		smooth_y = savgol_filter(df_coords["y"], 11, 3)
+	\end{lstlisting}
+\end{latin}
+
+\paragraph{استخراج مرجع هندسی قرنیه}
+پس از آماده‌سازی مسیر صاف‌شده نوک ابزار، اطلاعات \lr{Cornea} و \lr{Pupil} از فایل \lr{annotation\_full.json} استخراج شدند. برای هر فریم، \lr{bounding box} قرنیه ذخیره شد تا بتوان از آن برای تعریف مرز ایمن استفاده کرد. اگر \lr{bounding box} قرنیه را با مختصات \lr{(cx, cy, cw, ch)} در نظر بگیریم، آنگاه مرکز آن برابر است با:
+\[
+x_c = cx + \frac{cw}{2}, \qquad
+y_c = cy + \frac{ch}{2}
+\]
+و شعاع تقریبی آن نیز با فرض دایره‌ای بودن ناحیه قرنیه از رابطه زیر به‌دست می‌آید:
+\[
+r_{\text{cornea}} = \frac{\min(cw, ch)}{2}
+\]
+استفاده از \lr{min(cw, ch)} باعث می‌شود اگر \lr{bounding box} کمی کشیده یا نامتقارن باشد، شعاع محافظه‌کارانه‌تری انتخاب شود و ناحیه ایمن بیش‌برآورد نشود.
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		for ann in data["annotations"]:
+		cat_name = cat_map.get(ann["category_id"])
+		bboxes = ann.get("bboxes", [])
+		for f_idx, box in enumerate(bboxes):
+		if f_idx < num_frames and box:
+		if cat_name == "Cornea":
+		frames_data[f_idx]["cornea"] = box
+		elif cat_name == "Pupil":
+		frames_data[f_idx]["pupil"] = box
+	\end{lstlisting}
+\end{latin}
+
+\paragraph{تعریف آستانه ایمن و دلیل انتخاب آن}
+برای تعریف حریم ایمن، از پارامتر زیر در کد استفاده شد:
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		SAFE_RADIUS_RATIO = 0.75
+	\end{lstlisting}
+\end{latin}
+بر این اساس، شعاع ایمن به صورت زیر تعریف شد:
+\[
+r_{\text{safe}} = 0.75 \times r_{\text{cornea}}
+\]
+این انتخاب به این معناست که تنها 75 درصد داخلی قرنیه به عنوان ناحیه امن در نظر گرفته می‌شود و 25 درصد بیرونی به عنوان حاشیه هشدار باقی می‌ماند. دلیل انتخاب این آستانه آن است که در کاربردهای جراحی چشم، نزدیک شدن ابزار به نواحی محیطی قرنیه می‌تواند احتمال تماس ناخواسته، ورود به ناحیه لبه‌ای حساس، یا کاهش کنترل‌پذیری حرکت را افزایش دهد. بنابراین لازم است هشدار پیش از رسیدن به مرز واقعی صادر شود، نه دقیقاً روی مرز.
+
+از نظر مهندسی ایمنی، این آستانه یک انتخاب \lr{conservative but practical} است؛ یعنی:
+\begin{itemize}
+	\item بیش از حد کوچک نیست که عملاً بیشتر فریم‌ها را خطرناک اعلام کند،
+	\item و بیش از حد بزرگ هم نیست که هشدار را دیر صادر کند.
+\end{itemize}
+به بیان دیگر، این ضریب یک ناحیه بافر ایجاد می‌کند تا سیستم مانیتورینگ بتواند پیش از ورود ابزار به ناحیه بحرانی، وضعیت را شناسایی کند.
+
+\paragraph{محاسبه فاصله اقلیدسی و تشخیص خطر}
+برای هر فریم، فاصله نوک ابزار تا مرکز قرنیه با رابطه اقلیدسی محاسبه شد:
+\[
+d = \sqrt{(x_{\text{tip}} - x_c)^2 + (y_{\text{tip}} - y_c)^2}
+\]
+سپس اگر:
+\[
+d > r_{\text{safe}}
+\]
+فریم موردنظر به عنوان حالت نزدیک‌شدن به مرز خطر علامت‌گذاری می‌شود. در واقع چون مرز ایمن به صورت یک دایره داخلی تعریف شده است، بزرگ‌تر شدن فاصله از این شعاع به معنای خروج از ناحیه مجاز و ورود به حاشیه هشدار است.
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		boundary_dist = np.zeros(num_frames)
+		for i in range(num_frames):
+		cornea = frames_data[i]["cornea"]
+		if cornea:
+		cx, cy, cw, ch = cornea
+		center_x = cx + cw / 2
+		center_y = cy + ch / 2
+		
+		cornea_radius = min(cw, ch) / 2
+		safe_radius = cornea_radius * SAFE_RADIUS_RATIO
+		
+		dx = smooth_x[i] - center_x
+		dy = smooth_y[i] - center_y
+		dist = np.sqrt(dx**2 + dy**2)
+		
+		boundary_dist[i] = max(dist - safe_radius, 0.0)
+	\end{lstlisting}
+\end{latin}
+
+در این بخش، متغیر \lr{boundary\_dist} میزان خروج ابزار از ناحیه ایمن را اندازه‌گیری می‌کند. اگر ابزار هنوز داخل محدوده ایمن باشد، این مقدار صفر خواهد بود؛ اما اگر از مرز ایمن عبور کرده باشد، مقدار مثبت آن نشان می‌دهد که ابزار چه‌قدر وارد ناحیه هشدار شده است.
+
+سپس تصمیم نهایی برای هر فریم به شکل زیر گرفته شد:
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		is_near_edge = False
+		if cornea:
+		cx, cy, cw, ch = cornea
+		center_x = cx + cw / 2
+		center_y = cy + ch / 2
+		
+		cornea_radius = min(cw, ch) / 2
+		safe_radius = cornea_radius * SAFE_RADIUS_RATIO
+		
+		dx = ee_pos[0] - center_x
+		dy = ee_pos[1] - center_y
+		dist = np.sqrt(dx**2 + dy**2)
+		
+		is_near_edge = dist > safe_radius
+	\end{lstlisting}
+\end{latin}
+
+\paragraph{نحوه نمایش هشدار در خروجی ویدئو}
+پس از تشخیص فریم‌های خطر، سیستم هشدار فضایی مستقیماً در ویدئوی خروجی نمایش داده شد. برای این کار، ابتدا دایره قرنیه و سپس دایره داخلیِ حریم ایمن روی هر فریم رسم شدند. دایره بزرگ‌تر نمایانگر مرز تقریبی قرنیه و دایره کوچک‌تر نمایانگر \lr{Inner Safe Limit} است. اگر نوک ابزار از این دایره داخلی عبور کند، رنگ مسیر و ابزار به نارنجی تغییر می‌کند و هشدار \lr{WARNING: Boundary Proximity} نیز به صورت چشمک‌زن در تصویر ظاهر می‌شود.
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		if cornea:
+		x, y, w, h = [int(v) for v in cornea]
+		center = (x + w // 2, y + h // 2)
+		cornea_radius = int(min(w, h) / 2)
+		safe_radius = int(cornea_radius * SAFE_RADIUS_RATIO)
+		
+		cv2.circle(frame, center, cornea_radius, NEON_CYAN, 2)
+		cv2.circle(frame, center, safe_radius, WARNING_ORANGE, 1, cv2.LINE_AA)
+	\end{lstlisting}
+\end{latin}
+
+و بخش نمایش هشدار متنی نیز به صورت زیر پیاده‌سازی شده است:
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		if is_near_edge:
+		if (f_idx // BLINK_FREQ) % 2 == 0:
+		cv2.rectangle(frame, (box_x1, box_y1), (box_x2, box_y2), BLACK, -1)
+		cv2.rectangle(frame, (box_x1, box_y1), (box_x2, box_y2), WARNING_ORANGE, 2)
+		
+		cv2.putText(
+		frame,
+		"WARNING: Boundary Proximity",
+		(width - 435, 70),
+		cv2.FONT_HERSHEY_SIMPLEX,
+		0.78,
+		WARNING_ORANGE,
+		2
+		)
+	\end{lstlisting}
+\end{latin}
+
+\paragraph{نقش \lr{Pupil} در تحلیل فضایی}
+اگرچه معیار اصلی تشخیص خطر فضایی در این پیاده‌سازی بر پایه قرنیه تعریف شد، وجود \lr{Pupil} نیز در سیستم بی‌اهمیت نیست. \lr{Pupil} به عنوان یک مرجع بصری مکمل روی فریم رسم می‌شود و به تفسیر بهتر موقعیت نسبی ابزار در ناحیه مرکزی چشم کمک می‌کند. از آنجا که مردمک معمولاً در ناحیه داخلی‌تر قرار دارد، مشاهده هم‌زمان قرنیه، مردمک و نوک ابزار به تحلیل‌گر اجازه می‌دهد ارزیابی دقیق‌تری از کیفیت مسیر حرکتی ابزار داشته باشد. با این حال، برای تعریف حریم هشدار، قرنیه انتخاب مناسب‌تری است؛ زیرا مرز بیرونی‌تر و محافظه‌کارانه‌تری نسبت به مردمک فراهم می‌کند.
+
+\paragraph{چرایی مناسب بودن آستانه در خروجی ویدئو}
+بر اساس مشاهده ویدئوی خروجی، انتخاب آستانه \(0.75\) مناسب بوده است. چند دلیل اصلی برای این نتیجه وجود دارد. نخست اینکه هشدارها در لحظاتی ظاهر می‌شوند که نوک ابزار واقعاً از ناحیه مرکزی امن فاصله می‌گیرد و به پیرامون قرنیه نزدیک می‌شود؛ بنابراین سیستم نسبت به تغییرات معنادار حساس است. دوم اینکه هشدار در تمام طول ویدئو به صورت مداوم فعال نیست، پس آستانه بیش از حد سخت‌گیرانه انتخاب نشده و نرخ هشدار کاذب پایین مانده است. سوم اینکه هنگام ورود ابزار به ناحیه هشدار، مسیر ترسیم‌شده و رنگ‌بندی ابزار نیز با هشدار هم‌راستا می‌شود و این سازگاری بصری نشان می‌دهد که معیار انتخاب‌شده از نظر شهودی نیز منطقی بوده است. چهارم اینکه وجود ناحیه بافر 25 درصدی باعث می‌شود هشدار پیش‌دستانه صادر شود؛ یعنی پیش از آنکه ابزار به مرز واقعی و حساس نزدیک شود، اپراتور از وضعیت خطر آگاه می‌شود. این ویژگی دقیقاً با هدف یک سیستم مانیتورینگ ایمنی در کنسول ربات جراح سازگار است.
+
+\paragraph{جمع‌بندی}
+در این بخش، با استفاده از داده‌های ردیابی نوک ابزار و \lr{bounding box}های قرنیه، یک مدل ساده اما مؤثر برای تعریف ناحیه خطر فضایی طراحی شد. ابتدا مختصات نوک ابزار استخراج، تکمیل و هموارسازی شد؛ سپس مرکز و شعاع تقریبی قرنیه در هر فریم محاسبه شد؛ بعد یک شعاع ایمن برابر با 75 درصد شعاع قرنیه تعریف شد؛ و در نهایت با محاسبه فاصله اقلیدسی نوک ابزار تا مرکز قرنیه، فریم‌هایی که ابزار از این محدوده عبور می‌کرد شناسایی شدند. خروجی ویدئو نیز نشان داد که این طراحی توانسته است به شکلی قابل‌فهم، پیش‌دستانه و از نظر بصری معتبر، نزدیک‌شدن ابزار به نواحی پرخطر را آشکار کند.
+
+\subsection{تحلیل لرزش و هشدارهای سینماتیکی پایه}
+
+
+در این بخش، هدف آن بود که عملکرد حرکتی \lr{end-effector} تنها از دیدگاه سینماتیکی بررسی شود؛ یعنی بدون تکیه بر دانش سطح‌بالای صحنه، فقط با استفاده از مسیر حرکت نوک ابزار مشخص کنیم آیا رفتار حرکتی ابزار نرم، پایدار و قابل‌کنترل بوده است یا شامل نوسانات ناگهانی، تغییرات شدید یا لرزش‌های نامطلوب می‌شود. برای این منظور، از مسیر زمانی نوک ابزار، مشتقات اول تا سوم شامل سرعت، شتاب و \lr{jerk} استخراج شد و سپس از این کمیت‌ها برای تولید هشدار سینماتیکی استفاده گردید.
+
+\paragraph{ایده اصلی تحلیل سینماتیکی}
+در مهندسی رباتیک، صرف دانستن موقعیت ابزار برای ارزیابی کیفیت حرکت کافی نیست. یک ابزار ممکن است از نظر مکانی در محل درست قرار داشته باشد، اما در عین حال با نوسانات سریع، تغییرات ناگهانی در شتاب، یا رفتارهای تهاجمی حرکت کند. به همین دلیل، لازم است مسیر ابزار از منظر دینامیک مرتبه پایین تحلیل شود. در اینجا:
+\begin{itemize}
+	\item مشتق اول مسیر، سرعت ابزار را نشان می‌دهد،
+	\item مشتق دوم، شتاب را مشخص می‌کند،
+	\item و مشتق سوم، یعنی \lr{jerk}، نشان‌دهنده میزان ناگهانی بودن تغییرات شتاب است.
+\end{itemize}
+در عمل، \lr{jerk} یکی از شاخص‌های مهم برای تشخیص لرزش‌های فرکانس بالا و حرکات ناپایدار است، زیرا هرچه تغییر شتاب ناگهانی‌تر باشد، احتمال وجود لرزش یا کنترل نامناسب بیشتر است.
+
+\paragraph{استخراج مسیر زمانی نوک ابزار}
+نخست مختصات نوک ابزار از ستون \lr{cystotome\_tip} در فایل \lr{CSV} استخراج شد. چون در برخی فریم‌ها ممکن بود نوک ابزار annotation نداشته باشد، ابتدا یک آرایه دوبعدی با مقدار اولیه \lr{NaN} ساخته شد تا مختصات \lr{x} و \lr{y} به تفکیک هر فریم در آن ذخیره شوند. سپس هرجا که مختصات معتبر موجود بود، مقداردهی انجام شد.
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		raw_coords = np.full((num_frames, 2), np.nan)
+		for _, row in df_csv.iterrows():
+		f_num = int(row["frame_number"])
+		idx = f_num - 1 if f_num >= 1 else f_num
+		if 0 <= idx < num_frames:
+		tip = ast.literal_eval(row["cystotome_tip"]) \
+		if pd.notna(row["cystotome_tip"]) and row["cystotome_tip"] != "None" \
+		else None
+		if tip:
+		raw_coords[idx] = [tip[0], tip[1]]
+	\end{lstlisting}
+\end{latin}
+
+این مرحله یک مسیر خام از حرکت نوک ابزار در اختیار ما قرار می‌دهد، اما این مسیر هنوز برای مشتق‌گیری مستقیم مناسب نیست، زیرا \lr{missing value} و نویز ردیابی می‌توانند باعث تولید مشتق‌های ناپایدار شوند.
+
+\paragraph{تکمیل داده‌های گمشده و هموارسازی مسیر}
+از آنجا که مشتق‌گیری نسبت به نویز بسیار حساس است، پیش از هرگونه تحلیل سینماتیکی، مسیر خام ابزار هم از نظر پیوستگی و هم از نظر نرمی اصلاح شد. ابتدا با استفاده از \lr{interpolate}، \lr{forward fill} و \lr{backward fill} فریم‌های فاقد مختصات پر شدند تا مسیر زمانی پیوسته شود. سپس برای حذف نویزهای فرکانس بالا و در عین حال حفظ روند اصلی حرکت، از فیلتر \lr{Savitzky-Golay} استفاده شد.
+
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		df_coords = pd.DataFrame(raw_coords, columns=["x", "y"]).interpolate().ffill().bfill()
+		smooth_x = savgol_filter(df_coords["x"], 11, 3)
+		smooth_y = savgol_filter(df_coords["y"], 11, 3)
+	\end{lstlisting}
+\end{latin}
+
+در اینجا، پنجره \lr{11} و درجه چندجمله‌ای \lr{3} انتخاب شده است. این انتخاب از یک طرف به اندازه کافی هموارسازی ایجاد می‌کند تا نوسانات پیکسلی و خطاهای ردیابی حذف شوند، و از طرف دیگر آن‌قدر تهاجمی نیست که تغییرات واقعی حرکت ابزار را از بین ببرد. دلیل انتخاب \lr{Savitzky-Golay} نیز این است که این فیلتر بر خلاف برخی فیلترهای ساده میانگین‌گیر، شکل کلی سیگنال و رفتار موضعی آن را بهتر حفظ می‌کند و برای مشتق‌گیری بسیار مناسب است.
+
+\paragraph{محاسبه سرعت، شتاب و \lr{Jerk}}
+پس از به‌دست آوردن مسیر صاف‌شده، مشتقات آن نسبت به فریم محاسبه شدند. از آنجا که داده‌ها به صورت گسسته در طول زمان ثبت شده‌اند، برای محاسبه مشتق‌ها از \lr{np.gradient} استفاده شد. ابتدا سرعت در راستاهای \lr{x} و \lr{y}، سپس شتاب و در ادامه \lr{jerk} استخراج شد:
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		vx, vy = np.gradient(smooth_x), np.gradient(smooth_y)
+		ax, ay = np.gradient(vx), np.gradient(vy)
+		jx, jy = np.gradient(ax), np.gradient(ay)
+	\end{lstlisting}
+\end{latin}
+
+در ادامه، برای آنکه تحلیل مستقل از جهت حرکت باشد، بزرگی هر یک از این بردارها محاسبه شد:
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		speed = np.sqrt(vx**2 + vy**2)
+		acc_mag = np.sqrt(ax**2 + ay**2)
+		jerk_mag = np.sqrt(jx**2 + jy**2)
+	\end{lstlisting}
+\end{latin}
+
+در نتیجه:
+\[
+v = \sqrt{v_x^2 + v_y^2}, \qquad
+a = \sqrt{a_x^2 + a_y^2}, \qquad
+j = \sqrt{j_x^2 + j_y^2}
+\]
+که به ترتیب شدت کلی سرعت، شتاب و \lr{jerk} را در هر فریم نشان می‌دهند.
+
+\paragraph{چرا \lr{Jerk} برای تشخیص لرزش مهم است؟}
+از میان سه کمیت فوق، \lr{jerk} بیشترین حساسیت را نسبت به ناپایداری‌های حرکتی دارد. اگر سرعت تغییر کند، الزاماً به معنای حرکت خطرناک نیست؛ حتی شتاب بالا نیز ممکن است بخشی از یک مانور کنترل‌شده باشد. اما زمانی که شتاب با نرخ زیاد و ناگهانی تغییر کند، معمولاً با یک رفتار ناپایدار، لرزش سریع، اصلاح ناگهانی فرمان، یا واکنش کنترلی شدید مواجه هستیم. به همین دلیل، \lr{jerk} شاخص مناسبی برای تشخیص \lr{high-frequency tremor} در مسیر ابزار است.
+
+\paragraph{تعریف آستانه هشدار برای \lr{Jerk}}
+برای تشخیص فریم‌هایی که رفتار حرکتی ناپایدار دارند، در کد یک آستانه ثابت برای \lr{jerk} تعریف شد:
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		JERK_THRESHOLD = 5.0
+	\end{lstlisting}
+\end{latin}
+
+و سپس در هر فریم بررسی شد که آیا مقدار بزرگی \lr{jerk} از این آستانه بیشتر شده است یا خیر:
+
+\begin{latin}
+	\begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize]
+		is_jerk_high = jerk_mag[f_idx] > JERK_THRESHOLD
+	\end{lstlisting}
+\end{latin}
+
+منطق این آستانه آن است که تنها نوساناتی که از سطح طبیعی تغییرات مسیر بالاتر هستند، به عنوان هشدار ثبت شوند. اگر آستانه بیش از حد پایین انتخاب می‌شد، تقریباً بسیاری از تغییرات عادی حرکت نیز به عنوان لرزش تشخیص داده می‌شدند و سیستم دچار هشدار کاذب می‌شد. در مقابل، اگر آستانه بیش از حد بالا در نظر گرفته می‌شد، تنها نوسانات بسیار شدید شناسایی می‌شدند و سیستم نسبت به لرزش‌های مهم اما متوسط حساسیت کافی نداشت. مقدار \lr{5.0} در این پیاده‌سازی به عنوان یک آستانه عملی انتخاب شده تا بین حساسیت و پایداری تعادل برقرار شود و نوسانات غیرمعمول را از روند طبیعی حرکت تفکیک کند. البته این نکته قابل تامل است که در ویدیوی خروجی مقدار هشدارهای کینماتیکی زیاد است. اگر حد آستانه را بالاتر تعریف می کردیم، تعداد این هشدارها کمتر می شد اما به دلیل اینکه می خواستیم این هشدارها را به صورت واضح و در چند فریم ببینیم، این آستانه را پایینتر در نظر گرفتیم. در نمودار زمانی که در آخر همین تمرین ارسال می نماییم، کاملا نشان می دهد که گرفتن این آستانه همچین غیر منطقی هم نبوده و سیستم نسبت به نوسانات واقعی حساس شده است.
+
+\subsection{طراحی متریک ارزیابی مبتنی بر دینامیک و کنترل ربات}
+
+\subsubsection{شاخص تنش سینماتیکی ربات (\lr{RKSI}) برای ارزیابی کیفیت حرکت بازوی \lr{Slave Robot}}
+
+به‌منظور ارزیابی هم‌زمان کیفیت حرکتی، تنش دینامیکی و ریسک هندسی در مسیر حرکت نوک ابزار، در این تمرین از شاخصی ترکیبی با عنوان \lr{Robot Kinematic Stress Index (RKSI)} استفاده شده است. هدف از تعریف این شاخص آن است که تنها به یک کمیت منفرد مانند سرعت یا شتاب اکتفا نشود، بلکه چند مؤلفه مهم و اثرگذار در پایداری و ایمنی حرکت به‌صورت هم‌زمان در نظر گرفته شوند. از دیدگاه کنترل و برنامه‌ریزی مسیر، یک حرکت مطلوب در ربات جراحی باید نرم، پیوسته، کم‌تنش و در عین حال دور از نواحی مرزی حساس باشد. بنابراین، افزایش ناگهانی در \lr{jerk}، شتاب، انحنای مسیر یا نزدیک‌شدن ابزار به مرز ناحیه ایمن می‌تواند نشان‌دهنده افت کیفیت حرکت و افزایش ریسک عملیاتی باشد.
+
+بر این اساس، شاخص \lr{RKSI} به‌صورت یک ترکیب وزنی از چهار مؤلفه اصلی شامل بزرگی \lr{jerk}، بزرگی شتاب، انحنای مسیر و ریسک مرزی تعریف شده است. رابطه این شاخص به‌صورت زیر نوشته می‌شود:
+
+\[
+\mathrm{RKSI}(t)
+=
+0.35\left(\frac{J(t)}{J_{95}+\epsilon}\right)^2
++
+0.25\left(\frac{A(t)}{A_{95}+\epsilon}\right)^2
++
+0.20\left(\frac{\kappa(t)}{\kappa_{95}+\epsilon}\right)^2
++
+0.20\left(\frac{B(t)}{B_{95}+\epsilon}\right)^2
+\]
+
+که در آن:
+\begin{itemize}
+	\item $J(t)$ بزرگی \lr{jerk} در فریم $t$ است،
+	\item $A(t)$ بزرگی شتاب در فریم $t$ است،
+	\item $\kappa(t)$ انحنای مسیر در فریم $t$ است،
+	\item $B(t)$ مؤلفه ریسک مرزی در فریم $t$ است،
+	\item $J_{95}$، $A_{95}$، $\kappa_{95}$ و $B_{95}$ به‌ترتیب صدک 95ام هر کمیت در کل داده هستند،
+	\item و $\epsilon$ یک مقدار کوچک مثبت برای جلوگیری از تقسیم بر صفر است.
+\end{itemize}
+
+وزن‌دهی استفاده‌شده در این رابطه به‌گونه‌ای انتخاب شده است که سهم \lr{jerk} و شتاب، به‌عنوان شاخص‌های مستقیم‌تر تنش دینامیکی و تلاش کنترلی، بیشتر باشد. در واقع، از دیدگاه کنترل ربات، افزایش \lr{jerk} به معنای تغییرات ناگهانی در شتاب و در نتیجه نیاز به اعمال فرمان‌های سریع‌تر و شدیدتر است. چنین رفتاری معمولاً با افزایش \lr{control effort}، مصرف انرژی بیشتر، افزایش بار دینامیکی روی عملگرها و در نهایت استهلاک بالاتر اجزای مکانیکی همراه است. همچنین افزایش انحنای مسیر نشان می‌دهد که ابزار در حال تجربه تغییر جهت‌های شدیدتر است و اگر این وضعیت هم‌زمان با نزدیکی به مرز ناحیه ایمن رخ دهد، احتمال بروز شرایط نامطلوب حرکتی و کاهش حاشیه ایمنی بیشتر خواهد شد. همچنین شرایط تکینگی نیز به حالتی بر می گردد که مقدار هر کدام از این مولفه ها به بی نهایت میل کند(در واقع مقدارشان بسیار زیاد شود). با هشداری که در این بخش پیاده نمودیم، تمامی این موارد پوشش داده می شود و می توان این نوسانات ناگهانی را تشخیص داد.
+
+برای محاسبه مؤلفه ریسک مرزی، ابتدا موقعیت مرکز ناحیه قرنیه از روی \lr{bounding box} استخراج شده و سپس یک شعاع ایمن بر مبنای نسبت ثابتی از اندازه قرنیه تعریف می‌شود. فاصله نوک ابزار تا این ناحیه ایمن محاسبه شده و هرچه ابزار به مرز نزدیک‌تر شود، ریسک مرزی افزایش می‌یابد. برای اینکه این مفهوم در متریک نهایی به‌صورت افزایشی ظاهر شود، از یک کمیت معکوسِ وابسته به فاصله استفاده می‌شود تا نزدیک‌شدن به مرز باعث بزرگ‌تر شدن مقدار این مؤلفه شود. بدین ترتیب، شاخص \lr{RKSI} تنها یک معیار سینماتیکی صرف نیست، بلکه هم‌زمان محدودیت هندسی و ریسک فضایی را نیز در نظر می‌گیرد.
+
+به‌منظور کاهش اثر مقادیر پرت، نرمال‌سازی مؤلفه‌ها بر اساس صدک 95ام انجام شده است. استفاده از صدک 95 به‌جای بیشینه مطلق باعث می‌شود که چند نمونه بسیار غیرعادی، مقیاس کلی داده را مخدوش نکنند. پس از محاسبه مقدار \lr{RKSI} برای تمام فریم‌ها، آستانه بحرانی این شاخص به‌صورت صدک 90ام توزیع آن تعریف شده است:
+
+\[
+\mathrm{RKSI}_{\mathrm{th}} = P_{90}(\mathrm{RKSI})
+\]
+
+بنابراین، فریم‌هایی که مقدار \lr{RKSI} آن‌ها از این آستانه بیشتر باشد، به‌عنوان فریم‌های بحرانی یا پرتنش در نظر گرفته می‌شوند. این روش آستانه‌گذاری نسبت به انتخاب یک مقدار ثابت تجربی، انعطاف‌پذیرتر بوده و بهتر با توزیع واقعی داده در هر ویدئو سازگار می‌شود.
+
+شکل~\ref{fig:rksi} تغییرات زمانی این شاخص را در طول فریم‌های ویدئو نشان می‌دهد. در این شکل، منحنی آبی مقدار \lr{RKSI} را برای هر فریم نمایش می‌دهد و خط‌چین قرمز آستانه بحرانی را مشخص می‌کند. همان‌گونه که مشاهده می‌شود، مقدار این شاخص در بیشتر فریم‌ها پایین و نزدیک به خط مبنا است که بیانگر پایداری نسبی حرکت ابزار در بخش عمده ویدئو می‌باشد. با این حال، چند پیک تیز و مجزا در بخش‌های مشخصی از نمودار دیده می‌شود که نشان‌دهنده وقوع بازه‌های پرتنش و بالقوه بحرانی هستند.
+
+بر اساس نمودار، یکی از بزرگ‌ترین قله‌ها در حوالی فریم 1920 ظاهر شده است که می‌تواند بحرانی‌ترین رخداد حرکتی در این دنباله ویدئویی تلقی شود. افزون بر آن، جهش‌های قابل توجه دیگری نیز در حوالی فریم‌های 50، 800، بازه 1300 تا 1450 و حدود 2100 مشاهده می‌شوند. این نواحی به احتمال زیاد متناظر با افزایش ناگهانی در \lr{jerk}، شتاب، انحنای مسیر، یا کاهش فاصله ابزار تا مرز ناحیه ایمن هستند. از دیدگاه مهندسی، این نوع رفتار نشان می‌دهد که اگرچه عملکرد کلی سیستم قابل قبول و نسبتاً پایدار است، اما در برخی لحظات کوتاه، حرکت ابزار از الگوی نرمال فاصله گرفته و وارد وضعیت‌های پرتنش شده است. توجه شود که در تصویر، چون یکسری نوسانات شدیدا بزرگ بودند باعث شده که یکسری نوسانات کوچکتر بالاتر از ترشهولد، داخل تصویر قرار نگیرند.
+
+در مجموع، شاخص \lr{RKSI} به‌عنوان یک معیار ترکیبی، قابلیت مناسبی برای تفکیک فریم‌های عادی از فریم‌های بحرانی دارد. این شاخص می‌تواند به‌طور هم‌زمان اطلاعاتی درباره نرمی حرکت، شدت تلاش کنترلی، پیچیدگی هندسی مسیر و نزدیکی به مرزهای حساس ارائه دهد. از این رو، \lr{RKSI} را می‌توان به‌عنوان یک ابزار کمّی مؤثر برای پایش کیفیت حرکت، شناسایی لحظات پرخطر و ارزیابی ایمنی عملکرد بازوی \lr{Slave Robot} در کاربردهای جراحی دقیق در نظر گرفت.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\linewidth]{img/rksi.PNG}
+	\caption{تغییرات شاخص تنش سینماتیکی ربات (\lr{RKSI}) بر حسب شماره فریم. منحنی آبی مقدار \lr{RKSI} را برای هر فریم نشان می‌دهد و خط‌چین قرمز آستانه بحرانی را مشخص می‌کند.}
+	\label{fig:rksi}
+\end{figure}
+
+
+
+\subsection{رندرینگ ویدیوی هشداردهنده و داشبورد مانیتورینگ}
+
+
+به‌منظور ارائه بازخورد بصری آنی به جراح در کنسول رباتیک، یک سامانه رندرینگ پیشرفته پیاده‌سازی شد. این سامانه با پردازش هم‌زمان داده‌های کینماتیکی و هندسی، ویدئویی تعاملی تولید می‌کند که وضعیت سلامت حرکت ابزار را در هر لحظه مشخص می‌سازد. 
+
+\paragraph{مکانیزم نمایش مسیر و بازخورد بصری}
+برای نمایش تاریخچه حرکت ابزار، از یک ساختار داده \lr{deque} با پنجره لغزان \lr{30} فریم استفاده شده است که یک \lr{Fading Tail} یا مسیر محوشونده را در پشت نوک ابزار ترسیم می‌کند. این مسیر به‌صورت پویا رنگ‌بندی می‌شود:
+\begin{itemize}
+	\item \textbf{سبز \lr{(Deep Green)}:} وضعیت ایمن و عملکرد مطلوب.
+	\item \textbf{نارنجی \lr{(Warning Orange)}:} نزدیکی به مرزهای آناتومیک (خطر فضایی).
+	\item \textbf{قرمز \lr{(Critical Red)}:} تشخیص ناپایداری کینماتیکی (خطر جدی).
+\end{itemize}
+علاوه بر مسیر، موقعیت نوک ابزار با یک نشانگر \lr{Tilted Cross} علامت‌گذاری شده است که تغییر رنگ آن، جراح را از وضعیت فعلی آگاه می‌سازد.
+
+\paragraph{پیاده‌سازی هشدارهای ایمنی}
+سامانه هشدار در دو سطح تعریف شده است که با استفاده از کتابخانه \lr{OpenCV} به‌صورت گرافیکی روی ویدئو رندر می‌شوند:
+
+\begin{figure}[htbp]
+	\centering
+	\begin{minipage}{0.5\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/warning.PNG}
+		\caption{هشدار خطر فضایی \lr{(Boundary Proximity)} با باکس نارنجی و پیغام چشمک‌زن.}
+		\label{fig:warning}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{img/critical.jpg}
+		\caption{هشدار خطر کینماتیکی \lr{(Critical: Unstable Kinematics)} با فریم قرمز.}
+		\label{fig:critical}
+	\end{minipage}
+\end{figure}
+
+\begin{itemize}
+	\item \textbf{هشدار فضایی:} هنگامی که فاصله نوک ابزار از مرکز قرنیه از شعاع ایمن فراتر رود، سیستم یک باکس نارنجی در گوشه تصویر ترسیم کرده و پیغام \lr{WARNING: Boundary Proximity} را با فرکانس مشخص (Blink) نمایش می‌دهد (شکل \ref{fig:warning}).
+	\item \textbf{هشدار کینماتیکی:} در صورت عبور شاخص \lr{RKSI} از آستانه بحرانی یا بالا بودن مقدار \lr{jerk}، کل فریم ویدئو با یک حاشیه ضخیم قرمز رنگ پوشانده می‌شود و پیغام \lr{CRITICAL: Unstable Kinematics Detected} در پایین صفحه ظاهر می‌گردد (شکل \ref{fig:critical}). این بازخورد بصری تمام‌صفحه، بالاترین سطح هشدار را به کاربر منتقل می‌کند.
+\end{itemize}
+
+\paragraph{تحلیل داشبورد زمانی و نوسانات سرعت}
+داشبورد زمانی (شکل \ref{fig:dashboard}) نوسانات سرعت خطی ابزار را در طول زمان رسم کرده و بازه‌های هشدار را با نوارهای رنگی متمایز می‌کند.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\linewidth]{img/Timeline_Dashboard.png}
+	\caption{داشبورد زمانی: نمودار سرعت خطی ابزار همراه با بازه‌های هشدار فضایی (نارنجی) و کینماتیکی (قرمز).}
+	\label{fig:dashboard}
+\end{figure}
+
+تحلیل نمودار نشان می‌دهد که نوسانات شدید و فرکانس بالای سرعت خطی (تغییرات ناگهانی سرعت) ارتباط مستقیمی با هشدارهای کینماتیکی دارند. هرچه فرکانس نوسانات افزایش یابد، مشتق‌های مرتبه دوم (شتاب) و مرتبه سوم (ژرک) افزایش یافته و در نتیجه مقدار شاخص \lr{RKSI} از حد مجاز فراتر می‌رود. این همبستگی در انتهای بازه زمانی (نزدیک به ثانیه ۹۰ تا ۱۰۰) به وضوح دیده می‌شود؛ جایی که نوسانات زیاد سرعت باعث فعال‌شدن مداوم هشدارهای کینماتیکی قرمز شده است. این نوسانات ناشی از اصلاحات سریع فرمان توسط جراح یا عدم پایداری در سیستم کنترل ربات است که می‌تواند منجر به استهلاک ابزار یا آسیب به بافت شود. در مقابل، بازه‌های هشدار نارنجی نشان‌دهنده ورود ابزار به حریم ممنوعه هستند.
+\end{document}
+

@@ -1,0 +1,53 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{json}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idef} \PYG{n}{extract\PYGZus{}keys}\PYG{p}{(}\PYG{n}{obj}\PYG{p}{,} \PYG{n}{prefix}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ikeys} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n+nb}{isinstance}\PYG{p}{(}\PYG{n}{obj}\PYG{p}{,} \PYG{n+nb}{dict}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{key}\PYG{p}{,} \PYG{n}{value} \PYG{o+ow}{in} \PYG{n}{obj}\PYG{o}{.}\PYG{n}{items}\PYG{p}{():}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifull\PYGZus{}key} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{prefix}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{.}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{key}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}} \PYG{k}{if} \PYG{n}{prefix} \PYG{k}{else} \PYG{n}{key}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ikeys}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{full\PYGZus{}key}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} بررسی زیرکلیدها}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ikeys}\PYG{o}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{extract\PYGZus{}keys}\PYG{p}{(}\PYG{n}{value}\PYG{p}{,} \PYG{n}{full\PYGZus{}key}\PYG{p}{))}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ielif} \PYG{n+nb}{isinstance}\PYG{p}{(}\PYG{n}{obj}\PYG{p}{,} \PYG{n+nb}{list}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{item} \PYG{o+ow}{in} \PYG{n}{obj}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ikeys}\PYG{o}{.}\PYG{n}{extend}\PYG{p}{(}\PYG{n}{extract\PYGZus{}keys}\PYG{p}{(}\PYG{n}{item}\PYG{p}{,} \PYG{n}{prefix}\PYG{p}{))}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ireturn} \PYG{n}{keys}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iwith} \PYG{n+nb}{open}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}/content/Dataset/train/TR\PYGZus{}0029\PYGZus{}S1\PYGZus{}P03/TR\PYGZus{}0029\PYGZus{}S1\PYGZus{}P03/annotation\PYGZus{}full.json\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}r\PYGZdq{}}\PYG{p}{,} \PYG{n}{encoding}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}utf\PYGZhy{}8\PYGZdq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{f}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idata} \PYG{o}{=} \PYG{n}{json}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{n}{f}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iall\PYGZus{}keys} \PYG{o}{=} \PYG{n}{extract\PYGZus{}keys}\PYG{p}{(}\PYG{n}{data}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{k} \PYG{o+ow}{in} \PYG{n}{all\PYGZus{}keys}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{n}{k}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{json}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ijson\PYGZus{}path} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/Dataset/train/TR\PYGZus{}0029\PYGZus{}S1\PYGZus{}P03/TR\PYGZus{}0029\PYGZus{}S1\PYGZus{}P03/annotation\PYGZus{}full.json\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iwith} \PYG{n+nb}{open}\PYG{p}{(}\PYG{n}{json\PYGZus{}path}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}r\PYGZsq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{f}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idata} \PYG{o}{=} \PYG{n}{json}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{n}{f}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Categories actually present in this specific video:\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZdq{}} \PYG{o}{*} \PYG{l+m+mi}{50}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Icategory\PYGZus{}names} \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{n}{cat}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}id\PYGZdq{}}\PYG{p}{]:} \PYG{n}{cat}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{]} \PYG{k}{for} \PYG{n}{cat} \PYG{o+ow}{in} \PYG{n}{data}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}categories\PYGZdq{}}\PYG{p}{,} \PYG{p}{[])\PYGZcb{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifound\PYGZus{}categories} \PYG{o}{=} \PYG{n+nb}{set}\PYG{p}{()}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{ann} \PYG{o+ow}{in} \PYG{n}{data}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}annotations\PYGZdq{}}\PYG{p}{,} \PYG{p}{[]):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Icat\PYGZus{}id} \PYG{o}{=} \PYG{n}{ann}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}category\PYGZus{}id\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifound\PYGZus{}categories}\PYG{o}{.}\PYG{n}{add}\PYG{p}{(}\PYG{n}{cat\PYGZus{}id}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{cat\PYGZus{}id} \PYG{o+ow}{in} \PYG{n+nb}{sorted}\PYG{p}{(}\PYG{n}{found\PYGZus{}categories}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iname} \PYG{o}{=} \PYG{n}{category\PYGZus{}names}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{cat\PYGZus{}id}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}Unknown\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Category ID: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{cat\PYGZus{}id}\PYG{l+s+si}{:}\PYG{l+s+s2}{2d}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ | Name: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{name}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}\PYGZdq{}} \PYG{o}{*} \PYG{l+m+mi}{50}\PYG{p}{)}
+\end{MintedVerbatim}

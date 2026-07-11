@@ -1,0 +1,19 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces توزیع فراوانی و میانگین آماری فاصله شعاعی نوک ابزار نسبت به مرکز مردمک}}{18}{figure.caption.9}%
+\contentsline {figure}{\numberline {2}{\ignorespaces تغییرات فاصله شعاعی نوک ابزار از مرکز مردمک در طول توالی فریم‌های جراحی}}{18}{figure.caption.10}%
+\contentsline {figure}{\numberline {3}{\ignorespaces توزیع برچسب‌ها شامل توزیع کلاس‌ها و توزیع اندازۀ باکس‌های احاطه‌گر}}{30}{figure.caption.19}%
+\contentsline {figure}{\numberline {4}{\ignorespaces منحنی‌های آموزش شامل توابع هزینه و معیارهای ارزیابی در طول ۸ اپوک}}{31}{figure.caption.21}%
+\contentsline {figure}{\numberline {5}{\ignorespaces نمونه‌هایی از تصاویر آموزشی با باکس‌های احاطه‌گر}}{35}{figure.caption.23}%
+\contentsline {figure}{\numberline {6}{\ignorespaces مقایسۀ پیش‌بینی مدل با برچسب‌های زمینۀ اصلی در مجموعۀ اعتبارسنجی}}{35}{figure.caption.24}%
+\contentsline {figure}{\numberline {7}{\ignorespaces نمودار \lr {Precision-Recall} برای هر کلاس و میانگین}}{41}{figure.caption.28}%
+\contentsline {figure}{\numberline {8}{\ignorespaces نمودار \lr {F1-Score} برای هر کلاس}}{41}{figure.caption.29}%
+\contentsline {figure}{\numberline {9}{\ignorespaces منحنی دقت (\lr {Precision}) بر اساس آستانۀ اطمینان}}{42}{figure.caption.30}%
+\contentsline {figure}{\numberline {10}{\ignorespaces منحنی بازیابی (\lr {Recall}) بر اساس آستانۀ اطمینان}}{43}{figure.caption.31}%
+\contentsline {figure}{\numberline {11}{\ignorespaces ماتریس درهم‌ریختگی مدل آشکارساز}}{43}{figure.caption.32}%
+\contentsline {figure}{\numberline {12}{\ignorespaces نمودار میله‌ای تعداد تعویض‌ شناسه‌ها به تفکیک کلاس‌های ابزار }}{44}{figure.caption.33}%
+\contentsline {figure}{\numberline {13}{\ignorespaces نمودار \lr {Speed vs. Accuracy} }}{49}{figure.caption.40}%
+\contentsline {figure}{\numberline {14}{\ignorespaces مقایسه تعداد فریم‌های دارای \lr {pupil\_bbox}، \lr {cornea\_bbox} و \lr {cystotome\_tip} در 15 ویدئوی منتخب. همان‌طور که مشاهده می‌شود، \lr {cornea} و \lr {pupil} در تمام فریم‌ها حضور دارند، در حالی که تعداد فریم‌های دارای \lr {cystotome\_tip} در برخی ویدئوها کمتر است}}{57}{figure.caption.56}%
+\contentsline {figure}{\numberline {15}{\ignorespaces نمایش چند فریم ابتدایی ویدئوی منتخب همراه با \lr {bounding box}‌های قرنیه، مردمک و ابزار.}}{61}{figure.caption.60}%
+\contentsline {figure}{\numberline {16}{\ignorespaces تغییرات شاخص تنش سینماتیکی ربات (\lr {RKSI}) بر حسب شماره فریم. منحنی آبی مقدار \lr {RKSI} را برای هر فریم نشان می‌دهد و خط‌چین قرمز آستانه بحرانی را مشخص می‌کند.}}{69}{figure.caption.76}%
+\contentsline {figure}{\numberline {18}{\ignorespaces هشدار خطر کینماتیکی \lr {(Critical: Unstable Kinematics)} با فریم قرمز.}}{70}{figure.caption.79}%
+\contentsline {figure}{\numberline {17}{\ignorespaces هشدار خطر فضایی \lr {(Boundary Proximity)} با باکس نارنجی و پیغام چشمک‌زن.}}{70}{figure.caption.79}%
+\contentsline {figure}{\numberline {19}{\ignorespaces داشبورد زمانی: نمودار سرعت خطی ابزار همراه با بازه‌های هشدار فضایی (نارنجی) و کینماتیکی (قرمز).}}{71}{figure.caption.81}%

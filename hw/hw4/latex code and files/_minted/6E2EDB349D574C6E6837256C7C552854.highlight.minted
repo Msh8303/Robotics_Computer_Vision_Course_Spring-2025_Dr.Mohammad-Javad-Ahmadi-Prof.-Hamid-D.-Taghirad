@@ -1,0 +1,39 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Create a metric host object}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imh} \PYG{o}{=} \PYG{n}{mm}\PYG{o}{.}\PYG{n}{metrics}\PYG{o}{.}\PYG{n}{create}\PYG{p}{()}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Define the exact metrics requested in the assignment}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Irequested\PYGZus{}metrics} \PYG{o}{=} \PYG{p}{[}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s1}{\PYGZsq{}mota\PYGZsq{}}\PYG{p}{,}         \PYG{c+c1}{\PYGZsh{} Multiple Object Tracking Accuracy}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s1}{\PYGZsq{}idf1\PYGZsq{}}\PYG{p}{,}         \PYG{c+c1}{\PYGZsh{} ID F1 Score (Identity preservation)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s1}{\PYGZsq{}mostly\PYGZus{}tracked\PYGZsq{}}\PYG{p}{,} \PYG{c+c1}{\PYGZsh{} MT: Mostly Tracked trajectories}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s1}{\PYGZsq{}mostly\PYGZus{}lost\PYGZsq{}}\PYG{p}{,}    \PYG{c+c1}{\PYGZsh{} ML: Mostly Lost trajectories}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s1}{\PYGZsq{}num\PYGZus{}switches\PYGZsq{}}    \PYG{c+c1}{\PYGZsh{} IDSW: Number of Identity Switches}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Compute the metrics using the accumulated data}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Isummary} \PYG{o}{=} \PYG{n}{mh}\PYG{o}{.}\PYG{n}{compute}\PYG{p}{(}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iaccumulator}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imetrics}\PYG{o}{=}\PYG{n}{requested\PYGZus{}metrics}\PYG{p}{,}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iname}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}Surgical\PYGZus{}Tracking\PYGZus{}Eval\PYGZsq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Format the output for better readability}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iformatter} \PYG{o}{=} \PYG{n}{mh}\PYG{o}{.}\PYG{n}{formatters}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Extract and print each metric clearly}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imota\PYGZus{}score} \PYG{o}{=} \PYG{n}{summary}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}mota\PYGZsq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{values}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{*} \PYG{l+m+mi}{100}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iidf1\PYGZus{}score} \PYG{o}{=} \PYG{n}{summary}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}idf1\PYGZsq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{values}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{*} \PYG{l+m+mi}{100}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Imt\PYGZus{}count} \PYG{o}{=} \PYG{n}{summary}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}mostly\PYGZus{}tracked\PYGZsq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{values}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iml\PYGZus{}count} \PYG{o}{=} \PYG{n}{summary}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}mostly\PYGZus{}lost\PYGZsq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{values}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iidsw\PYGZus{}count} \PYG{o}{=} \PYG{n}{summary}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}num\PYGZus{}switches\PYGZsq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{values}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}1. MOTA (Multiple Object Tracking Accuracy) : }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{mota\PYGZus{}score}\PYG{l+s+si}{:}\PYG{l+s+s2}{.2f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZpc{}\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}2. IDF1 (Identity F1 Score)                 : }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{idf1\PYGZus{}score}\PYG{l+s+si}{:}\PYG{l+s+s2}{.2f}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZpc{}\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}3. MT (Mostly Tracked Trajectories)         : }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{mt\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}4. ML (Mostly Lost Trajectories)            : }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{ml\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}5. IDSW (ID Switches)                       : }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{idsw\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

@@ -1,0 +1,76 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{json}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{numpy} \PYG{k}{as} \PYG{n}{np}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iimport} \PYG{n}{matplotlib}\PYG{o}{.}\PYG{n}{pyplot} \PYG{k}{as} \PYG{n}{plt}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idef} \PYG{n}{convert\PYGZus{}to\PYGZus{}polar}\PYG{p}{(}\PYG{n}{tool\PYGZus{}x}\PYG{p}{,} \PYG{n}{tool\PYGZus{}y}\PYG{p}{,} \PYG{n}{pupil\PYGZus{}x}\PYG{p}{,} \PYG{n}{pupil\PYGZus{}y}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}ITransforms Cartesian coordinates to Polar coordinates relative to the pupil.}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}IReturns radius (r) and angle (theta) in radians.}
+\PYG{l+s+s2}{\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZca{}\PYGZca{}I\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idx} \PYG{o}{=} \PYG{n}{tool\PYGZus{}x} \PYG{o}{\PYGZhy{}} \PYG{n}{pupil\PYGZus{}x}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idy} \PYG{o}{=} \PYG{n}{pupil\PYGZus{}y} \PYG{o}{\PYGZhy{}} \PYG{n}{tool\PYGZus{}y} \PYG{c+c1}{\PYGZsh{} Invert Y\PYGZhy{}axis for standard math angles}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ir} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{dx}\PYG{o}{**}\PYG{l+m+mi}{2} \PYG{o}{+} \PYG{n}{dy}\PYG{o}{**}\PYG{l+m+mi}{2}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itheta} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arctan2}\PYG{p}{(}\PYG{n}{dy}\PYG{p}{,} \PYG{n}{dx}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ireturn} \PYG{n}{r}\PYG{p}{,} \PYG{n}{theta}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ijson\PYGZus{}path} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}/content/Dataset/train/TR\PYGZus{}0029\PYGZus{}S1\PYGZus{}P03/TR\PYGZus{}0029\PYGZus{}S1\PYGZus{}P03/annotation\PYGZus{}full.json\PYGZdq{}}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iwith} \PYG{n+nb}{open}\PYG{p}{(}\PYG{n}{json\PYGZus{}path}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}r\PYGZsq{}}\PYG{p}{)} \PYG{k}{as} \PYG{n}{f}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Idata} \PYG{o}{=} \PYG{n}{json}\PYG{o}{.}\PYG{n}{load}\PYG{p}{(}\PYG{n}{f}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{IPUPIL\PYGZus{}CATEGORY\PYGZus{}ID} \PYG{o}{=} \PYG{l+m+mi}{10}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{ITOOL\PYGZus{}CATEGORY\PYGZus{}ID} \PYG{o}{=} \PYG{l+m+mi}{2}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ipupil\PYGZus{}track} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itool\PYGZus{}track} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Extract and reshape the continuous arrays into frame\PYGZhy{}by\PYGZhy{}frame chunks}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{ann} \PYG{o+ow}{in} \PYG{n}{data}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}annotations\PYGZdq{}}\PYG{p}{,} \PYG{p}{[]):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Icat\PYGZus{}id} \PYG{o}{=} \PYG{n}{ann}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}category\PYGZus{}id\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{l+s+s2}{\PYGZdq{}keypoints\PYGZdq{}} \PYG{o+ow}{in} \PYG{n}{ann} \PYG{o+ow}{and} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{ann}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}keypoints\PYGZdq{}}\PYG{p}{])} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ikp} \PYG{o}{=} \PYG{n}{ann}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}keypoints\PYGZdq{}}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Chunk the massive flat array into blocks of 6 items per frame}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Schema per chunk: [center\PYGZus{}x, center\PYGZus{}y, center\PYGZus{}v, tip\PYGZus{}x, tip\PYGZus{}y, tip\PYGZus{}v]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itrack\PYGZus{}frames} \PYG{o}{=} \PYG{p}{[}\PYG{n}{kp}\PYG{p}{[}\PYG{n}{i}\PYG{p}{:}\PYG{n}{i}\PYG{o}{+}\PYG{l+m+mi}{6}\PYG{p}{]} \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{kp}\PYG{p}{),} \PYG{l+m+mi}{6}\PYG{p}{)]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{cat\PYGZus{}id} \PYG{o}{==} \PYG{n}{PUPIL\PYGZus{}CATEGORY\PYGZus{}ID}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ipupil\PYGZus{}track} \PYG{o}{=} \PYG{n}{track\PYGZus{}frames}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ielif} \PYG{n}{cat\PYGZus{}id} \PYG{o}{==} \PYG{n}{TOOL\PYGZus{}CATEGORY\PYGZus{}ID}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itool\PYGZus{}track} \PYG{o}{=} \PYG{n}{track\PYGZus{}frames}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Calculate distance frame by frame}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ir\PYGZus{}values} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itheta\PYGZus{}values} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ivalid\PYGZus{}frames} \PYG{o}{=} \PYG{p}{[]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Find the total number of frames tracked in the video}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Inum\PYGZus{}frames} \PYG{o}{=} \PYG{n+nb}{min}\PYG{p}{(}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{pupil\PYGZus{}track}\PYG{p}{),} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{tool\PYGZus{}track}\PYG{p}{))} \PYG{k}{if} \PYG{n}{pupil\PYGZus{}track} \PYG{o+ow}{and} \PYG{n}{tool\PYGZus{}track} \PYG{k}{else} \PYG{l+m+mi}{0}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ifor} \PYG{n}{frame\PYGZus{}idx} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{num\PYGZus{}frames}\PYG{p}{):}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ip\PYGZus{}frame} \PYG{o}{=} \PYG{n}{pupil\PYGZus{}track}\PYG{p}{[}\PYG{n}{frame\PYGZus{}idx}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{It\PYGZus{}frame} \PYG{o}{=} \PYG{n}{tool\PYGZus{}track}\PYG{p}{[}\PYG{n}{frame\PYGZus{}idx}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Ensure the chunk has all 6 values}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{p\PYGZus{}frame}\PYG{p}{)} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{6} \PYG{o+ow}{and} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{t\PYGZus{}frame}\PYG{p}{)} \PYG{o}{\PYGZgt{}=} \PYG{l+m+mi}{6}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Pupil Center}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ip\PYGZus{}cx}\PYG{p}{,} \PYG{n}{p\PYGZus{}cy}\PYG{p}{,} \PYG{n}{p\PYGZus{}cv} \PYG{o}{=} \PYG{n}{p\PYGZus{}frame}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{],} \PYG{n}{p\PYGZus{}frame}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{],} \PYG{n}{p\PYGZus{}frame}\PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Tool Tip}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{It\PYGZus{}tx}\PYG{p}{,} \PYG{n}{t\PYGZus{}ty}\PYG{p}{,} \PYG{n}{t\PYGZus{}tv} \PYG{o}{=} \PYG{n}{t\PYGZus{}frame}\PYG{p}{[}\PYG{l+m+mi}{3}\PYG{p}{],} \PYG{n}{t\PYGZus{}frame}\PYG{p}{[}\PYG{l+m+mi}{4}\PYG{p}{],} \PYG{n}{t\PYGZus{}frame}\PYG{p}{[}\PYG{l+m+mi}{5}\PYG{p}{]}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{c+c1}{\PYGZsh{} Check if both Pupil Center (p\PYGZus{}cv) and Tool Tip (t\PYGZus{}tv) are visible in this specific frame}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iif} \PYG{n}{p\PYGZus{}cv} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0} \PYG{o+ow}{and} \PYG{n}{t\PYGZus{}tv} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0}\PYG{p}{:}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ir}\PYG{p}{,} \PYG{n}{theta} \PYG{o}{=} \PYG{n}{convert\PYGZus{}to\PYGZus{}polar}\PYG{p}{(}\PYG{n}{t\PYGZus{}tx}\PYG{p}{,} \PYG{n}{t\PYGZus{}ty}\PYG{p}{,} \PYG{n}{p\PYGZus{}cx}\PYG{p}{,} \PYG{n}{p\PYGZus{}cy}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ir\PYGZus{}values}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{r}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Itheta\PYGZus{}values}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{theta}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Ivalid\PYGZus{}frames}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n}{frame\PYGZus{}idx}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Total frames tracked in video: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{num\PYGZus{}frames}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{Iprint}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Successfully calculated distance for }\PYG{l+s+si}{\PYGZob{}}\PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{valid\PYGZus{}frames}\PYG{p}{)}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ frames where both were visible.\PYGZdq{}}\PYG{p}{)}
+\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}\PYG{o}{\PYGZca{}\PYGZca{}}\PYG{n}{I}
+\end{MintedVerbatim}
