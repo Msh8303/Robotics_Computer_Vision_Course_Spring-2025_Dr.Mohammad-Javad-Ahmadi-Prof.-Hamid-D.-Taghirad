@@ -1,0 +1,39 @@
+{
+    "metadata": {
+        "paradigm": "Tracking-by-Detection",
+        "detector": "YOLOv8",
+        "tracker": "ByteTrack",
+        "status": "Success"
+    },
+    "paths": {
+        "best_model_weights": "/content/runs/detect/Surgical_Instrument_Tracking/YOLOv8_ByteTrack_Run1/weights/best.pt",
+        "training_results_dir": "Surgical_Instrument_Tracking/YOLOv8_ByteTrack_Run1"
+    },
+    "hyperparameters": {
+        "project_name": "Surgical_Instrument_Tracking",
+        "experiment_name": "YOLOv8_ByteTrack_Run1",
+        "model_architecture": "yolov8n.pt",
+        "training": {
+            "epochs": 8,
+            "batch_size": 16,
+            "img_size": 640,
+            "learning_rate_initial": 0.001,
+            "learning_rate_final": 0.0001,
+            "optimizer": "AdamW",
+            "weight_decay": 0.0005,
+            "momentum": 0.937
+        },
+        "tracking": {
+            "tracker_type": "bytetrack.yaml",
+            "conf_threshold": 0.25,
+            "iou_threshold": 0.5
+        }
+    },
+    "evaluation_metrics": {
+        "mAP_50": 0.908684494897948,
+        "mAP_50_95": 0.749763863768481,
+        "precision": 0.9208098285339665,
+        "recall": 0.900054563944634,
+        "fitness": 0.749763863768481
+    }
+}
